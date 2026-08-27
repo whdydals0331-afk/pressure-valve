@@ -1,0 +1,373 @@
+<title>Pressure Valve Field Test</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root {
+    --ground: #f3efe6;
+    --surface: #fffdf8;
+    --surface-2: #e9e2d3;
+    --ink: #211c17;
+    --ink-soft: #5c534a;
+    --line: #cabfa9;
+    --ember: #d8481f;
+    --ember-deep: #a8330f;
+    --ember-tint: #f4d9c9;
+    --relief: #256b63;
+    --relief-tint: #d7e8e2;
+    --shadow: 0 1px 0 rgba(33,28,23,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #161310; --surface: #1f1b16; --surface-2: #2a241d;
+      --ink: #f1ebe0; --ink-soft: #b3a795; --line: #40382d;
+      --ember: #ef6a3a; --ember-deep: #ff8452; --ember-tint: #3a2419;
+      --relief: #5fb3a6; --relief-tint: #1c332e;
+      --shadow: 0 1px 0 rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #161310; --surface: #1f1b16; --surface-2: #2a241d;
+    --ink: #f1ebe0; --ink-soft: #b3a795; --line: #40382d;
+    --ember: #ef6a3a; --ember-deep: #ff8452; --ember-tint: #3a2419;
+    --relief: #5fb3a6; --relief-tint: #1c332e;
+    --shadow: 0 1px 0 rgba(0,0,0,0.3);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 26px 18px 60px; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ember); display: flex; align-items: center; gap: 8px; margin: 0 0 6px;
+  }
+  .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ember); box-shadow: 0 0 0 3px var(--ember-tint); flex: none; }
+
+  h1 {
+    font-family: 'Big Shoulders Display', 'Noto Sans KR', sans-serif;
+    font-weight: 800; font-size: clamp(30px, 8vw, 42px); line-height: .98;
+    letter-spacing: .01em; margin: 0 0 8px; text-wrap: balance; text-transform: uppercase;
+  }
+  .lede { color: var(--ink-soft); font-size: 14.5px; max-width: 50ch; margin: 0 0 20px; }
+
+  .quicklinks { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+  .quicklinks a {
+    font-family: 'Noto Sans KR', sans-serif; font-weight: 700; font-size: 13px;
+    text-decoration: none; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .quicklinks a:hover { border-color: var(--ember); color: var(--ember-deep); }
+  .quicklinks a:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+  .progress-panel {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    box-shadow: var(--shadow); padding: 20px 20px 18px; margin-bottom: 24px;
+  }
+  .progress-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+  .progress-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  .progress-count {
+    font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 26px;
+    font-variant-numeric: tabular-nums; color: var(--ink);
+  }
+  .progress-count span { color: var(--ink-soft); font-size: 15px; }
+  .progress-track { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--ember); border-radius: 999px; width: 0%; transition: width .25s ease; }
+  @media (prefers-reduced-motion: reduce) { .progress-fill { transition: none; } }
+  .progress-note { font-size: 12.5px; color: var(--ink-soft); margin: 10px 0 0; }
+
+  h2.group-title {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 700; font-size: 19px; letter-spacing: .01em;
+    display: flex; align-items: baseline; gap: 9px; margin: 0 0 4px;
+  }
+  h2.group-title .num { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--ember); font-weight: 600; }
+  .group-sub { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 10px; }
+  .group { margin-bottom: 24px; }
+
+  .check-list { display: flex; flex-direction: column; gap: 6px; }
+  .check-row {
+    display: flex; align-items: flex-start; gap: 11px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: 12px 13px; cursor: pointer; user-select: none;
+  }
+  .check-row:hover { border-color: var(--ember); }
+  .check-row.done { background: var(--relief-tint); border-color: var(--relief); }
+  .check-box {
+    flex: none; width: 20px; height: 20px; border-radius: 5px; margin-top: 1px;
+    border: 1.5px solid var(--line); background: var(--surface-2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: transparent; transition: background .1s ease, border-color .1s ease;
+  }
+  .check-row.done .check-box { background: var(--relief); border-color: var(--relief); color: #fff8f2; }
+  .check-text { font-size: 14px; color: var(--ink); }
+  .check-row.done .check-text { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: var(--relief); }
+  .check-row input { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  .check-row:focus-within { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+  .notes-panel {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    padding: 18px 18px 16px; margin-top: 6px;
+  }
+  .notes-panel h2.group-title { margin-bottom: 4px; }
+  textarea {
+    width: 100%; min-height: 110px; resize: vertical;
+    border: 1px solid var(--line); border-radius: 4px;
+    background: var(--surface-2); color: var(--ink);
+    font-family: 'Noto Sans KR', sans-serif; font-size: 14px;
+    padding: 11px 13px; margin: 10px 0 12px;
+  }
+  textarea:focus-visible { outline: 2px solid var(--ember); outline-offset: 1px; }
+  textarea::placeholder { color: var(--ink-soft); opacity: .8; }
+
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button.pill {
+    font-family: 'Noto Sans KR', sans-serif; font-weight: 700; font-size: 13px;
+    border-radius: 999px; border: 1px solid var(--line); background: var(--surface-2);
+    color: var(--ink); padding: 9px 16px; cursor: pointer;
+  }
+  button.pill:hover { border-color: var(--ember); }
+  button.pill:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  button.pill.primary { background: var(--ember); border-color: var(--ember); color: #fff8f2; }
+  button.pill.primary:hover { background: var(--ember-deep); border-color: var(--ember-deep); }
+  button.pill.primary.copied { background: var(--relief); border-color: var(--relief); }
+  .privacy-note { font-size: 11.5px; color: var(--ink-soft); margin-top: 10px; }
+
+  footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--ink-soft); }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Beta Test · Phase 4</p>
+  <h1>Field Test</h1>
+  <p class="lede">Pressure Valve를 직접 써보면서 체크하는 페이지예요. 누르면 바로 체크되고, 이 화면을 나갔다 와도 진행 상황은 이 브라우저에 남아있어요.</p>
+
+  <div class="quicklinks">
+    <a href="https://claude.ai/code/artifact/27b81816-0070-4645-89eb-4c564bdc022c" target="_blank" rel="noopener">💨 앱 열기</a>
+    <a href="https://claude.ai/code/artifact/24077d86-50ea-4bba-aea4-f7799badc7a4" target="_blank" rel="noopener">📋 기획 문서 보기</a>
+  </div>
+
+  <div class="progress-panel">
+    <div class="progress-row">
+      <span class="progress-label">진행 상황</span>
+      <span class="progress-count" id="progressCount">0<span> / 18</span></span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <p class="progress-note" id="progressNote">아직 시작 전이에요. 위에서 앱을 먼저 열어보세요.</p>
+  </div>
+
+  <div id="groups"></div>
+
+  <div class="notes-panel">
+    <h2 class="group-title">버그·이상한 점 메모</h2>
+    <p class="group-sub">"어떤 상황에서 뭘 눌렀더니 어떻게 됐다" 정도로 편하게 적어두세요. 나중에 복사해서 그대로 보내주시면 돼요.</p>
+    <textarea id="notes" placeholder="예: 매운맛으로 바꾸고 자책 카테고리 눌렀는데 표현이 이상하게 반복됨..."></textarea>
+    <div class="btn-row">
+      <button class="pill primary" id="copyNotesBtn" type="button">메모 복사하기</button>
+      <button class="pill" id="resetBtn" type="button">전체 초기화</button>
+    </div>
+    <p class="privacy-note">이 페이지도 서버로 아무것도 전송하지 않아요. 체크와 메모는 이 브라우저에만 저장돼요.</p>
+  </div>
+
+  <footer>Pressure Valve Field Test · Charter 24번 체크리스트를 그대로 옮긴 페이지</footer>
+</div>
+
+<script>
+(function () {
+  var GROUPS = [
+    {
+      id: 'a', title: '기능', sub: '핵심 흐름이 다 도는지',
+      items: [
+        '카테고리 5개 전부 눌러보기',
+        '순한맛 ↔ 매운맛 전환해보기',
+        '상황 텍스트로 각 카테고리 유형 문장 입력해 매칭 확인',
+        '즐겨찾기 추가·삭제, 목록에서 "보기"→"다른 표현"',
+        '복사 버튼으로 실제 메모장 등에 붙여넣어 확인',
+        '발음 듣기(🔊) 눌러보기',
+        '"다른 표현" 연타 시 직전 문장 바로 반복 안 되는지'
+      ]
+    },
+    {
+      id: 'b', title: '콘텐츠 품질', sub: '아직 검증 안 된 부분',
+      items: [
+        '영어 표현이 자연스러운지, 어색한 문장 있는지',
+        '한국어 설명(ko)이 뜻과 맞는지',
+        'tip이 실제로 도움되는지',
+        '매운맛 강도가 너무 약하거나 세지 않은지'
+      ]
+    },
+    {
+      id: 'c', title: '실사용 경험', sub: '제품 가치 자체를 검증하는 부분',
+      items: [
+        '순한맛에 만족하는지, 매운맛으로 바꾸게 되는지',
+        '즐겨찾기를 실제로 누르게 되는지',
+        '하루 지나서 다시 열고 싶어지는지',
+        '"진짜 스트레스가 풀리는 느낌"이 드는지'
+      ]
+    },
+    {
+      id: 'd', title: '환경 체크', sub: '',
+      items: [
+        '폰에서 가로 스크롤 없이 잘 보이는지',
+        '가능하면 사파리·크롬 둘 다 (발음 듣기 특히)',
+        '다크모드·라이트모드 전환해도 괜찮은지'
+      ]
+    }
+  ];
+
+  var TOTAL = GROUPS.reduce(function (n, g) { return n + g.items.length; }, 0);
+  var STATE_KEY = 'pressure-valve-fieldtest-checks-v1';
+  var NOTES_KEY = 'pressure-valve-fieldtest-notes-v1';
+
+  var groupsEl = document.getElementById('groups');
+  var progressCount = document.getElementById('progressCount');
+  var progressFill = document.getElementById('progressFill');
+  var progressNote = document.getElementById('progressNote');
+  var notes = document.getElementById('notes');
+  var copyNotesBtn = document.getElementById('copyNotesBtn');
+  var resetBtn = document.getElementById('resetBtn');
+
+  function loadChecks() {
+    try {
+      var raw = localStorage.getItem(STATE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+  function saveChecks(state) {
+    try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  }
+
+  var checks = loadChecks();
+
+  function itemKey(gid, i) { return gid + i; }
+
+  function updateProgress() {
+    var done = Object.keys(checks).filter(function (k) { return checks[k]; }).length;
+    progressCount.innerHTML = done + '<span> / ' + TOTAL + '</span>';
+    progressFill.style.width = Math.round((done / TOTAL) * 100) + '%';
+    if (done === 0) progressNote.textContent = '아직 시작 전이에요. 위에서 앱을 먼저 열어보세요.';
+    else if (done < TOTAL) progressNote.textContent = '진행 중이에요 — 편하게, 순서 상관없이 체크하시면 돼요.';
+    else progressNote.textContent = '전부 확인했어요. 메모 남긴 거 있으면 아래에서 복사해서 보내주세요.';
+  }
+
+  function renderGroups() {
+    groupsEl.innerHTML = '';
+    GROUPS.forEach(function (g, gi) {
+      var section = document.createElement('div');
+      section.className = 'group';
+
+      var h = document.createElement('h2');
+      h.className = 'group-title';
+      h.innerHTML = '<span class="num">' + (gi + 1) + '</span>' + g.title;
+      section.appendChild(h);
+
+      if (g.sub) {
+        var sub = document.createElement('p');
+        sub.className = 'group-sub';
+        sub.textContent = g.sub;
+        section.appendChild(sub);
+      }
+
+      var list = document.createElement('div');
+      list.className = 'check-list';
+
+      g.items.forEach(function (text, i) {
+        var key = itemKey(g.id, i);
+        var row = document.createElement('label');
+        row.className = 'check-row' + (checks[key] ? ' done' : '');
+
+        var input = document.createElement('input');
+        input.type = 'checkbox';
+        input.checked = !!checks[key];
+        input.addEventListener('change', function () {
+          checks[key] = input.checked;
+          saveChecks(checks);
+          row.classList.toggle('done', input.checked);
+          updateProgress();
+        });
+        row.appendChild(input);
+
+        var box = document.createElement('span');
+        box.className = 'check-box';
+        box.textContent = '✓';
+        row.appendChild(box);
+
+        var txt = document.createElement('span');
+        txt.className = 'check-text';
+        txt.textContent = text;
+        row.appendChild(txt);
+
+        list.appendChild(row);
+      });
+
+      section.appendChild(list);
+      groupsEl.appendChild(section);
+    });
+  }
+
+  // notes persistence
+  try {
+    var savedNotes = localStorage.getItem(NOTES_KEY);
+    if (savedNotes) notes.value = savedNotes;
+  } catch (e) { /* ignore */ }
+
+  notes.addEventListener('input', function () {
+    try { localStorage.setItem(NOTES_KEY, notes.value); } catch (e) { /* ignore */ }
+  });
+
+  function fallbackCopy(text, cb) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (cb) cb();
+    } catch (e) { /* ignore */ }
+  }
+
+  copyNotesBtn.addEventListener('click', function () {
+    var text = notes.value.trim();
+    if (!text) return;
+    var showCopied = function () {
+      copyNotesBtn.textContent = '복사됨 ✓';
+      copyNotesBtn.classList.add('copied');
+      setTimeout(function () {
+        copyNotesBtn.textContent = '메모 복사하기';
+        copyNotesBtn.classList.remove('copied');
+      }, 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(showCopied, function () { fallbackCopy(text, showCopied); });
+    } else {
+      fallbackCopy(text, showCopied);
+    }
+  });
+
+  resetBtn.addEventListener('click', function () {
+    checks = {};
+    saveChecks(checks);
+    notes.value = '';
+    try { localStorage.removeItem(NOTES_KEY); } catch (e) { /* ignore */ }
+    renderGroups();
+    updateProgress();
+  });
+
+  renderGroups();
+  updateProgress();
+})();
+</script>

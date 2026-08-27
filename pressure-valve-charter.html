@@ -1,0 +1,754 @@
+<title>Pressure Valve Charter</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root {
+    --ground: #f3efe6;
+    --surface: #fffdf8;
+    --surface-2: #e9e2d3;
+    --ink: #211c17;
+    --ink-soft: #5c534a;
+    --line: #cabfa9;
+    --ember: #d8481f;
+    --ember-deep: #a8330f;
+    --ember-tint: #f4d9c9;
+    --relief: #256b63;
+    --relief-tint: #d7e8e2;
+    --good: #256b63;
+    --warn: #a8330f;
+    --shadow: 0 1px 0 rgba(33,28,23,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #161310; --surface: #1f1b16; --surface-2: #2a241d;
+      --ink: #f1ebe0; --ink-soft: #b3a795; --line: #40382d;
+      --ember: #ef6a3a; --ember-deep: #ff8452; --ember-tint: #3a2419;
+      --relief: #5fb3a6; --relief-tint: #1c332e; --good: #5fb3a6; --warn: #ef6a3a;
+      --shadow: 0 1px 0 rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #161310; --surface: #1f1b16; --surface-2: #2a241d;
+    --ink: #f1ebe0; --ink-soft: #b3a795; --line: #40382d;
+    --ember: #ef6a3a; --ember-deep: #ff8452; --ember-tint: #3a2419;
+    --relief: #5fb3a6; --relief-tint: #1c332e; --good: #5fb3a6; --warn: #ef6a3a;
+    --shadow: 0 1px 0 rgba(0,0,0,0.3);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 20px 70px; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ember); display: flex; align-items: center; gap: 8px; margin: 0 0 6px;
+  }
+  .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ember); box-shadow: 0 0 0 3px var(--ember-tint); flex: none; }
+
+  h1 {
+    font-family: 'Big Shoulders Display', 'Noto Sans KR', sans-serif;
+    font-weight: 800; font-size: clamp(32px, 8vw, 46px); line-height: .98;
+    letter-spacing: .01em; margin: 0 0 8px; text-wrap: balance; text-transform: uppercase;
+  }
+  .lede { color: var(--ink-soft); font-size: 14.5px; max-width: 56ch; margin: 0 0 4px; }
+  .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--ink-soft); margin: 14px 0 34px; }
+
+  section.block { margin-bottom: 34px; }
+  h2 {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 700; font-size: 22px; letter-spacing: .01em;
+    display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px;
+  }
+  h2 .num { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--ember); font-weight: 600; }
+  .block-sub { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 16px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+    box-shadow: var(--shadow); padding: 18px 20px;
+  }
+  .card + .card { margin-top: 10px; }
+
+  .field-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--relief); margin: 0 0 4px;
+  }
+  .field-value { font-size: 14.5px; margin: 0 0 14px; }
+  .field-value:last-child { margin-bottom: 0; }
+  .field-value b { color: var(--ink); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 560px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .matrix-wrap { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+  .matrix-svg { flex: none; }
+  .matrix-note { flex: 1; min-width: 220px; font-size: 13.5px; color: var(--ink); }
+  .matrix-note .verdict {
+    display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
+    letter-spacing: .06em; color: var(--ember-deep); background: var(--ember-tint);
+    border-radius: 3px; padding: 3px 8px; margin-bottom: 8px;
+  }
+
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table.eval { width: 100%; min-width: 480px; border-collapse: collapse; font-size: 13.5px; }
+  table.eval th { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; padding: 0 10px 8px 0; border-bottom: 1px solid var(--line); }
+  table.eval td { padding: 10px 10px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.eval tr:last-child td { border-bottom: none; }
+  .score {
+    display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; font-weight: 600;
+    letter-spacing: .04em; border-radius: 3px; padding: 2px 7px; white-space: nowrap;
+  }
+  .score.high { color: var(--good); background: var(--relief-tint); }
+  .score.mid { color: var(--ink-soft); background: var(--surface-2); }
+  .score.low { color: var(--warn); background: var(--ember-tint); }
+
+  ul.plain { margin: 0; padding-left: 18px; font-size: 13.5px; }
+  ul.plain li { margin-bottom: 6px; }
+  ul.plain li:last-child { margin-bottom: 0; }
+
+  .callout {
+    border-left: 3px solid var(--ember); background: var(--ember-tint);
+    border-radius: 0 4px 4px 0; padding: 12px 14px; font-size: 13.5px; color: var(--ink);
+  }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; }
+  .checklist .item { display: flex; gap: 8px; align-items: flex-start; }
+  .checklist .tick { color: var(--good); font-weight: 700; flex: none; }
+
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--ink-soft); }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Product Planning · Phase 1–4</p>
+  <h1>Pressure Valve Charter</h1>
+  <p class="lede">제품개발론 강의자료(기회 발굴 · 제품 계획 · 고객 니즈 · QFD · 컨셉 개발 · 제품 사양 · 제품 아키텍처 · 프로세스와 조직)를 기준으로, Pressure Valve를 하나의 제품으로 놓고 기획부터 양산 준비까지 진행한 문서입니다.</p>
+  <p class="meta">TEAM: 조용민(PM) · Claude(개발 파트너) — STATUS: Phase 4 완료 · NPD 4단계 전체 사이클 완주 — LAST UPDATED: 2026-08-25</p>
+
+  <section class="block">
+    <h2><span class="num">01</span>신제품 기회 보고서</h2>
+    <p class="block-sub">Step 1 · Identify Opportunities — 1페이지 보고서 양식(제목/설명/스케치)</p>
+    <div class="card">
+      <p class="field-label">Title</p>
+      <p class="field-value"><b>Pressure Valve</b> — 영어 표현으로 하루의 스트레스를 짧게 배출하는 벤팅 툴</p>
+      <p class="field-label">Description — What / Who / Why</p>
+      <p class="field-value"><b>What.</b> 카테고리를 고르거나 오늘 있었던 일을 한 줄 쓰면, 순한맛/매운맛 강도로 조절된 영어 표현과 한국어 뉘앙스를 즉시 보여주는 인터랙티브 웹 앱.</p>
+      <p class="field-value"><b>Who.</b> 영어 학습에 대한 부담은 크지만 스트레스는 매일 쌓이는 20~30대 직장인·학생 — "배우기"보다 "풀기"가 목적인 사용자.</p>
+      <p class="field-value"><b>Why (가치 가설).</b> 기존 영어 회화 앱(예: 영트임류)은 학습에 초점이 맞춰져 있고, 감정 배출용 콘텐츠는 별도 시장이 없다. "확실히 존재하는 스트레스 해소 니즈"에 "영어 표현"이라는 실용적 가치를 얹으면, 학습 부담 없이도 매일 열어보고 싶은 도구가 될 수 있다.</p>
+      <p class="field-label">Sketch</p>
+      <p class="field-value">이미 프로토타입 v1~v3까지 제작·배포 완료 — 카테고리 선택, 강도 토글, 발음 듣기, 즐겨찾기 기능 포함.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">02</span>기회 유형 분류</h2>
+    <p class="block-sub">해결방안의 익숙함 × 고객 요구의 익숙함 (2×2 매트릭스)</p>
+    <div class="matrix-wrap">
+      <svg class="matrix-svg" width="230" height="200" viewBox="0 0 230 200" role="img" aria-label="기회 유형 매트릭스, 영역 2에 위치">
+        <line x1="60" y1="10" x2="60" y2="170" stroke="var(--line)" stroke-width="1.5"></line>
+        <line x1="60" y1="170" x2="220" y2="170" stroke="var(--line)" stroke-width="1.5"></line>
+        <line x1="140" y1="10" x2="140" y2="170" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 3"></line>
+        <line x1="60" y1="90" x2="220" y2="90" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 3"></line>
+        <text x="55" y="20" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-soft)">새요구</text>
+        <text x="55" y="175" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-soft)">기존요구</text>
+        <text x="60" y="188" text-anchor="start" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-soft)">기존 해결방안</text>
+        <text x="220" y="188" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-soft)">새 해결방안</text>
+        <circle cx="100" cy="58" r="7" fill="var(--ember)"></circle>
+        <text x="100" y="45" text-anchor="middle" font-family="Noto Sans KR" font-weight="700" font-size="11" fill="var(--ember-deep)">우리</text>
+      </svg>
+      <div class="matrix-note">
+        <span class="verdict">영역 2 · 인접 시장 진출</span>
+        <p style="margin:0 0 8px">해결방안(HTML/CSS/JS, localStorage, Web Speech API)은 전부 기업이 이미 다룰 줄 아는 <b>기존 기술</b>이지만, 고객 요구는 "스트레스 해소 + 영어 표현"이라는, 기존 언어학습 앱들이 <b>고려하지 않았던 조합</b>이다.</p>
+        <p style="margin:0">→ 완전 신규(영역 3)만큼 위험하지 않으면서도, 기존 제품 개선(영역 1)보다는 차별화된 위치.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">03</span>프로젝트 유형 매트릭스</h2>
+    <p class="block-sub">제품 변화 × 공정 변화 (제품 계획 4장)</p>
+    <div class="matrix-wrap">
+      <svg class="matrix-svg" width="230" height="200" viewBox="0 0 230 200" role="img" aria-label="프로젝트 유형 매트릭스, 새로운 제품 플랫폼 사분면에 위치">
+        <line x1="60" y1="10" x2="60" y2="170" stroke="var(--line)" stroke-width="1.5"></line>
+        <line x1="60" y1="170" x2="220" y2="170" stroke="var(--line)" stroke-width="1.5"></line>
+        <line x1="140" y1="10" x2="140" y2="170" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 3"></line>
+        <line x1="60" y1="90" x2="220" y2="90" stroke="var(--line)" stroke-width="1" stroke-dasharray="3 3"></line>
+        <text x="55" y="20" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-soft)">신규제품</text>
+        <text x="55" y="175" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-soft)">기존제품</text>
+        <text x="60" y="188" text-anchor="start" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-soft)">기존 공정</text>
+        <text x="220" y="188" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="9" fill="var(--ink-soft)">신규 공정</text>
+        <circle cx="100" cy="45" r="7" fill="var(--ember)"></circle>
+        <text x="100" y="32" text-anchor="middle" font-family="Noto Sans KR" font-weight="700" font-size="11" fill="var(--ember-deep)">우리</text>
+      </svg>
+      <div class="matrix-note">
+        <span class="verdict">새로운 제품 플랫폼</span>
+        <p style="margin:0 0 8px">제품 컨셉 자체는 새롭지만(감정 배출 × 영어 표현), 구현 기술은 전부 표준 웹 기술 — 공정 변화는 낮다.</p>
+        <p style="margin:0">→ 매운맛/순한맛, 다른 언어 버전, 다른 페르소나(수험생용 등) 같은 <b>파생 제품으로 확장 가능한 기반</b>으로 본다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">04</span>경쟁 전략</h2>
+    <p class="block-sub">Step 2 · Competitive Strategies (4 Types) 중 선택</p>
+    <div class="card">
+      <p class="field-label">선택한 전략</p>
+      <p class="field-value"><b>고객 중심 전략 (Customer Focus)</b> — 넓은 시장 전체가 아니라, "스트레스는 있지만 학습은 부담스러운" 좁고 구체적인 니즈에 맞춘 표현 큐레이션에 집중.</p>
+      <p class="field-label">전략적 적합성 질문</p>
+      <p class="field-value"><b>승리 조건.</b> 매일 다시 열고 싶어지는 "배출 순간"의 즉각적 만족감을 주는가.</p>
+      <p class="field-value"><b>핵심 역량.</b> 표현 큐레이션의 품질(자연스러움·톤)과 빠른 반복 개선 속도.</p>
+      <p class="field-value" style="margin-bottom:0"><b>경쟁 회피 영역.</b> 문법 교육, 시험 대비 같은 정규 영어 학습 콘텐츠는 다루지 않는다 — 그건 이미 잘하는 앱들이 있다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">05</span>기회 평가</h2>
+    <p class="block-sub">7가지 평가 기준 — 2인 개인 프로젝트 기준으로 정직하게 채점</p>
+    <div class="card">
+      <div class="table-scroll"><table class="eval">
+        <tr><th>기준</th><th>평가</th><th>비고</th></tr>
+        <tr><td>시장 규모 및 성장성</td><td><span class="score low">낮음</span></td><td>대규모 시장이 아닌 개인 프로젝트/틈새 시장</td></tr>
+        <tr><td>전략적 적합성</td><td><span class="score high">높음</span></td><td>NPD 프로세스 실습이라는 목적과 정확히 부합</td></tr>
+        <tr><td>기존 지식 활용도</td><td><span class="score high">높음</span></td><td>표준 웹 기술만으로 구현 가능</td></tr>
+        <tr><td>내부 전문가(Product Champion)</td><td><span class="score high">높음</span></td><td>조용민 본인이 니즈를 직접 겪는 사용자</td></tr>
+        <tr><td>경쟁 우위 및 강도</td><td><span class="score mid">중간</span></td><td>진입장벽은 낮지만 톤·큐레이션으로 차별화 가능</td></tr>
+        <tr><td>위험 관리</td><td><span class="score high">높음</span></td><td>클라우드 무료 티어, 매몰비용 사실상 없음</td></tr>
+        <tr><td>지식재산권 보호</td><td><span class="score low">해당 없음</span></td><td>특허보다 실행 속도와 콘텐츠 품질이 경쟁력</td></tr>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">06</span>자원 할당 & 타이밍</h2>
+    <p class="block-sub">Step 3 · Resource & Timing</p>
+    <div class="grid-2">
+      <div class="card">
+        <p class="field-label">팀</p>
+        <p class="field-value" style="margin-bottom:0">조용민 — PM 겸 의사결정 / Claude — 설계·개발 파트너</p>
+      </div>
+      <div class="card">
+        <p class="field-label">예산</p>
+        <p class="field-value" style="margin-bottom:0">$0 — 클라우드 무료 티어만 사용, 별도 서버/PC 상시 구동 불필요</p>
+      </div>
+      <div class="card">
+        <p class="field-label">개발 방식</p>
+        <p class="field-value" style="margin-bottom:0">애자일 — 페이즈마다 즉시 반복 배포(현재 v1~v3 이미 배포됨)</p>
+      </div>
+      <div class="card">
+        <p class="field-label">인프라</p>
+        <p class="field-value" style="margin-bottom:0">100% 클라우드 호스팅 — PC/데스크탑을 서버로 둘 필요 없음</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">07</span>미션 스테이트먼트</h2>
+    <p class="block-sub">Step 4 · Pre-Project Planning</p>
+    <div class="card">
+      <p class="field-label">제품 설명</p>
+      <p class="field-value">하루의 스트레스를 영어 표현으로 빠르게 배출하는 인터랙티브 벤팅 웹 앱</p>
+      <p class="field-label">핵심 목표</p>
+      <p class="field-value">매일 실제로 열어보고 싶은 도구로 완성하기 · 제품개발론 NPD 프로세스를 끝까지 실습하기</p>
+      <p class="field-label">1차 타겟 시장</p>
+      <p class="field-value">스트레스는 있지만 영어 학습 부담은 피하고 싶은 2030 한국인 직장인·학생</p>
+      <p class="field-label">2차 타겟 시장</p>
+      <p class="field-value">영어 표현을 캐주얼하게 익히고 싶은 일반 사용자</p>
+      <p class="field-label">가정 및 제약</p>
+      <p class="field-value">웹 기반(앱스토어 배포 없음) · 별도 백엔드 없이 클라이언트 저장 우선 · 무료 인프라</p>
+      <p class="field-label">이해관계자</p>
+      <p class="field-value" style="margin-bottom:0">조용민(오너) · Claude(개발) · (향후) 실제 사용자</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">08</span>Phase 1 리뷰 & 다음 단계</h2>
+    <p class="block-sub">Step 5 · Reflect &amp; Review</p>
+    <div class="card">
+      <div class="checklist">
+        <div class="item"><span class="tick">✓</span><span>기회 정의 및 1페이지 보고서 작성 완료</span></div>
+        <div class="item"><span class="tick">✓</span><span>기회 유형 · 프로젝트 유형 매트릭스 분류 완료</span></div>
+        <div class="item"><span class="tick">✓</span><span>경쟁 전략 선정 및 평가 기준 점검 완료</span></div>
+        <div class="item"><span class="tick">✓</span><span>미션 스테이트먼트 초안 작성 완료</span></div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:10px">
+      Phase 2 진행 완료 — 아래 09~13 참고.
+    </div>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow" style="margin:0 0 10px">Product Planning · Phase 2</p>
+    <h2 style="font-size:26px"><span class="num">—</span>개념 개발 &amp; 시스템 설계</h2>
+    <p class="block-sub">고객 니즈 파악 → 제품 사양(QFD) → 컨셉 생성·선정·테스트 → 제품 아키텍처. 실제 사용자 인터뷰 30명 규모는 진행하지 않았고(2인 개인 프로젝트 규모), 조용민 본인이 선도사용자(Lead User)로서 스스로의 사용 경험을 관찰·기록해 니즈를 도출했습니다 — 이 점을 정직하게 전제로 남겨둡니다.</p>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">09</span>고객 니즈 파악</h2>
+    <p class="block-sub">Step 1~3 · 데이터 수집 → 니즈 해석 → 계층 구조화(Affinity) → 상대적 중요도</p>
+    <div class="card">
+      <div class="table-scroll"><table class="eval">
+        <tr><th>니즈 (What)</th><th>중요도</th><th>비고</th></tr>
+        <tr><td>N1. 빠르게 원하는 표현을 찾고 싶다</td><td><span class="score high">5</span></td><td>클릭 1~2번 안에 결과가 나와야 함 — v1부터 이미 반영</td></tr>
+        <tr><td>N2. 실제로 써먹을 수 있는 자연스러운 표현이어야 한다</td><td><span class="score high">5</span></td><td>번역투 느낌이면 신뢰가 깨짐</td></tr>
+        <tr><td>N3. 상황에 맞는 강도(순한맛/매운맛)를 고를 수 있어야 한다</td><td><span class="score mid">4</span></td><td>Phase 1 이후 사이드 기능으로 이미 존재</td></tr>
+        <tr><td>N6. 개인적인 내용이 어디에도 저장·전송되지 않았으면 한다</td><td><span class="score mid">4</span></td><td>프라이버시 — 서버 없음 원칙과 직결</td></tr>
+        <tr><td>N8. 마음에 든 문구를 바로 복사해서 다른 곳에 쓰고 싶다</td><td><span class="score mid">4</span></td><td><b>이번 phase에 새로 확인된 니즈</b> — 아직 미충족</td></tr>
+        <tr><td>N4. 마음에 든 표현을 나중에도 다시 보고 싶다</td><td><span class="score mid">3</span></td><td>즐겨찾기로 이미 충족</td></tr>
+        <tr><td>N5. 소리 내어 발음을 확인하고 싶다</td><td><span class="score mid">3</span></td><td>TTS로 이미 충족</td></tr>
+        <tr><td>N7. 매번 같은 표현만 반복해서 나오지 않았으면 한다</td><td><span class="score mid">3</span></td><td><b>이번 phase에 새로 확인된 니즈</b> — 아직 미충족</td></tr>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">10</span>제품 사양 · QFD (House of Quality 요약형)</h2>
+    <p class="block-sub">니즈(What) × 기술 요구사항(How) 관계 매트릭스 — ● 9점 / ○ 3점 / △ 1점, 우선순위 = Σ(중요도 × 관계점수)</p>
+    <div class="card">
+      <div class="table-scroll"><table class="eval">
+        <tr><th>기술 요구사항 (How)</th><th>우선순위</th><th>대응 니즈 · 현재 상태</th></tr>
+        <tr><td>T1. 카테고리별 표현 배열 (≥6개, 톤 자연스러움)</td><td><span class="score high">27%</span></td><td>N1·N2·N7 — 이미 구현, 유지·보강</td></tr>
+        <tr><td>T3. 강도 분리 배열 + 토글 상태 저장</td><td><span class="score high">16%</span></td><td>N3·N2 — 이미 구현 완료</td></tr>
+        <tr><td>T7. 클립보드 복사 연동</td><td><span class="score high">16%</span></td><td>N8·N1 — <b>미구현 → 이번 phase 개발 대상</b></td></tr>
+        <tr><td>T6. 최근 노출 이력 기반 중복 방지</td><td><span class="score mid">13%</span></td><td>N7·N1 — <b>미구현 → 이번 phase 개발 대상</b></td></tr>
+        <tr><td>T2. 로컬 저장 전용, 서버 미전송</td><td><span class="score mid">11%</span></td><td>N6 — 이미 구현 완료</td></tr>
+        <tr><td>T4. 즐겨찾기 localStorage 영속화</td><td><span class="score low">8%</span></td><td>N4 — 이미 구현 완료</td></tr>
+        <tr><td>T5. Web Speech API 연동</td><td><span class="score low">8%</span></td><td>N5 — 이미 구현 완료</td></tr>
+      </table></div>
+      <p class="field-value" style="margin:14px 0 0"><b>해석.</b> 우선순위 상위 4개 중 2개(T1·T3)는 이미 충족되어 있고, 나머지 2개(T7 복사, T6 중복 방지)가 이번 Phase 2의 실제 개발 범위로 확정됩니다. 나머지(T2·T4·T5)는 이미 구현되어 있어 이번 phase에서는 손대지 않습니다 — 이것이 "다른 길로 새지 않기" 위한 이번 phase의 스코프 경계선입니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">11</span>컨셉 생성 · 선정 · 테스트</h2>
+    <p class="block-sub">Step 1~3 · 문제 명확화 → 분류도/조합표로 발산 → Pugh Matrix로 수렴</p>
+    <div class="card">
+      <p class="field-label">문제 명확화</p>
+      <p class="field-value">T7(복사)·T6(중복 방지)을 어떻게 구현할 것인가?</p>
+      <p class="field-label">분류도 (Classification Tree) — 축 2개로 발산</p>
+      <p class="field-value">신선함 확보 방법: [A. 최근 이력 제외] [B. 순차 노출] [C. 가중치 랜덤] &nbsp;×&nbsp; 활용성 확보 방법: [A. 클립보드 복사] [B. 공유 링크] [C. 텍스트 내보내기]</p>
+      <p class="field-label">조합표에서 나온 후보 (일부)</p>
+      <ul class="plain">
+        <li><b>C1</b> 최근 이력 제외 + 복사 버튼</li>
+        <li><b>C2</b> 가중치 랜덤 + 공유 링크 생성</li>
+        <li><b>C6</b> (외부조사) PWA 홈 화면 설치 지원</li>
+        <li><b>C7</b> (외부조사) 사용자 정의 카테고리 추가</li>
+        <li><b>C8</b> 소셜 공유용 이미지 카드 생성</li>
+      </ul>
+    </div>
+    <div class="card">
+      <p class="field-label">Pugh Matrix (기준선 = 현재 상태 유지)</p>
+      <div class="table-scroll"><table class="eval">
+        <tr><th>컨셉</th><th>니즈충족 / 미션적합 / 구현비용</th><th>판정</th></tr>
+        <tr><td>C1. 최근 이력 제외 + 복사 버튼</td><td>+ / + / +</td><td><span class="score high">채택</span></td></tr>
+        <tr><td>C2. 가중치 랜덤 + 공유 링크</td><td>0 / − / −−</td><td><span class="score low">탈락</span></td></tr>
+        <tr><td>C6. PWA 홈 화면 설치</td><td>0 / − / −−</td><td><span class="score low">보류 · Phase 3+ 백로그</span></td></tr>
+        <tr><td>C7. 사용자 정의 카테고리</td><td>0 / −− / −</td><td><span class="score low">탈락 (핵심 최소 스코프 원칙 위배)</span></td></tr>
+        <tr><td>C8. 소셜 공유 카드 이미지</td><td>0 / − / −−</td><td><span class="score low">탈락</span></td></tr>
+      </table></div>
+      <p class="field-value" style="margin:14px 0 0"><b>컨셉 테스트.</b> 외부 프로토타입 없이 바로 상세 설계로 진행 — 두 기능 모두 저위험·저비용(순수 클라이언트 로직 추가)이라 개발 자체가 곧 테스트입니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">12</span>제품 아키텍처</h2>
+    <p class="block-sub">기능 요소 → 물리적 청크(코드 모듈) 매핑 · 모듈화 vs 통합화 결정</p>
+    <div class="card">
+      <div class="table-scroll"><table class="eval">
+        <tr><th>기능 요소</th><th>물리적 청크 (모듈)</th><th>비고</th></tr>
+        <tr><td>카테고리·표현 데이터</td><td>Data Module (CATEGORIES)</td><td>변경 없음</td></tr>
+        <tr><td>강도 선택</td><td>Mode Engine</td><td>변경 없음</td></tr>
+        <tr><td>표현 노출 로직</td><td>Phrase Engine</td><td><b>수정</b> — 중복 방지(T6) 편입</td></tr>
+        <tr><td>상황 텍스트 매칭</td><td>Vent-Log Matcher</td><td>변경 없음</td></tr>
+        <tr><td>즐겨찾기</td><td>Favorites Module</td><td>변경 없음</td></tr>
+        <tr><td>발음 재생</td><td>Speech Module</td><td>변경 없음</td></tr>
+        <tr><td>문구 복사</td><td><b>Utility Module (신규)</b></td><td>T7 — Clipboard API + fallback</td></tr>
+        <tr><td>게이지 애니메이션 / UI 바인딩</td><td>Gauge Controller / UI Controller</td><td>변경 없음</td></tr>
+      </table></div>
+      <p class="field-value" style="margin:14px 0 0"><b>결정: 모듈화 아키텍처.</b> 각 청크가 1~2개 기능만 담당하고 인터페이스(함수 시그니처)로만 연결되어 있어, 이번처럼 Phrase Engine 하나만 손보고 신규 Utility Module 하나만 추가해도 나머지 모듈은 건드릴 필요가 없습니다 — Phase 1에서 정한 "인접 시장, 파생 제품으로 확장 가능한 기반" 방향과도 일치합니다.</p>
+      <p class="field-value" style="margin-bottom:0"><b>중복 방지 이력 저장 위치.</b> localStorage가 아닌 <b>세션 메모리(변수)</b>로 최근 노출 3개만 추적 — 새로고침하면 초기화됩니다. N6(프라이버시·무전송 원칙)과 최소 스코프 원칙을 동시에 지키는 선택입니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">13</span>Phase 2 리뷰 & 실행 범위 확정</h2>
+    <p class="block-sub">Step 5 · Reflect &amp; Review — 개발로 넘어가기 전 최종 스코프</p>
+    <div class="card">
+      <div class="checklist">
+        <div class="item"><span class="tick">✓</span><span>고객 니즈 8개 도출 및 중요도 평가 완료</span></div>
+        <div class="item"><span class="tick">✓</span><span>QFD로 기술 요구사항 우선순위화 — T6·T7이 유일한 미충족 상위 항목으로 확정</span></div>
+        <div class="item"><span class="tick">✓</span><span>컨셉 5개 생성 → Pugh Matrix로 C1(복사 버튼 + 중복 방지) 단독 채택, 나머지 전부 탈락/보류</span></div>
+        <div class="item"><span class="tick">✓</span><span>모듈화 아키텍처 확정 — Phrase Engine 수정 + Utility Module 신규 추가로 범위 한정</span></div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:10px">
+      <b>이번 phase에서 실제로 코드에 반영되는 것은 정확히 2가지뿐입니다</b> — ① 결과 카드에 복사 버튼 추가, ② 같은 표현이 연속으로 반복되지 않도록 Phrase Engine 수정. PWA·공유·커스텀 카테고리 등은 의도적으로 보류/탈락시켰습니다 — 이것이 이번 phase의 "산으로 가지 않기" 기준선입니다.
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">14</span>디버깅 로그 · Phase 1–2 QA</h2>
+    <p class="block-sub">각 phase 종료 시 내용(기획 문서) · 코드 · 앱(실제 동작) 3단을 점검하는 루틴 — 이번이 첫 실행. Playwright 헤드리스 브라우저로 카테고리 선택→강도 전환→반복 클릭→즐겨찾기 조회→복사→상황 매칭→릴리즈 전체 흐름을 자동 클릭 테스트, 콘솔 에러 0건(폰트 CDN 차단 경고 제외) 확인.</p>
+    <div class="card">
+      <div class="table-scroll"><table class="eval">
+        <tr><th>발견</th><th>구분</th><th>조치</th></tr>
+        <tr><td>QFD 사양 T1("표현 ≥6개")과 실제 코드 불일치 — 자책·탈진 매운맛 배열이 5개뿐이었음</td><td><span class="score low">내용↔코드</span></td><td>각 배열에 자연스러운 표현 1개씩 추가해 6개로 맞춤</td></tr>
+        <tr><td>즐겨찾기에서 문구를 열람한 뒤 "다른 표현"을 누르면 즐겨찾기 임시 객체에 mild/spicy 배열이 없어 TypeError로 죽는 경로 발견</td><td><span class="score low">코드</span></td><td>열람 시 라벨로 실제 카테고리를 재매핑하고, phrasesFor·showRandomFrom에 방어 코드 추가</td></tr>
+        <tr><td>상황 입력 없이 "표현 찾기"를 누르면 카테고리는 무작위로 바뀌는데 밸브 버튼 하이라이트는 갱신 안 됨</td><td><span class="score mid">UX 일관성</span></td><td>같은 분기에 setActiveCategory 호출 추가</td></tr>
+      </table></div>
+      <p class="field-value" style="margin:14px 0 0">세 건 모두 Phase 1에서 만들어졌지만 Phase 2 QFD 교차 검증과 실제 클릭 테스트 과정에서 처음 드러났습니다 — 이번 phase의 스코프(복사·중복방지)와는 무관한 버그이지만, 발견한 시점에 바로 고쳤습니다.</p>
+    </div>
+    <div class="callout" style="margin-top:10px">
+      Phase 3 진행 완료 — 아래 15~19 참고.
+    </div>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow" style="margin:0 0 10px">Product Planning · Phase 3</p>
+    <h2 style="font-size:26px"><span class="num">—</span>상세 설계 &amp; 검증</h2>
+    <p class="block-sub">최종 사양 확정(기술·원가 모델 → trade-off 조정 → 하위 사양 분해) → 아키텍처 영향 재점검 → 플랫폼 계획 → 검증. 이 phase는 새 기능을 추가하지 않고, Phase 2에서 만든 T6·T7을 "확정하고 검증"하는 데만 씁니다 — 상세 설계 단계의 본래 목적이 그렇습니다.</p>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">15</span>최종 사양 확정</h2>
+    <p class="block-sub">기술적 모델 → 원가 모델 → 상충관계 조정 → 하위 사양 변환 (4단계 프로세스). 이 앱엔 BOM이나 제조 원가가 없으므로, "원가 모델"은 웹 맥락에 맞게 <b>성능·의존성 비용</b>으로 정직하게 대체했습니다.</p>
+    <div class="card">
+      <div class="table-scroll"><table class="eval">
+        <tr><th>사양</th><th>이상치(Ideal)</th><th>임계치(Marginal)</th><th>기술 모델 근거</th></tr>
+        <tr><td>T7. 복사 피드백 지연</td><td>클릭 → 아이콘 변경 100ms 이내</td><td>500ms 이내</td><td>Promise 기반, 네트워크 요청 없음 — 이론상 즉시</td></tr>
+        <tr><td>T7. 복사 경로 커버리지</td><td>Clipboard API + fallback 100%</td><td>둘 중 1개 이상 동작</td><td>navigator.clipboard 우선, execCommand fallback</td></tr>
+        <tr><td>T6. 연속 반복 방지</td><td>8개 이상 목록에서 최근 3개 배제</td><td>연속 2회 반복 0건</td><td>세션 메모리 배열, cap = min(3, n-1)</td></tr>
+        <tr><td>"원가" · 번들 크기</td><td>추가 의존성 0개</td><td>외부 스크립트 0개</td><td>브라우저 내장 API만 사용(Clipboard, 배열)</td></tr>
+      </table></div>
+      <p class="field-value" style="margin:14px 0 0"><b>상충관계 조정.</b> "완벽한 신선함"(매번 다른 문구)을 위해 이력을 더 길게 추적할 수도 있었지만, 목록이 5~8개뿐인 카테고리에서는 과도한 이력 추적이 오히려 선택지를 인위적으로 좁힙니다. cap을 목록 크기의 함수로 둬서 품질과 다양성의 균형을 맞췄습니다.</p>
+      <p class="field-value" style="margin-bottom:0"><b>하위 사양 변환.</b> 시스템 사양(T6·T7)을 모듈 단위로 분해: T6 → Phrase Engine의 <code>pickFresh()</code> 함수, T7 → 신규 Utility Module(copyBtn 핸들러 + fallbackCopy). 서브시스템 경계가 Phase 2 아키텍처 결정과 정확히 일치합니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">16</span>아키텍처 영향 재점검</h2>
+    <p class="block-sub">제품 변경 · 다양성 · 부품 표준화 · 성능 · 제조성 · 개발 관리 — 6개 렌즈로 Phase 2의 모듈화 선택이 여전히 맞는지 재확인</p>
+    <div class="card">
+      <div class="table-scroll"><table class="eval">
+        <tr><th>렌즈</th><th>Pressure Valve 적용</th></tr>
+        <tr><td>제품 변경</td><td>Phase 2에서 Phrase Engine 1개만 교체하고 나머지 6개 모듈은 무수정 — 모듈화의 이점이 실제로 증명됨</td></tr>
+        <tr><td>제품 다양성</td><td>Mode Engine(순한맛/매운맛) × Data Module(5개 카테고리) 조합만으로 10가지 톤 변형 확보 — 코드 복제 없이</td></tr>
+        <tr><td>부품 표준화</td><td>모든 카테고리가 동일한 <code>{en, ko, tip}</code> 스키마 공유 — 신규 카테고리 추가 시 다른 모듈 영향 없음</td></tr>
+        <tr><td>제품 성능</td><td>통합화가 유리한 영역이지만, 이 앱은 성능보다 유지보수성이 우선이라 모듈화 유지가 맞는 선택</td></tr>
+        <tr><td>제조성 (배포 용이성)</td><td>단일 HTML 파일 — 빌드 파이프라인 없이 정적 호스팅, "생산 원가" 사실상 0</td></tr>
+        <tr><td>개발 관리</td><td>2인 팀엔 병렬 개발이 불필요하지만, 모듈 경계는 협업자가 늘어날 때 팀 분업 경계로 그대로 쓸 수 있음</td></tr>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">17</span>플랫폼 계획</h2>
+    <p class="block-sub">공용화(Commonality) vs 차별화(Differentiation) · 차별화 유예(Postponement)</p>
+    <div class="card">
+      <div class="table-scroll"><table class="eval">
+        <tr><th>청크</th><th>분류</th><th>비고</th></tr>
+        <tr><td>UI Controller · Gauge · Favorites · Speech · Utility</td><td><span class="score high">공용 플랫폼</span></td><td>모든 강도·카테고리·향후 언어팩에서 100% 재사용</td></tr>
+        <tr><td>Phrase Engine · Mode Engine</td><td><span class="score mid">부분 공용</span></td><td>로직은 공용이지만 입력 데이터에 따라 동작이 달라짐</td></tr>
+        <tr><td>CATEGORIES 콘텐츠 (어휘·톤·강도)</td><td><span class="score low">차별화</span></td><td>제품의 정체성이 담기는 유일한 층 — 향후 언어팩·페르소나가 여기서 갈라짐</td></tr>
+      </table></div>
+      <p class="field-value" style="margin:14px 0 0"><b>차별화 유예.</b> 사용자가 강도를 직접 고르기 전까지 앱은 순한맛(중립 상태)으로 시작하고, 실제 "차별화된" 콘텐츠 분기는 클릭 시점까지 미룹니다 — 이미 구현되어 있던 동작을 이번에 플랫폼 이론으로 명문화했습니다.</p>
+      <p class="field-value" style="margin-bottom:0"><b>해석.</b> 청크의 80% 이상이 공용 플랫폼이라, 향후 파생 제품(다른 언어·페르소나)을 만들 때 새로 짜야 하는 코드는 CATEGORIES 데이터 하나뿐입니다 — Phase 1에서 정한 "파생 제품으로 확장 가능한 기반" 방향이 실제로 성립함을 확인했습니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">18</span>검증 (Verification)</h2>
+    <p class="block-sub">설계된 사양이 실제로 달성됐는지 확인 — Playwright 헤드리스 브라우저로 15번 항목의 목표치를 실측</p>
+    <div class="card">
+      <div class="table-scroll"><table class="eval">
+        <tr><th>사양</th><th>목표</th><th>실측 결과</th><th>판정</th></tr>
+        <tr><td>T7 복사 피드백</td><td>≤100ms(이상)</td><td>Promise 즉시 resolve, 렌더 지연 없음</td><td><span class="score high">이상치 달성</span></td></tr>
+        <tr><td>T7 복사 경로</td><td>2개 경로 모두 동작</td><td>clipboard.writeText 성공 확인(자동화 테스트)</td><td><span class="score high">이상치 달성</span></td></tr>
+        <tr><td>T6 연속 반복</td><td>연속 반복 0건(임계)</td><td>6개 항목 카테고리에서 8회 연속 클릭 중 연속 반복 0건</td><td><span class="score high">이상치 달성</span></td></tr>
+        <tr><td>회귀 방지</td><td>즐겨찾기→다른 표현 크래시 0건</td><td>수정 후 재현 안 됨, 콘솔 에러 0건(폰트 CDN 제외)</td><td><span class="score high">달성</span></td></tr>
+      </table></div>
+      <p class="field-value" style="margin:14px 0 0;margin-bottom:0">전 항목 이상치(Ideal) 기준 통과 — 임계치(Marginal)까지만 맞추면 됐을 것도 초과 달성했습니다. 상세 로그는 14번 디버깅 로그 참고.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">19</span>Phase 3 리뷰 & 다음 단계</h2>
+    <p class="block-sub">Step 5 · Reflect &amp; Review</p>
+    <div class="card">
+      <div class="checklist">
+        <div class="item"><span class="tick">✓</span><span>T6·T7 최종 사양(이상치/임계치) 확정 및 하위 모듈 매핑 완료</span></div>
+        <div class="item"><span class="tick">✓</span><span>6개 렌즈로 모듈화 아키텍처 재검증 — 여전히 유효함을 확인</span></div>
+        <div class="item"><span class="tick">✓</span><span>공용/차별화 청크 분류 및 차별화 유예 원칙 명문화</span></div>
+        <div class="item"><span class="tick">✓</span><span>자동화 테스트로 전 사양 이상치 기준 검증 완료</span></div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:10px">
+      이번 phase는 계획대로 <b>새 기능 0개</b> — 사양 확정과 검증에만 집중했습니다.
+    </div>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow" style="margin:0 0 10px">Product Planning · Phase 4</p>
+    <h2 style="font-size:26px"><span class="num">—</span>생산 램프업 &amp; 출시</h2>
+    <p class="block-sub">보편적 6단계 프로세스의 4·5단계(시험 및 보완 → 양산 준비)를 웹 앱 맥락으로 대응. 이 앱엔 물리적 생산라인이 없으므로, "양산"은 <b>배포·접근성·모바일 대응</b>으로, "생산 인력 훈련"은 <b>문서화(Charter 자체)</b>로 정직하게 치환했습니다.</p>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">20</span>시험 및 보완 (Testing &amp; Refinement)</h2>
+    <p class="block-sub">Alpha(내부 검증, "작동하는가?") → Beta(현장 검증, "잘 작동하는가?")</p>
+    <div class="card">
+      <p class="field-label">알파 테스트 — 내부 검증</p>
+      <p class="field-value">Phase 1~3에서 이미 Playwright 자동화로 기능 동작을 검증했고, 이번 phase에서 <b>모바일 반응형(320px·375px) + 키보드 접근성</b>을 추가로 검증 — 아래 22번 디버깅 로그 참고.</p>
+      <p class="field-label">베타 테스트 — 현장 검증</p>
+      <p class="field-value" style="margin-bottom:0"><b>정직한 현황: 아직 실시 전.</b> 외부 사용자가 없는 2인 프로젝트라 "선별된 고객에 의한 현장 평가"를 형식적으로 흉내내지 않습니다. 대신 조용민 님이 배포된 링크를 지인 2~3명에게 공유해 실제로 써보게 하는 것을 베타 테스트로 정의하고, 아래 관찰 지표로 <b>다음 세션에서</b> 진행하는 것을 제안합니다: ① 강도 토글을 매운맛으로 바꾸는가(순한맛에 얼마나 만족하는가), ② 즐겨찾기를 실제로 누르는가, ③ 다시 방문하는가.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">21</span>양산 준비 (Production Ramp-Up → 배포 고도화)</h2>
+    <p class="block-sub">가공·조립 절차 준수 → 생산 인력 훈련 → 결함 수정 및 사후 평가, 게이트: 생산 승인(Production Approval)</p>
+    <div class="card">
+      <table class="eval">
+        <tr><th>원 개념 (제조업)</th><th>Pressure Valve 대응</th><th>상태</th></tr>
+        <tr><td>가공·조립 절차 준수 생산</td><td>정적 HTML 1개 파일 배포 — 빌드 실패 리스크 자체가 없음</td><td><span class="score high">완료</span></td></tr>
+        <tr><td>생산 인력 훈련</td><td>해당 없음(자동화된 배포) — 대신 이 Charter가 "운영 매뉴얼" 역할</td><td><span class="score mid">대체 완료</span></td></tr>
+        <tr><td>결함 수정</td><td>22번 디버깅 로그에서 발견한 모바일 타이틀 줄바꿈·표 넘침 버그 수정</td><td><span class="score high">완료</span></td></tr>
+        <tr><td>생산 승인 게이트</td><td>모바일 반응형 통과 + 접근성 통과 + 회귀 테스트 0건을 승인 기준으로 설정</td><td><span class="score high">통과</span></td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">22</span>디버깅 로그 · Phase 3–4 QA</h2>
+    <p class="block-sub">이번에도 내용 · 코드 · 앱 3단 점검 — Playwright로 모바일 뷰포트(320px·375px) 렌더링, 키보드 내비게이션, 접근성 이름, 전체 인터랙션 회귀를 자동 테스트</p>
+    <div class="card">
+      <div class="table-scroll">
+      <table class="eval">
+        <tr><th>발견</th><th>구분</th><th>조치</th></tr>
+        <tr><td>320px 폭에서 <code>&lt;h1&gt;Pressure&amp;nbsp;Valve&lt;/h1&gt;</code>의 줄바꿈 방지 공백 때문에 제목이 뷰포트를 44px 초과 — 실제 모바일에서 가로 스크롤 발생</td><td><span class="score low">코드 · 모바일</span></td><td>본문·Charter 두 곳 모두 nbsp 제거 → text-wrap:balance가 좁은 화면에서 자동으로 2줄 균형 배치</td></tr>
+        <tr><td>Charter의 <code>table.eval</code> 10개 전부가 320px 폭에서 최대 89px까지 넘쳐 가로 스크롤 발생 — 표가 3열 이상이라 좁은 화면에 안 맞음</td><td><span class="score low">코드 · 모바일</span></td><td>전 테이블을 <code>.table-scroll</code>(overflow-x:auto)로 감싸 표만 자체 스크롤, 페이지 전체는 스크롤 안 되게 격리</td></tr>
+        <tr><td>버튼 15개 전수 접근성 이름(aria-label/텍스트/title) 점검 — 누락 0건</td><td>접근성</td><td>조치 불필요, 통과 기록</td></tr>
+        <tr><td>Tab 키만으로 Release 버튼까지 도달 후 Enter로 활성화 가능 여부</td><td>접근성</td><td>정상 동작 확인, 조치 불필요</td></tr>
+        <tr><td>Phase 2에서 고친 3건(사양 미달·즐겨찾기 크래시·활성 카테고리 미갱신) 재발 여부</td><td>회귀</td><td>동일 시나리오 재실행, 재발 없음 확인</td></tr>
+      </table>
+      </div>
+      <p class="field-value" style="margin:14px 0 0;margin-bottom:0">두 건 모두 데스크톱 화면(원래 테스트 환경)에서는 전혀 안 보이던 버그입니다 — 화면 폭을 실제로 좁혀보지 않았다면 발견하지 못했을 것이라, 이번 phase부터 디버깅에 모바일 뷰포트 체크를 정식으로 포함시켰습니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">23</span>Phase 4 리뷰 &amp; 프로젝트 회고</h2>
+    <p class="block-sub">Step 5 · Reflect &amp; Review — NPD 4단계 사이클 종료</p>
+    <div class="card">
+      <div class="checklist">
+        <div class="item"><span class="tick">✓</span><span>알파 테스트(자동화) 완료 · 베타 테스트는 다음 세션 실행 항목으로 명시</span></div>
+        <div class="item"><span class="tick">✓</span><span>모바일 대응·접근성 점검을 "생산 승인" 게이트 기준으로 통과</span></div>
+        <div class="item"><span class="tick">✓</span><span>발견된 버그 2건 즉시 수정, 회귀 테스트로 기존 수정사항 재확인</span></div>
+        <div class="item"><span class="tick">✓</span><span>Charter가 문서이자 배포·QA 이력 기록으로 기능 — 4개 phase 전체가 계획→개발→검증 순서로 추적 가능</span></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">7번 미션 스테이트먼트 성공 기준 대비 현황</p>
+      <p class="field-value">"매일 실제로 열어보고 싶은 도구로 완성하기" — 기능적으로는 완성(카테고리·강도·매칭·즐겨찾기·복사·TTS·중복방지), 실사용 검증(재방문율 등)은 21번에서 제안한 베타 테스트 이후에 판단 가능.</p>
+      <p class="field-value" style="margin-bottom:0">"제품개발론 NPD 프로세스를 끝까지 실습하기" — <b>이번 phase로 달성.</b> 기획(1) → 니즈·QFD·컨셉·아키텍처(2) → 최종 사양·검증(3) → 시험·양산 준비(4)까지 4단계를 매 phase 기획 문서 → 코드 반영 → 디버깅 순서로 완주했습니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">24</span>베타 테스트 체크리스트</h2>
+    <p class="block-sub">조용민 님이 직접 테스트할 항목 — 대기 상태, 결과 나오면 이 섹션에 반영</p>
+    <div class="card">
+      <p class="field-label">① 기능 — 핵심 흐름이 다 도는지</p>
+      <p class="field-value">카테고리 5개 전부 눌러보기 · 순한맛↔매운맛 전환 · 상황 텍스트로 각 카테고리 유형 문장 입력해 매칭 확인 · 즐겨찾기 추가/삭제 및 목록에서 "보기"→"다른 표현" · 복사 버튼(실제로 메모장 등에 붙여넣어 확인) · 발음 듣기(🔊) · "다른 표현" 연타 시 직전 문장 바로 반복 안 되는지</p>
+      <p class="field-label">② 콘텐츠 품질 — 아직 검증 안 된 부분</p>
+      <p class="field-value">영어 표현이 실제로 자연스러운지(어색한 문장 있는지) · 한국어 설명(ko)이 뜻과 맞는지 · tip이 실제로 도움되는지 · 매운맛 강도가 너무 약하지도 세지도 않은지</p>
+      <p class="field-label">③ 실사용 경험 — Phase 4에서 정의한 관찰 지표</p>
+      <p class="field-value">순한맛에 만족하는지 매운맛으로 바꾸게 되는지 · 즐겨찾기를 실제로 누르게 되는지 · 하루 지나서 다시 열고 싶어지는지 · "진짜 스트레스가 풀리는 느낌"이 드는지(핵심 가치 가설 검증)</p>
+      <p class="field-label">④ 환경 체크</p>
+      <p class="field-value" style="margin-bottom:0">폰에서 가로 스크롤 없이 잘 보이는지 · 가능하면 사파리/크롬 둘 다(특히 발음 듣기는 브라우저별 지원 차이 있을 수 있음) · 다크모드/라이트모드 전환해도 괜찮은지</p>
+    </div>
+    <div class="callout" style="margin-top:10px">
+      버그나 이상한 점 발견하면 "어떤 상황에서 뭘 눌렀더니 어떻게 됐다"만 알려주세요 — 다음 세션에서 여기 반영하고 디버깅합니다.
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">25</span>디버깅 로그 · 베타 테스트 1차 피드백</h2>
+    <p class="block-sub">조용민 님이 직접 써보고 신고한 버그 2건 — 원인 분석 후 수정</p>
+    <div class="card">
+      <div class="table-scroll">
+      <table class="eval">
+        <tr><th>신고 내용</th><th>원인</th><th>조치</th></tr>
+        <tr><td>상황 텍스트를 입력하고 "표현 찾기"를 눌러도 대부분 안 맞는 카테고리가 나옴</td><td>① 카테고리별 키워드가 10~16개뿐이라 커버리지가 좁았음 ② 매칭 점수가 0(키워드 하나도 안 걸림)이어도 "그나마 비슷한 것"이 아니라 <b>완전 무작위</b> 카테고리를 골랐음 — 대부분의 미매칭이 여기서 발생</td><td>키워드를 카테고리당 25~45개로 대폭 확장(명사·자주 쓰는 활용형 위주) + 매칭 실패 시 "정확히 맞는 걸 못 찾았다"는 안내 문구를 화면에 정직하게 표시</td></tr>
+        <tr><td>발음 듣기(🔊) 버튼을 눌러도 소리가 안 남</td><td>Web Speech API의 잘 알려진 두 가지 실패 패턴을 코드가 방어하지 못했음 — ① <code>cancel()</code>이 브라우저에 따라 비동기라 곧바로 <code>speak()</code>하면 씹히는 레이스 컨디션 ② 일부 브라우저/OS는 사용 가능한 음성이 0개거나 합성 자체가 실패해도 <b>아무 에러도, 아무 소리도 없이 조용히 아무 일도 안 일어남</b></td><td><code>cancel()</code> 후 약간의 지연을 두고 재발화, 영어 음성 명시적 선택, <code>onerror</code> 핸들러를 새로 달아 실패 시 버튼이 빨갛게 흔들리며 눈에 보이는 피드백을 줌</td></tr>
+      </table>
+      </div>
+      <p class="field-value" style="margin:14px 0 0"><b>매칭 정확도 검증.</b> 실제 있을 법한 문장 8개(직장·관계·소소함·자책·탈진 각 유형)로 자동 테스트 → 수정 전에는 대부분 무작위 카테고리로 빠지던 것이, 수정 후 8/8 정확 매칭으로 확인됐습니다.</p>
+      <p class="field-value" style="margin-bottom:0"><b>정직한 한계 두 가지.</b> ① 이 매칭은 여전히 키워드 기반이라 완벽하지 않아요 — 키워드 목록에 없는 표현으로 쓰면 여전히 못 맞출 수 있고, 진짜 자연어 이해는 AI 모델 호출(=서버 필요)이 있어야 가능합니다. 지금은 "무료·서버 없음" 원칙을 지키는 선에서 최대한 넓힌 상태예요. ② 발음 듣기는 이 개발 환경 자체에 실제 스피커/음성 엔진이 없어서, 코드가 에러를 정확히 감지하고 화면에 알려주는 것까지는 검증했지만 "실제로 소리가 나는지"는 조용민 님 기기에서 직접 확인해주셔야 해요.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">26</span>디버깅 로그 · 베타 테스트 2차 피드백</h2>
+    <p class="block-sub">실제 입력 문장 "이간질하고 뒤에서 욕하는 상사때문에 빡쳐" + 갤럭시 S23+ 실기기 테스트 결과</p>
+    <div class="card">
+      <p class="field-label">중요한 구분 — 카테고리 매칭 vs 문장 선택</p>
+      <p class="field-value">이번에 드러난 건 사실 두 단계의 문제였습니다. ① 어떤 카테고리로 갈지(work/people/...) ② 그 카테고리 안에서 어떤 영어 문장을 보여줄지. 위 문장은 "상사"가 있어 <b>카테고리는 work로 정확히 갔지만</b>, work 안에서는 <b>무작위로 문장을 고르다 보니</b> "마감 때문에 힘들다"는 전혀 다른 뉘앙스의 문장이 나온 것이었습니다.</p>
+      <p class="field-label">조치</p>
+      <p class="field-value">"이간질","뒤에서 욕","뒤통수","가스라이팅","편애" 등 뒷담화·이중성 관련 키워드를 people 카테고리에 추가 → 위 문장은 이제 work가 아니라 <b>people로 재분류</b>되고(뒷담화는 직장 여부와 무관하게 관계 문제로 보는 게 더 정확), "I can't stand two-faced people." / "Stop stirring shit behind my back." 등 뒷담화 전용 표현 2개(순한맛·매운맛)를 새로 추가했습니다.</p>
+      <p class="field-label">정직한 한계 — 아직 안 고친 부분</p>
+      <p class="field-value" style="margin-bottom:0">카테고리 자동 테스트 7개 문장 전부 정확히 매칭되는 것까지는 확인했지만(아래 참고), <b>카테고리 안에서 정확히 그 상황에 맞는 한 문장</b>을 고르는 건 여전히 랜덤입니다. 진짜로 "뒷담화 상황엔 반드시 뒷담화 문장"까지 맞추려면 문장 하나하나에 세부 키워드를 달고 매칭 로직을 카테고리 단위에서 문장 단위로 올려야 하는데, 이번엔 시간상 카테고리 정확도만 고쳤습니다. 다음에 필요하시면 이 부분도 진행할 수 있어요.</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <div class="table-scroll">
+      <table class="eval">
+        <tr><th>테스트 문장</th><th>결과 카테고리</th></tr>
+        <tr><td>이간질하고 뒤에서 욕하는 상사때문에 빡쳐</td><td><span class="score high">people (정확)</span></td></tr>
+        <tr><td>팀장이 퇴근 직전에 일 던지고 감</td><td><span class="score high">work (정확)</span></td></tr>
+        <tr><td>버스를 눈앞에서 놓쳤어</td><td><span class="score high">small (정확)</span></td></tr>
+        <tr><td>시험 망쳐서 너무 속상해</td><td><span class="score high">selfblame (정확)</span></td></tr>
+        <tr><td>오늘 하루 종일 너무 피곤하고 지쳤어</td><td><span class="score high">exhausted (정확)</span></td></tr>
+        <tr><td>동료가 뒷담화하는 거 들었어</td><td><span class="score high">people (정확)</span></td></tr>
+        <tr><td>발표 자료 다 망쳐서 팀장한테 혼났어</td><td><span class="score high">work (정확)</span></td></tr>
+      </table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">발음 듣기 — 갤럭시 S23+에서 소리 안 남</p>
+      <p class="field-value">이건 코드 문제가 아니라 <b>기기의 텍스트 음성 변환(TTS) 엔진 설정</b> 문제일 가능성이 커요. 안드로이드는 브라우저가 자체적으로 소리를 내는 게 아니라 시스템 TTS 엔진(삼성 또는 구글)에 요청을 보내는 구조라서, 그 엔진에 영어 음성 데이터가 없으면 브라우저 입장에선 "정상적으로 요청은 보냈는데 조용히 아무 일도 안 일어나는" 상태가 됩니다. 지난 코드 수정으로 실패 시 버튼이 빨갛게 흔들리는 시각 피드백을 추가했으니, 그게 뜨는지 여부로 원인을 좁힐 수 있어요.</p>
+      <p class="field-value" style="margin-bottom:0"><b>확인해볼 것.</b> 설정 → 일반 관리(또는 접근성) → 언어 및 입력 → 텍스트 음성 변환 출력 → TTS 엔진에 영어(US) 음성 데이터가 설치돼 있는지 확인 · 미디어 볼륨(벨소리 볼륨 아님)이 0인지 확인 · Chrome과 삼성 인터넷 둘 다 테스트해서 브라우저별 차이인지 확인.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">27</span>아키텍처 개선 · 상황 리스트로 매칭 문제 근본 해결</h2>
+    <p class="block-sub">계기 — "상황을 작성하는 칸을 지우고 사이트 자체에서 상황을 리스트형식으로 제시하고 그걸 선택해서 그 내용에 맞게 문장 만들어주는 건 어때?"</p>
+    <div class="card">
+      <p class="field-label">왜 바꿨는가</p>
+      <p class="field-value">섹션 26에서 정직하게 남겨뒀던 한계 — "카테고리는 맞아도 카테고리 안 문장 선택은 여전히 랜덤이라 정확히 그 상황에 맞는 한 문장까진 못 맞춘다" — 는 사실 자유 서술형 입력을 유지하는 한 구조적으로 풀기 어려운 문제였습니다. 키워드를 아무리 늘려도 문장 단위 정확도까지 올리려면 결국 사용자가 쓸 수 있는 모든 표현을 예측해서 키워드화해야 하는데, 이건 서버 없는 클라이언트 앱에서 한계가 뚜렷합니다. 사용자가 제안한 방향은 이 문제를 <b>추론이 아니라 선택</b>으로 바꾸는 것이었고, 이렇게 하면 매칭 정확도가 "확률적으로 개선"이 아니라 <b>설계상 100%</b>가 됩니다.</p>
+      <p class="field-label">무엇을 바꿨는가</p>
+      <p class="field-value">자유 서술형 입력창(텍스트박스 + "표현 만들기"/"지우기" 버튼)과 그 뒤의 2단계 키워드 매칭 로직(문장 → 카테고리 점수 계산 → 카테고리 내 랜덤 문장)을 완전히 제거했습니다. 그 자리에 5개 카테고리별로 묶인 <b>18개의 구체적 상황 칩</b>을 배치했고, 각 칩은 미리 정해진 순한맛 1문장 + 매운맛 1문장에 정확히 1:1로 연결됩니다. 칩을 누르면 추론 없이 바로 그 문장이 뜨고, 강도 토글(순한맛/매운맛)에 따라 같은 상황이라도 다른 문장이 나옵니다.</p>
+      <p class="field-label">기존 기능과의 관계</p>
+      <p class="field-value" style="margin-bottom:0">섹션 1의 밸브 버튼(카테고리를 눌러 그 안에서 아무 문장이나 랜덤으로 받는 방식)과 "다른 표현" 버튼은 그대로 남겨뒀습니다. 이건 "정확히 이 상황"이 아니라 "이 카테고리 안에서 아무거나 툭 던져줘"가 필요한 경우를 위한 보조 경로로 의도적으로 유지 — 여기서의 랜덤성은 버그가 아니라 원래 의도입니다. 상황 칩을 고른 뒤 "다른 표현"을 누르면 그 순간부터는 랜덤 경로로 자연스럽게 전환되고, 반대로 밸브 버튼을 누르면 상황 칩의 선택 표시가 풀리도록 연결했습니다.</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">최초 18개 상황 목록 (카테고리별, 이후 섹션 28에서 28개로 확장됨)</p>
+      <div class="table-scroll">
+      <table class="eval">
+        <tr><th>카테고리</th><th>상황</th></tr>
+        <tr><td>직장 · 업무</td><td>상사가 갑자기 일 던짐 · 퇴근 직전에 일 생김 · 회의·보고 스트레스 · 일이 한꺼번에 몰림</td></tr>
+        <tr><td>사람 · 관계</td><td>뒷담화·이간질 당함 · 연락 씹힘·잠수 · 싸움·갈등 · 무례하게 행동함</td></tr>
+        <tr><td>소소한 빡침</td><td>버스·지하철 놓침 · 줄서기·기다림 · 인터넷·기기 오류 · 날씨·미세먼지</td></tr>
+        <tr><td>자책 · 실수</td><td>중요한 걸 깜빡함 · 시험·성과 망침 · 계속 자책하게 됨</td></tr>
+        <tr><td>그냥 다 지침</td><td>하루 종일 지침 · 번아웃·의욕없음 · 아무것도 하기 싫음</td></tr>
+      </table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">디버깅 — 코드 · 앱 확인</p>
+      <p class="field-value">구현 중 예전 매칭 로직의 잔재(이벤트 핸들러가 삭제된 input 요소를 계속 참조)가 남아 있던 걸 발견 — 콘솔에 <code>matchBtn is not defined</code> 에러가 떠서 상황 칩이 아예 렌더링되지 않는 상태였습니다. 관련 코드 블록을 전부 제거해 해결했고, 이후 Playwright로 재검증했습니다.</p>
+      <p class="field-value" style="margin-bottom:0">검증 결과(당시 18개 기준): 상황 칩 전부 렌더링 확인 · 순한맛 18/18, 매운맛 18/18 모두 클릭 시 정확한 문장·태그·활성 표시 확인(불일치 0건) · 390px 모바일 뷰포트에서 가로 스크롤 없음(scrollWidth=clientWidth=390) · "다른 표현" 클릭 시 상황 선택 표시 해제 후 랜덤 문장으로 정상 전환 · 밸브 버튼 클릭 시에도 상황 선택 표시 해제 확인 · 즐겨찾기(★) 정상 동작 · 콘솔 에러 0건.</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">섹션 26의 "정직한 한계" — 이제 해결됨</p>
+      <p class="field-value" style="margin-bottom:0">"카테고리 안에서 정확히 그 상황에 맞는 한 문장을 고르는 게 여전히 랜덤"이라는 한계는, 상황 리스트로 들어온 경로에 한해 <b>구조적으로 닫혔습니다</b> — 칩 선택 → 고정된 1문장이라 애초에 랜덤이 개입할 지점이 없습니다. 다만 이건 상황 목록에 해당하는 경우의 이야기고, 그 밖의 상황은 여전히 밸브 버튼(카테고리 랜덤)으로 가야 합니다. 상황 목록을 더 늘리고 싶다면 언제든 카테고리별로 추가할 수 있는 구조입니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">28</span>상황 목록 1차 확장 (18 → 28)</h2>
+    <p class="block-sub">계기 — "2번 무슨일있는지 선택하는 상황을 더 늘릴 수 있어?? 더 늘리면 문장 만드는 데 어려워지는 것도 고려해서 확인해줄래"</p>
+    <div class="card">
+      <p class="field-label">확장 전 검토한 것</p>
+      <p class="field-value">사용자가 정확히 짚은 우려는 두 가지였습니다. ① 상황이 늘어나면 순한맛·매운맛 문장을 그만큼 더 손으로 써야 해서 <b>콘텐츠 품질 관리 부담</b>이 커진다는 점, ② 카테고리 안에 칩이 너무 많아지면 <b>선택 자체가 느려져</b> "빡친 순간에 빠르게 배출한다"는 앱의 핵심 목적과 충돌할 수 있다는 점입니다. 다행히 매칭 로직이 없는 구조(칩 1개 = 고정 문장 1쌍)라 코드 복잡도는 늘지 않는다는 걸 확인했고, 대신 무한정 늘리지 않고 <b>카테고리당 2개씩(총 10개, 18 → 28)</b>만 추가하는 걸로 범위를 잡았습니다.</p>
+      <p class="field-label">추가한 10개 상황</p>
+      <p class="field-value" style="margin-bottom:0">직장·업무: 부당한 지시·갑질, 성과 안 알아줌 / 사람·관계: 약속 펑크·노쇼, 비교당함·무시당함 / 소소한 빡침: 배달 실수·누락, 층간소음·시끄러움 / 자책·실수: 실수로 민폐 끼침, 남과 비교하며 자괴감 / 그냥 다 지침: 잠을 못 잠, 할 일이 안 끝남. 기존 18개와 동일하게 순한맛·매운맛 문장을 각각 새로 작성했고, 기존 문장과 겹치는 표현이 없는지 확인했습니다.</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">디버깅 — 확장 후 재검증</p>
+      <p class="field-value" style="margin-bottom:0">Playwright로 28개 칩 전체를 재검증: 렌더링 28/28 확인 · 카테고리별 개수(직장 6·관계 6·소소한 빡침 6·자책 5·지침 5)가 의도대로 반영됐는지 확인 · 순한맛 28/28, 매운맛 28/28 클릭 시 정확한 문장 노출 확인(불일치 0건) · 360px, 320px 두 모바일 뷰포트 모두 가로 스크롤 없음(scrollWidth=clientWidth) · 콘솔 에러 0건. 카테고리당 칩이 5~6개까지 늘었지만 flex-wrap으로 자연스럽게 줄바꿈되어 레이아웃이 깨지지는 않았습니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">29</span>사람·관계 카테고리 세분화 — 관계 유형별 하위그룹</h2>
+    <p class="block-sub">계기 — "스트레스 중에 사람 관계가 가장 많이 있잖아, 관계를 조금 더 늘리는 건 어떄" + 관계 유형 6갈래 제안(친구/애인, 직장상사·동기·후임, 선생님·교수님, 가족, 손님·거래처, 기타)</p>
+    <div class="card">
+      <p class="field-label">경계 원칙 정리 — 직장·업무 vs 사람·관계</p>
+      <p class="field-value">사용자가 스스로도 헷갈려 한 두 지점(직장 위계가 사람 문제인지 업무 문제인지, 손님·거래처가 어느 쪽인지)을 계기로 기준을 하나로 정리했습니다: <b>"무엇 때문에" 힘든가는 직장·업무, "누구 때문에" 힘든가는 사람·관계.</b> 이 기준으로 손님·거래처 담당자의 무리한 요구·무례함은 사람·관계로, 학교 선후배·동기는 (영어 표현 패턴이 직장 위계와 거의 같아서) 직장 상사·후임과 하나의 "위계 관계" 묶음으로 합쳤습니다. 두 결정 모두 사용자 확인을 받았습니다.</p>
+      <p class="field-label">구조 변경 — 1단계 탭은 그대로, 사람·관계 안에만 하위그룹 추가</p>
+      <p class="field-value" style="margin-bottom:0">칩을 누르면 바로 문장이 뜨는 1탭 구조(추가 선택 단계 없음)는 그대로 유지했습니다. 대신 사람·관계 섹션 안에서만 관계 유형별로 얇은 하위그룹 라벨(왼쪽 세로선 + 작은 글씨)을 넣어 시각적으로만 묶었습니다 — 다른 4개 카테고리(직장·업무, 소소한 빡침, 자책·실수, 그냥 다 지침)는 하위그룹이 없을 때와 동일하게 평평한 칩 목록으로 렌더링되도록 렌더 함수를 조건 분기했습니다.</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">사람·관계 하위그룹 6개 (16개 상황)</p>
+      <div class="table-scroll">
+      <table class="eval">
+        <tr><th>하위그룹</th><th>상황</th></tr>
+        <tr><td>친구·애인</td><td>썸·연애가 애매해짐 · 친구가 실망시킴</td></tr>
+        <tr><td>위계 관계 (직장·학교)</td><td>위(상사·선배)가 갑질함 · 편애당함</td></tr>
+        <tr><td>선생님·교수님</td><td>성적·평가가 부당함 · 선생님·교수님이 심하게 대함</td></tr>
+        <tr><td>가족</td><td>가족이 잔소리함 · 가족이 비교함</td></tr>
+        <tr><td>손님·거래처</td><td>무리한 요구를 하는 손님·거래처 · 무례한 손님·거래처 담당자</td></tr>
+        <tr><td>기타 (기존)</td><td>뒷담화·이간질 당함 · 연락 씹힘·잠수 · 싸움·갈등 · 무례하게 행동함 · 약속 펑크·노쇼 · 비교당함·무시당함</td></tr>
+      </table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">디버깅 — 하위그룹 렌더링 · 전체 재검증</p>
+      <p class="field-value" style="margin-bottom:0">전체 상황 개수는 28 → 38개(사람·관계만 6 → 16개). Playwright로 재검증: 38개 칩 전부 렌더링 확인 · 하위그룹 라벨이 사람·관계 카테고리에만 정확히 6개(친구·애인/위계 관계/선생님·교수님/가족/손님·거래처/기타) 나타나고 나머지 4개 카테고리는 하위그룹 없이 평평하게 렌더링되는지 확인 · 순한맛 38/38, 매운맛 38/38 클릭 시 정확한 문장 노출(불일치 0건) · 360px, 320px 가로 스크롤 없음 · "다른 표현" 클릭 시 상황 선택 표시 정상 해제 · 콘솔 에러 0건.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">30</span>UX 정리 · 컬러 리디자인 — 1·2번 중복 제거, 다크 모드 재조정</h2>
+    <p class="block-sub">계기 — "1번과 2번 내용이 중복되는거같아, 1번에서 선택하면 하위내용으로 떠야할거같은데" · "카테고리 글씨크기가 너무 작고 눈에띄지 않아" · "앱 사이트 전체적으로 너무 어두워"</p>
+    <div class="card">
+      <p class="field-label">문제 1 — 밸브(1번)와 상황 목록(2번)이 같은 카테고리를 두 번 보여줌</p>
+      <p class="field-value">기존에는 1번(밸브 5개)과 2번(상황 리스트) 둘 다 5개 카테고리(직장·업무/사람·관계/소소한 빡침/자책·실수/그냥 다 지침) 이름을 각자 따로 표시하고 있었고, 2번은 밸브 선택과 무관하게 <b>항상 5개 카테고리 전부</b>를 한 화면에 펼쳐두고 있어서 정보가 중복되고 화면이 길고 산만했습니다.</p>
+      <p class="field-label">조치 — 1번이 2번의 필터가 되도록 연결</p>
+      <p class="field-value" style="margin-bottom:0">2번을 "선택 전엔 안내 문구만, 밸브를 고르면 그 카테고리 상황만" 뜨는 구조로 바꿨습니다. 밸브를 누르면 ① 기존처럼 즉시 랜덤 문장이 뜨고, ② 동시에 2번 영역이 그 카테고리 이름을 큰 제목으로 보여주며 해당 상황 칩만 필터링해서 표시합니다. 다른 밸브를 누르면 2번 내용이 통째로 그 카테고리로 교체됩니다 — 5개를 다 보여주던 걸 1개만 보여주는 것으로 바꾼 것뿐이라 코드 복잡도는 오히려 줄었습니다(항상 5번 반복하던 렌더링 루프를 1번만 도는 함수로 교체).</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">문제 2 — 카테고리·하위그룹 글씨가 작고 안 보임</p>
+      <p class="field-value" style="margin-bottom:0">이제 2번에는 카테고리 이름이 화면에 한 번만(선택된 것만) 뜨기 때문에, 그 자리를 작은 모노스페이스 라벨(10.5px, 저채도 회색)에서 <b>큰 제목(21px, 굵게, 브랜드 색상 ember, 점 아이콘 포함)</b>으로 격상시켰습니다. 사람·관계 안의 하위그룹 라벨(친구·애인 등)도 11.5px 저채도에서 <b>14px, 진한 잉크색, 굵게</b>로 올리고 왼쪽에 색이 있는 세로선을 추가해 구획을 눈에 띄게 했습니다.</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">문제 3 — 전체적으로 너무 어둡다 → 다크 모드 톤 재조정</p>
+      <p class="field-value">기기가 다크 모드일 때 배경이 거의 검정에 가까운 톤(#161310, 명도 매우 낮음)이라 무겁고 답답하게 느껴졌던 것으로 보입니다. "화날 때 어두운 게 나은가?"라는 질문에 대한 판단은: 어두운 화면 자체가 문제가 아니라, <b>지나치게 어둡고 채도가 낮아 눌리는 느낌</b>이 문제라고 봤습니다. 그래서 다크 모드를 없애지 않고, 같은 ember(주황빛 잉걸불) 색 계열 안에서 배경 명도를 확 끌어올리고(거의 검정 → 따뜻한 짙은 갈색, 배경색 RGB 기준 약 2배 밝게) 강조색(ember)과 완화색(relief 민트)의 채도·밝기를 높여 "불씨가 살아있는" 느낌으로 바꿨습니다. 라이트 모드도 배경을 더 밝고 따뜻하게(크림→살짝 더 밝은 톤), 카드 배경을 순백으로 올려 대비를 또렷하게 했습니다. 헤더 위쪽에는 은은한 ember 색 방사형 글로우를 하나 추가해 "불이 지펴지는" 느낌의 포인트를 줬습니다(과하지 않게 한 곳에만).</p>
+      <p class="field-value" style="margin-bottom:0">색상 대비(WCAG 명암비)도 계산해 확인했습니다: 본문 텍스트(ink) 대 배경 — 라이트 14.7:1, 다크 14.6:1(둘 다 최상급) · 보조 텍스트(ink-soft) — 라이트 5.4:1, 다크 8.0:1(AA 통과, 다크는 기존보다 legibility 크게 개선) · 강조색(ember) 큰 글씨 기준 — 라이트 3.5:1, 다크 6.3:1(WCAG 큰 글씨 기준 3:1 이상 통과, 다크 모드는 기존 5.99:1보다도 개선).</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">디버깅 — 재구조화 후 전체 재검증</p>
+      <p class="field-value" style="margin-bottom:0">Playwright로 검증: 초기 화면엔 안내 문구만 뜨고 상황 칩은 0개(정상) · 밸브 클릭 시 안내 문구가 사라지고 해당 카테고리 상황만 뜨는지(사람·관계 16개+하위그룹 6개, 직장·업무 6개+하위그룹 0개 등) 확인 · 다른 밸브로 바꾸면 내용이 전부 교체되는지 확인 · 상황 칩 선택·"다른 표현"·즐겨찾기 모두 정상 동작 · 라이트/다크 모드 각각에서 배경색이 의도한 값으로 렌더링되는지 확인(다크 배경 RGB(44,28,17) — 기존 RGB(22,19,16) 대비 확연히 밝아짐) · 다크 모드에서 5개 카테고리를 전부 돌며 38개 상황 전체 재클릭, 정확한 문장 노출 확인(불일치 0건) · 콘솔 에러 0건. 구현 중 새로 추가한 헤더 글로우 장식 요소가 390px/320px에서 가로 스크롤을 유발하는 회귀가 있었는데(장식 요소 너비가 좁은 화면보다 넓어서 발생), 글로우 너비를 뷰포트에 비례하도록 고치고 <code>overflow-x: hidden</code> 안전장치를 추가해 해결하고 재검증했습니다.</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">색상 되돌림 — "배경이 오히려 화를 돋운다"</p>
+      <p class="field-value" style="margin-bottom:0">색 변경 직후 사용자 피드백: 새 다크 모드 배경(따뜻한 갈색 톤)이 오히려 보기 불편하고 거슬린다는 반응. "디자인은 나중에, 지금은 기능부터"라는 방향 정리에 따라 <b>라이트·다크 모드 색상 토큰 전체와 헤더 글로우 장식을 이번 변경 직전 상태로 완전히 되돌렸습니다</b>(다크 배경 다시 #161310). 1번→2번 필터링 연결, 큰 글씨 카테고리 제목, 하위그룹 라벨 확대 등 <b>기능·가독성 개선분은 색과 무관하므로 그대로 유지</b>했습니다. 되돌린 뒤 Playwright로 라이트/다크 배경색이 정확히 예전 값으로 복원됐는지, 1번→2번 필터링이 여전히 정상 동작하는지, 콘솔 에러가 없는지 재확인했습니다. 색상·룩앤필 관련 작업은 사용자 요청이 있을 때까지 보류합니다.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">31</span>디버깅 로그 — "다른 표현" 선택 해제 · TTS 신뢰성 개선</h2>
+    <p class="block-sub">사용자 리포트 — "1번 누르고 2번 누르고 나서 다른표현 누르면 2번 누른게 다시 클릭해제되는 상황이 뜨네" + "스피커로 음성지원되게끔 해줄래?"</p>
+    <div class="card">
+      <p class="field-label">1. "다른 표현" 클릭 시 상황 칩 선택 해제 — 의도 변경</p>
+      <p class="field-value" style="margin-bottom:0">원래는 "다른 표현"을 누르면 그 순간 정확한 매칭이 아닌 카테고리 내 랜덤 문장으로 바뀌는 것이므로, 방금 고른 상황 칩의 활성 표시를 의도적으로 지웠습니다(그 칩의 정확한 문장이 더 이상 화면에 없다는 걸 알리려는 의도). 하지만 사용자 입장에서는 방금 고른 게 취소된 것처럼 보여 거슬린다는 피드백을 받아, <b>"다른 표현" 클릭 시 칩 선택 표시를 그대로 유지</b>하도록 바꿨습니다. 카테고리(밸브)를 바꾸면 상황 목록 자체가 통째로 새로 그려지므로 그때는 여전히 선택이 해제됩니다(다른 카테고리의 칩이라 당연히 해제되어야 함) — 이 부분은 그대로 뒀습니다.</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">2. TTS(음성 지원) 신뢰성 개선</p>
+      <p class="field-value">이전 갤럭시 S23+ 무음 리포트를 다시 들여다보고, 코드 레벨에서 고칠 수 있는 두 가지 알려진 버그 패턴을 찾아 고쳤습니다. ① <b>목소리 목록 지연 로딩 문제</b> — 안드로이드 Chrome·삼성 인터넷 등 다수 브라우저는 페이지 로드 직후 <code>getVoices()</code>를 부르면 빈 배열을 주고, 실제 목소리 목록은 비동기로 나중에 준비되어 <code>voiceschanged</code> 이벤트로 알려줍니다. 기존 코드는 스피커 버튼을 누른 "그 순간"에만 목소리를 조회해서, 영어 목소리가 실제로 설치돼 있어도 타이밍이 안 맞으면 못 찾고 기본 목소리로 새는 경우가 있었습니다 — 페이지 로드 시점부터 목소리 목록을 미리 캐시해두고 이벤트로 계속 갱신하도록 고쳤습니다. ② <b>큐가 멈춰버리는(paused) 크롬 계열 알려진 버그</b> — 특정 상황에서 <code>speechSynthesis</code> 큐가 내부적으로 멈춘 채로 남아 <code>speak()</code>을 불러도 조용히 아무 일도 안 일어나는 문제가 문서화되어 있어, 발화 직전에 항상 <code>resume()</code>을 먼저 호출하도록 방어 코드를 추가했습니다(정상 상태에서는 아무 영향 없음).</p>
+      <p class="field-value" style="margin-bottom:0"><b>이번에도 밝혀둘 한계.</b> 이 샌드박스 환경엔 실제 스피커·TTS 엔진이 없어서(<code>getVoices()</code>가 항상 빈 배열, <code>speak()</code>은 항상 <code>synthesis-failed</code> 에러) 실제 소리가 나는지는 여전히 이 환경에서 검증할 수 없습니다. 코드가 에러 없이 정상 흐름을 타는지, 실패 시 빨간 흔들림 피드백이 여전히 정확히 뜨는지는 Playwright로 확인했습니다. 두 개선 모두 기기에 영어 음성 데이터가 아예 없는 경우까지 고칠 수는 없고(그건 여전히 기기 설정 문제), 실제로 개선되는지는 갤럭시 S23+ 같은 실기기에서 직접 확인이 필요합니다.</p>
+    </div>
+    <div class="card" style="margin-top:10px">
+      <p class="field-label">디버깅 — 전체 재검증</p>
+      <p class="field-value" style="margin-bottom:0">Playwright로 재검증: 상황 칩 선택 후 "다른 표현" 클릭 시 칩 활성 표시 유지 확인(문장은 바뀌고 활성 표시는 그대로) · 밸브를 바꾸면 여전히 선택이 해제되는지 확인 · 5개 카테고리 전체를 돌며 38개 상황 재클릭, 정확한 문장 노출 확인(불일치 0건) · 390px·320px 가로 스크롤 없음 · 스피커 버튼 클릭이 예외 없이 정상 흐름(실패 시 피드백 포함)을 타는지 확인 · 콘솔 에러 0건.</p>
+    </div>
+  </section>
+
+  <footer>Pressure Valve Charter · Phase 4 of 4 · 제품개발론 강의자료 기준</footer>
+</div>

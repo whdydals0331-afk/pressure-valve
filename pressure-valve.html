@@ -1,0 +1,1242 @@
+<title>Pressure Valve</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root {
+    --ground: #f3efe6;
+    --surface: #fffdf8;
+    --surface-2: #e9e2d3;
+    --ink: #211c17;
+    --ink-soft: #5c534a;
+    --line: #cabfa9;
+    --ember: #d8481f;
+    --ember-deep: #a8330f;
+    --ember-tint: #f4d9c9;
+    --relief: #256b63;
+    --relief-tint: #d7e8e2;
+    --gauge-track: #ddd2ba;
+    --danger-fill: #d8481f;
+    --shadow: 0 1px 0 rgba(33,28,23,0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #161310;
+      --surface: #1f1b16;
+      --surface-2: #2a241d;
+      --ink: #f1ebe0;
+      --ink-soft: #b3a795;
+      --line: #40382d;
+      --ember: #ef6a3a;
+      --ember-deep: #ff8452;
+      --ember-tint: #3a2419;
+      --relief: #5fb3a6;
+      --relief-tint: #1c332e;
+      --gauge-track: #35301f;
+      --danger-fill: #ef6a3a;
+      --shadow: 0 1px 0 rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #161310;
+    --surface: #1f1b16;
+    --surface-2: #2a241d;
+    --ink: #f1ebe0;
+    --ink-soft: #b3a795;
+    --line: #40382d;
+    --ember: #ef6a3a;
+    --ember-deep: #ff8452;
+    --ember-tint: #3a2419;
+    --relief: #5fb3a6;
+    --relief-tint: #1c332e;
+    --gauge-track: #35301f;
+    --danger-fill: #ef6a3a;
+    --shadow: 0 1px 0 rgba(0,0,0,0.3);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; overflow-x: hidden; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ember);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--ember);
+    box-shadow: 0 0 0 3px var(--ember-tint);
+    flex: none;
+  }
+
+  h1 {
+    font-family: 'Big Shoulders Display', 'Noto Sans KR', sans-serif;
+    font-weight: 800;
+    font-size: clamp(38px, 10vw, 56px);
+    letter-spacing: 0.01em;
+    line-height: 0.95;
+    margin: 0 0 10px;
+    text-wrap: balance;
+    text-transform: uppercase;
+  }
+
+  .lede {
+    color: var(--ink-soft);
+    font-size: 15px;
+    max-width: 46ch;
+    margin: 0 0 18px;
+  }
+
+  /* INTENSITY TOGGLE */
+  .intensity-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .intensity-toggle {
+    display: inline-flex;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px;
+  }
+  .intensity-toggle button {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    border: none;
+    background: transparent;
+    color: var(--ink-soft);
+    border-radius: 999px;
+    padding: 7px 16px;
+    cursor: pointer;
+  }
+  .intensity-toggle button.active {
+    background: var(--ember);
+    color: #fff8f2;
+  }
+  .intensity-toggle button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .intensity-note {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+  }
+
+  /* GAUGE */
+  .gauge-panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    padding: 22px 20px 16px;
+    margin-bottom: 22px;
+  }
+  .gauge-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .gauge-svg { flex: none; width: 130px; height: 78px; }
+  .gauge-readout { flex: 1; min-width: 0; }
+  .gauge-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 4px;
+  }
+  .gauge-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 34px;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .gauge-value span { color: var(--ink-soft); font-size: 16px; }
+  .gauge-note {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+  }
+
+  /* CATEGORY VALVES */
+  h2.section-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+  }
+
+  .valves {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+    margin-bottom: 26px;
+  }
+  .valve {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    text-align: left;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 12px 12px 11px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .valve .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--gauge-track);
+    transition: background .15s ease;
+  }
+  .valve:hover { border-color: var(--ember); }
+  .valve:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .valve.active {
+    background: var(--ember-tint);
+    border-color: var(--ember);
+  }
+  .valve.active .dot { background: var(--ember); }
+
+  /* SITUATIONS */
+  .situations { margin-bottom: 22px; }
+  .situation-placeholder {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 0;
+    text-align: center;
+  }
+  .situation-context {
+    font-family: 'Big Shoulders Display', 'Noto Sans KR', sans-serif;
+    font-weight: 800;
+    font-size: 21px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .situation-context::before {
+    content: "";
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--ember);
+    flex: none;
+  }
+  .sit-subgroup { margin: 0 0 14px 2px; padding-left: 11px; border-left: 3px solid var(--ember-tint); }
+  .sit-subgroup:last-child { margin-bottom: 0; }
+  .sit-subgroup-label {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+    margin: 0 0 7px;
+  }
+  .sit-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .sit-chip {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: left;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+  .sit-chip:hover { border-color: var(--ember); }
+  .sit-chip:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .sit-chip.active { background: var(--ember-tint); border-color: var(--ember); color: var(--ember-deep); }
+
+  button.pill {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink);
+    padding: 9px 16px;
+    cursor: pointer;
+  }
+  button.pill:hover { border-color: var(--ember); }
+  button.pill:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  button.pill.primary {
+    background: var(--ember);
+    border-color: var(--ember);
+    color: #fff8f2;
+  }
+  button.pill.primary:hover { background: var(--ember-deep); border-color: var(--ember-deep); }
+
+  .privacy-note {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 10px;
+  }
+
+  /* RELEASE BUTTON */
+  .release-zone {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0 24px;
+  }
+  #releaseBtn {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff8f2;
+    background: var(--ember);
+    border: none;
+    border-radius: 999px;
+    padding: 18px 46px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--ember-deep);
+    transition: transform .08s ease, box-shadow .08s ease;
+  }
+  #releaseBtn:hover { background: var(--ember-deep); }
+  #releaseBtn:active { transform: translateY(3px); box-shadow: 0 0 0 var(--ember-deep); }
+  #releaseBtn:focus-visible { outline: 3px solid var(--relief); outline-offset: 3px; }
+
+  /* RESULT CARD */
+  .result {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    padding: 22px 22px 18px;
+    display: none;
+    margin-bottom: 18px;
+  }
+  .result.show { display: block; animation: rise .32s ease; }
+  @media (prefers-reduced-motion: reduce) {
+    .result.show { animation: none; }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .result-tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--relief);
+    background: var(--relief-tint);
+    border-radius: 3px;
+    padding: 3px 8px;
+    margin-bottom: 12px;
+  }
+  .result-tag.spicy {
+    color: var(--ember-deep);
+    background: var(--ember-tint);
+  }
+  .result-en {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 700;
+    font-size: clamp(26px, 6.5vw, 34px);
+    line-height: 1.08;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+  .result-ko {
+    font-size: 15px;
+    color: var(--ink);
+    margin: 0 0 4px;
+  }
+  .result-tip {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+    padding-left: 12px;
+    border-left: 2px solid var(--line);
+  }
+  .result-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  button.icon-btn {
+    font-size: 15px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    width: 36px; height: 36px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink);
+  }
+  button.icon-btn:hover { border-color: var(--ember); }
+  button.icon-btn.starred { color: var(--ember); border-color: var(--ember); background: var(--ember-tint); }
+  button.icon-btn.copied { color: var(--relief); border-color: var(--relief); background: var(--relief-tint); }
+  button.icon-btn.speak-error { color: var(--ember-deep); border-color: var(--ember-deep); background: var(--ember-tint); animation: shake .3s ease; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-2px)} 75%{transform:translateX(2px)} }
+  @media (prefers-reduced-motion: reduce) { button.icon-btn.speak-error { animation: none; } }
+  button.icon-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+  .no-speech-note {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+
+  /* FAVORITES */
+  .favs-panel { margin-bottom: 18px; }
+  .favs-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .fav-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 8px 10px;
+  }
+  .fav-en {
+    flex: 1;
+    min-width: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .fav-cat {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-soft);
+    flex: none;
+  }
+  .fav-btn {
+    font-size: 12px;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 4px 10px;
+    cursor: pointer;
+    flex: none;
+  }
+  .fav-btn:hover { border-color: var(--ember); }
+  .favs-empty {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-top: 10px;
+  }
+
+  footer {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Stress Release Valve</p>
+  <h1>Pressure Valve</h1>
+  <p class="lede">오늘 쌓인 거, 영어로 짧게 내뱉고 시원하게 풀어버리기.</p>
+
+  <div class="intensity-row">
+    <div class="intensity-toggle" id="intensityToggle" role="group" aria-label="표현 강도">
+      <button type="button" class="active" data-mode="mild">순한맛</button>
+      <button type="button" data-mode="spicy">매운맛</button>
+    </div>
+  </div>
+  <p class="intensity-note" id="intensityNote">순한맛 — 육두문자 없이, 그래도 시원한 표현들이에요.</p>
+
+  <section class="gauge-panel" aria-label="스트레스 게이지">
+    <div class="gauge-row">
+      <svg class="gauge-svg" id="gaugeSvg" viewBox="0 0 130 78" aria-hidden="true">
+        <path d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke-width="12" stroke-linecap="round" style="stroke: var(--gauge-track)"></path>
+        <path id="gaugeFill" d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke-width="12" stroke-linecap="round" style="stroke: var(--danger-fill); stroke-dasharray: 173; stroke-dashoffset: 40"></path>
+        <line id="needle" x1="65" y1="70" x2="65" y2="24" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" style="transform-origin: 65px 70px; transform: rotate(45deg); transition: transform .5s cubic-bezier(.3,1.4,.4,1)"></line>
+        <circle cx="65" cy="70" r="5" fill="var(--ink)"></circle>
+      </svg>
+      <div class="gauge-readout">
+        <p class="gauge-label">Pressure Level</p>
+        <p class="gauge-value" id="gaugeValue">72<span>%</span></p>
+        <p class="gauge-note" id="gaugeNote">밸브를 열 때예요. 아래에서 표현을 골라보세요.</p>
+      </div>
+    </div>
+  </section>
+
+  <h2 class="section-title">1 · 뭐 때문에 쌓였어요?</h2>
+  <div class="valves" id="valveGrid" role="group" aria-label="스트레스 카테고리"></div>
+
+  <h2 class="section-title">2 · 정확히 무슨 일이었어요? (선택)</h2>
+  <div class="situations" id="situationWrap">
+    <p class="situation-placeholder" id="situationPlaceholder">위에서 밸브를 먼저 하나 골라보세요. 그 카테고리에 딱 맞는 상황이 여기 떠요.</p>
+    <div id="situationActive" hidden>
+      <p class="situation-context" id="situationContext"></p>
+      <div id="situationChips"></div>
+    </div>
+    <p class="privacy-note">여기서 고르면 그 상황에 딱 맞춰 미리 준비된 표현이 바로 나와요. 이 페이지는 서버로 아무것도 전송하지 않아요.</p>
+  </div>
+
+  <div class="release-zone">
+    <button id="releaseBtn" type="button">Release ↓</button>
+  </div>
+
+  <section class="result" id="result" aria-live="polite">
+    <span class="result-tag" id="resultTag">Work &amp; Deadlines</span>
+    <p class="result-en" id="resultEn">"I am so done with today."</p>
+    <p class="result-ko" id="resultKo">오늘 진짜 지쳤다, 끝났다는 뜻이에요.</p>
+    <p class="result-tip" id="resultTip">퇴근길에 혼잣말처럼 던지기 좋은 톤이에요.</p>
+    <div class="result-actions">
+      <button class="icon-btn" id="speakBtn" type="button" title="영어로 들어보기" aria-label="영어로 들어보기">🔊</button>
+      <button class="icon-btn" id="copyBtn" type="button" title="문구 복사하기" aria-label="문구 복사하기">📋</button>
+      <button class="icon-btn" id="starBtn" type="button" title="즐겨찾기" aria-label="즐겨찾기">☆</button>
+      <button class="pill" id="anotherBtn" type="button">다른 표현</button>
+      <span class="no-speech-note" id="noSpeechNote" hidden>이 브라우저는 음성 재생을 지원하지 않아요.</span>
+    </div>
+  </section>
+
+  <div class="favs-panel">
+    <button class="pill" id="favsToggleBtn" type="button">⭐ 즐겨찾기 보기</button>
+    <div class="favs-list" id="favsList" hidden></div>
+  </div>
+
+  <footer>
+    Pressure Valve · 매일 조금씩 새어나가야 터지지 않아요.
+  </footer>
+</div>
+
+<script>
+(function () {
+  var CATEGORIES = [
+    {
+      id: "work", label: "직장 · 업무", keywords: ["회사","업무","일이","상사","팀장","야근","마감","프로젝트","보고서","회의","출근","퇴근","직장","클라이언트","고객","메일","부장","과장","대리","동료","실적","컨펌","결재","클레임","거래처","납기","워크샵","출장","연차","반차","퇴사","이직","면접","해고","갑질","꼰대","잔업","발표","기획서","회식","칼퇴","정시퇴근","일 던지","혼났","혼내","깨졌","갈굼","갈구","까임","까였","욕먹","질책","잔소리","업무지시","야근수당"],
+      mild: [
+        { en: "I am so done with today.", ko: "오늘 진짜 지쳤다, 끝났다는 뜻이에요.", tip: "퇴근길에 혼잣말처럼 던지기 좋은 톤이에요." },
+        { en: "This deadline is killing me.", ko: "이 마감 때문에 죽겠다는 과장된 표현이에요.", tip: "실제로 힘들다는 뜻이지 진짜 위협이 아니라, 캐주얼하게 씁니다." },
+        { en: "I can't deal with this right now.", ko: "지금은 이거 감당 못 하겠다는 뜻이에요.", tip: "일이 갑자기 몰릴 때 딱 맞는 표현." },
+        { en: "Why does everything happen at once?", ko: "왜 이렇게 한꺼번에 몰리는 거야, 라는 한탄이에요.", tip: "일이 겹칠 때 자연스럽게 나오는 말." },
+        { en: "I need five minutes to just breathe.", ko: "잠깐 숨 좀 돌릴 시간이 필요하다는 뜻이에요.", tip: "회의 사이사이 진짜 많이 쓰는 문장." },
+        { en: "Today was a disaster.", ko: "오늘 완전 망했다는 뜻이에요.", tip: "하루를 한 단어로 정리할 때." },
+        { en: "I'm running on fumes.", ko: "기름이 다 떨어진 것처럼 완전히 탈진했다는 관용구예요.", tip: "야근 며칠째일 때 딱입니다." },
+        { en: "Can we please just stop for today?", ko: "오늘은 제발 여기까지 하자는 뜻이에요.", tip: "회의나 야근을 끊고 싶을 때." }
+      ],
+      spicy: [
+        { en: "This is such bullshit.", ko: "이건 진짜 개소리(말도 안 됨)라는 뜻이에요.", tip: "친한 동료끼리 혼잣말이나 메신저용. 상사 앞에서는 절대 금지." },
+        { en: "I'm so fucking done with this.", ko: "나 이거 진짜 존나 지쳤다는 뜻이에요.", tip: "강도가 센 표현이라 아주 편한 사이에서만." },
+        { en: "Screw this deadline.", ko: "이 마감 엿 먹어라, 라는 뜻이에요.", tip: "마감에 대한 분노를 캐주얼하게 던질 때." },
+        { en: "This job is kicking my ass.", ko: "이 일이 나를 완전히 조지고 있다는 관용구예요.", tip: "업무 강도가 너무 셀 때, 편한 대화에서." },
+        { en: "I don't give a shit anymore.", ko: "이제 신경 하나도 안 쓴다(될 대로 되라)는 뜻이에요.", tip: "체념 섞인 포기의 뉘앙스." },
+        { en: "What the hell is going on today?", ko: "오늘 도대체 뭔 일이냐는 뜻이에요.", tip: "hell은 다른 단어보다 순한 편이라 비교적 무난하게 쓸 수 있어요." }
+      ]
+    },
+    {
+      id: "people", label: "사람 · 관계", keywords: ["친구","가족","애인","남친","여친","엄마","아빠","동료","사람","관계","싸웠","갈등","연락","전화","연인","남자친구","여자친구","와이프","남편","아내","절친","베프","지인","선배","후배","단톡","카톡","이별","헤어졌","헤어짐","바람","배신","뒷담","무시","차별","오해","서운","섭섭","실망","잠수","연락두절","읽씹","씹었","무시당했","싸가지","예의없","버릇없","이간질","뒤에서 욕","뒤통수","가스라이팅","편애","이중적","표리부동","나쁜소문","소문내","험담"],
+      mild: [
+        { en: "Honestly, I'm over it.", ko: "솔직히 이제 지쳤어, 신경 안 쓸래라는 뜻이에요.", tip: "감정 소모를 그만하고 싶을 때." },
+        { en: "That really got under my skin.", ko: "그거 진짜 신경 거슬렸다는 뜻이에요.", tip: "작은 말 한마디가 계속 걸릴 때." },
+        { en: "I don't have the energy for this drama.", ko: "이 갈등 감당할 기운이 없다는 뜻이에요.", tip: "누군가의 감정 소모전에 끼고 싶지 않을 때." },
+        { en: "Not today, seriously.", ko: "오늘은 진짜 아니야, 라는 뜻이에요.", tip: "짧고 단호하게 거리를 둘 때." },
+        { en: "I just need some space.", ko: "그냥 좀 혼자 있고 싶다는 뜻이에요.", tip: "관계에서 잠깐 거리 두고 싶을 때 정중한 편." },
+        { en: "That was so unnecessary.", ko: "그거 진짜 불필요했다는 뜻이에요.", tip: "상대의 말이나 행동이 과했을 때." },
+        { en: "I'm choosing peace over this.", ko: "이 상황보다 내 평온을 택하겠다는 뜻이에요.", tip: "요즘 SNS에서도 자주 보이는 쿨한 표현." },
+        { en: "Some people, I swear.", ko: "어떤 사람들은 진짜... 라는 한숨 섞인 표현이에요.", tip: "구체적으로 말하지 않고 눙칠 때." },
+        { en: "I can't stand two-faced people.", ko: "앞뒤 다른(이중적인) 사람은 정말 못 참겠다는 뜻이에요.", tip: "뒤에서 딴소리하는 상사·동료한테 딱이에요." },
+        { en: "Talking behind my back? Real mature.", ko: "뒤에서 내 얘기 해? 참 어른스럽네(비꼬는 말)라는 뜻이에요.", tip: "빈정거리는 톤으로, 뒷담화한 사람 향해." }
+      ],
+      spicy: [
+        { en: "That was such a dick move.", ko: "그건 진짜 재수 없는 짓이었다는 뜻이에요.", tip: "상대 행동을 비난할 때, 친한 친구끼리." },
+        { en: "Stop stirring shit behind my back.", ko: "뒤에서 이간질(분란 조장)하지 좀 말라는 뜻이에요.", tip: "shit이 들어가 꽤 강한 표현, 편한 사이에서만." },
+        { en: "Two-faced people like that piss me off.", ko: "그렇게 앞뒤 다른 사람들 진짜 열받는다는 뜻이에요.", tip: "겉과 속이 다른 사람에 대한 분노." },
+        { en: "I'm so pissed off right now.", ko: "나 지금 진짜 열받았다는 뜻이에요.", tip: "화남을 직접적으로, 아주 흔하게 쓰는 표현." },
+        { en: "They can go to hell.", ko: "걔넨 알아서 하라 그래(꺼지라 해)라는 뜻이에요.", tip: "강한 거리두기 표현, 실제 저주는 아니에요." },
+        { en: "I'm done with their bullshit.", ko: "걔네 헛소리는 이제 끝이라는 뜻이에요.", tip: "반복된 갈등에 완전히 지쳤을 때." },
+        { en: "What a jerk.", ko: "진짜 재수없는 인간이네, 라는 뜻이에요.", tip: "무난하게 자주 쓰는 정도의 표현이에요." },
+        { en: "I swear, some people are just assholes.", ko: "진짜, 어떤 사람들은 그냥 개xx라는 뜻이에요.", tip: "강한 표현이라 아주 편한 사이에서만." }
+      ]
+    },
+    {
+      id: "small", label: "소소한 빡침", keywords: ["짜증","버스","지하철","줄","날씨","신호등","와이파이","배달","늦었","엘리베이터","비와서","미세먼지","택시","주차","지각","알람","늦잠","새치기","흡연","담배냄새","시끄러","민폐","쓰레기","층간소음","이웃","택배","분실","고장","인터넷","렉","버벅","앱오류","에러","결제","환불","고객센터","콜센터","대기","핸드폰","배터리","놓쳤","놓침","꼬였"],
+      mild: [
+        { en: "Ugh, seriously?", ko: "아, 진짜?라는 짧은 탄식이에요.", tip: "가장 만능으로 쓸 수 있는 감탄사." },
+        { en: "You've got to be kidding me.", ko: "장난하는 거지 지금, 이라는 뜻이에요.", tip: "황당한 일이 벌어졌을 때." },
+        { en: "This is so annoying.", ko: "이거 진짜 짜증난다는 뜻이에요.", tip: "가장 직접적이고 무난한 표현." },
+        { en: "Of course this would happen.", ko: "역시나 이럴 줄 알았다는 뜻이에요.", tip: "예상했던 불운이 또 벌어졌을 때." },
+        { en: "Give me a break.", ko: "좀 봐줘라, 그만 좀 하라는 뜻이에요.", tip: "억울하거나 어이없을 때." },
+        { en: "Why is this taking forever?", ko: "이거 왜 이렇게 오래 걸리냐는 뜻이에요.", tip: "줄 서거나 로딩 기다릴 때 딱." },
+        { en: "I don't have time for this.", ko: "이거에 쓸 시간 없다는 뜻이에요.", tip: "사소한 방해가 계속될 때." },
+        { en: "Come on, really?", ko: "아 진짜로?라는 뜻이에요.", tip: "믿기 힘든 상황에 짧게 반응할 때." }
+      ],
+      spicy: [
+        { en: "Oh, for fuck's sake.", ko: "아 진짜 미치겠다는 뜻이에요.", tip: "만능 짜증 감탄사, 아주 흔하게 씁니다." },
+        { en: "This is such crap.", ko: "이거 완전 별로다(쓰레기 같다)는 뜻이에요.", tip: "상황이나 물건에 대한 짜증." },
+        { en: "Damn it, not again.", ko: "젠장, 또야, 라는 뜻이에요.", tip: "반복되는 불운에 대한 흔한 반응." },
+        { en: "What the fuck.", ko: "뭐야 진짜(황당함)라는 뜻이에요.", tip: "아주 강한 감탄사라 상황 가려서." },
+        { en: "This is bullshit.", ko: "이거 말도 안 된다는 뜻이에요.", tip: "상황 자체가 부당하다고 느낄 때." },
+        { en: "Screw this.", ko: "에라 모르겠다, 됐다는 뜻이에요.", tip: "그냥 포기하고 싶을 때 짧게." }
+      ]
+    },
+    {
+      id: "selfblame", label: "자책 · 실수", keywords: ["실수","망했","후회","바보","멍청","자책","틀렸","까먹","깜빡","잊어버","잊었","실패","포기","망쳤","망쳐","말아먹","시험","성적","불합격","떨어졌","엉망","자신없","자존감","자괴감","한심","창피","부끄러","왜그랬","그러지말걸"],
+      mild: [
+        { en: "I can't believe I did that.", ko: "내가 그걸 했다니 믿기지가 않는다는 뜻이에요.", tip: "본인 실수에 놀랐을 때." },
+        { en: "That was so unlike me.", ko: "나답지 않은 행동이었다는 뜻이에요.", tip: "평소와 다른 실수를 했을 때." },
+        { en: "Okay, lesson learned.", ko: "그래, 교훈 얻었다는 뜻이에요.", tip: "자책을 마무리 짓는 담백한 표현." },
+        { en: "I'm human, I mess up.", ko: "나도 사람이니까 실수하지, 라는 뜻이에요.", tip: "스스로를 다독일 때." },
+        { en: "Let it go, it's done.", ko: "그냥 넘기자, 이미 끝난 일이라는 뜻이에요.", tip: "지나간 일에 매달리지 않으려 할 때." },
+        { en: "I'll do better next time.", ko: "다음엔 더 잘할 거라는 뜻이에요.", tip: "실수를 인정하고 넘어갈 때." },
+        { en: "Stop beating yourself up.", ko: "자책 그만해, 라는 뜻이에요.", tip: "나 자신에게 하는 말로도 자연스러워요." },
+        { en: "It's not the end of the world.", ko: "세상 끝난 거 아니야, 라는 뜻이에요.", tip: "실수를 과하게 확대해석하지 않으려 할 때." }
+      ],
+      spicy: [
+        { en: "God, I'm such an idiot.", ko: "아 나 진짜 바보 같다는 뜻이에요.", tip: "자기 자신에게, 가볍게 넘기는 톤으로." },
+        { en: "I really fucked that up.", ko: "나 그거 완전 망쳤다는 뜻이에요.", tip: "실수를 강하게 인정할 때." },
+        { en: "Shit, I can't believe I did that.", ko: "아 씨, 내가 그걸 했다니, 라는 뜻이에요.", tip: "놀람과 후회가 섞인 반응." },
+        { en: "Well, that was a shitshow.", ko: "아주 개판이었다(그 상황)는 뜻이에요.", tip: "상황 전체를 유머러스하게 자책할 때." },
+        { en: "Damn it, I should've known better.", ko: "젠장, 알았어야 했는데, 라는 뜻이에요.", tip: "후회 섞인 자책의 표현." },
+        { en: "I'm kicking myself for that.", ko: "그것 때문에 스스로를 자책하고 있다는 뜻이에요.", tip: "혼잣말로 자연스럽게 쓰는 관용구예요." }
+      ]
+    },
+    {
+      id: "exhausted", label: "그냥 다 지침", keywords: ["피곤","지침","힘들","지쳐","지쳤","에너지","잠","번아웃","무기력","의욕없","귀찮","쉬고싶","아무것도하기싫","멘탈","멘붕","힘빠져","늘어져","축쳐져","졸려","피로","과로","녹초","방전","탈진"],
+      mild: [
+        { en: "I'm completely drained.", ko: "진짜 완전히 지쳤다는 뜻이에요.", tip: "몸도 마음도 바닥났을 때." },
+        { en: "I have nothing left today.", ko: "오늘은 남은 에너지가 없다는 뜻이에요.", tip: "하루를 마무리하며 쓰기 좋아요." },
+        { en: "I just want to lie down and do nothing.", ko: "그냥 누워서 아무것도 안 하고 싶다는 뜻이에요.", tip: "가장 솔직한 소망을 말할 때." },
+        { en: "Today wiped me out.", ko: "오늘 하루가 날 완전히 지치게 했다는 뜻이에요.", tip: "하루 전체를 요약할 때." },
+        { en: "I need to recharge.", ko: "충전이 필요하다는 뜻이에요.", tip: "혼자만의 시간이 필요할 때." },
+        { en: "Enough for today.", ko: "오늘은 여기까지, 라는 뜻이에요.", tip: "짧고 단호하게 하루를 닫을 때." },
+        { en: "I'm calling it a day.", ko: "오늘은 이만 끝낼래, 라는 뜻이에요.", tip: "일을 정리하고 퇴근할 때 자연스러워요." },
+        { en: "Tomorrow, not today.", ko: "내일 하자, 오늘은 말고, 라는 뜻이에요.", tip: "더 이상 미루지 않고 오늘을 놓아줄 때." }
+      ],
+      spicy: [
+        { en: "I'm fucking exhausted.", ko: "나 진짜 존나 지쳤다는 뜻이에요.", tip: "피로를 강하게 표현할 때, 편한 사이에서." },
+        { en: "I can't even, today just sucked.", ko: "오늘 진짜 최악이었다(말을 잇지 못할 정도)는 뜻이에요.", tip: "캐주얼한 SNS식 표현." },
+        { en: "Today was a shitty day.", ko: "오늘 진짜 거지 같은 하루였다는 뜻이에요.", tip: "하루 전체를 강하게 평가할 때." },
+        { en: "I'm so over this week.", ko: "이번 주 진짜 지긋지긋하다는 뜻이에요.", tip: "반복된 피로가 쌓였을 때." },
+        { en: "Screw it, I'm done for today.", ko: "됐고, 오늘은 여기까지라는 뜻이에요.", tip: "단호하게 하루를 마무리할 때." },
+        { en: "I'm running on empty, for real.", ko: "진짜로 완전히 방전됐다는 뜻이에요.", tip: "run on empty는 기름 없이 달리는 차에서 온 관용구예요." }
+      ]
+    }
+  ];
+
+  // 상황을 직접 고르면 키워드 매칭 없이 그 상황 전용 표현이 정확히 나온다 (100% 매치 보장)
+  var SITUATIONS = [
+    { id: "s-taskdump", catId: "work", label: "상사가 갑자기 일 던짐",
+      mild: { en: "This deadline is killing me.", ko: "이 마감 때문에 죽겠다는 과장된 표현이에요.", tip: "실제로 힘들다는 뜻이지 진짜 위협이 아니라, 캐주얼하게 씁니다." },
+      spicy: { en: "Screw this deadline.", ko: "이 마감 엿 먹어라, 라는 뜻이에요.", tip: "마감에 대한 분노를 캐주얼하게 던질 때." } },
+    { id: "s-lateleave", catId: "work", label: "퇴근 직전에 일 생김",
+      mild: { en: "I am so done with today.", ko: "오늘 진짜 지쳤다, 끝났다는 뜻이에요.", tip: "퇴근길에 혼잣말처럼 던지기 좋은 톤이에요." },
+      spicy: { en: "I'm so fucking done with this.", ko: "나 이거 진짜 존나 지쳤다는 뜻이에요.", tip: "강도가 센 표현이라 아주 편한 사이에서만." } },
+    { id: "s-meeting", catId: "work", label: "회의·보고 스트레스",
+      mild: { en: "Can we please just stop for today?", ko: "오늘은 제발 여기까지 하자는 뜻이에요.", tip: "회의나 야근을 끊고 싶을 때." },
+      spicy: { en: "What the hell is going on today?", ko: "오늘 도대체 뭔 일이냐는 뜻이에요.", tip: "hell은 다른 단어보다 순한 편이라 비교적 무난하게 쓸 수 있어요." } },
+    { id: "s-overload", catId: "work", label: "일이 한꺼번에 몰림",
+      mild: { en: "Why does everything happen at once?", ko: "왜 이렇게 한꺼번에 몰리는 거야, 라는 한탄이에요.", tip: "일이 겹칠 때 자연스럽게 나오는 말." },
+      spicy: { en: "This job is kicking my ass.", ko: "이 일이 나를 완전히 조지고 있다는 관용구예요.", tip: "업무 강도가 너무 셀 때, 편한 대화에서." } },
+    { id: "s-unfair", catId: "work", label: "부당한 지시·갑질",
+      mild: { en: "That request wasn't fair.", ko: "그 요구는 부당했다는 뜻이에요.", tip: "부당한 지시를 담담하게 짚을 때." },
+      spicy: { en: "That was such bullshit.", ko: "그거 완전 개소리였다는 뜻이에요.", tip: "부당한 갑질에 대한 강한 반응." } },
+    { id: "s-unrecognized", catId: "work", label: "성과 안 알아줌",
+      mild: { en: "Nobody noticed how hard I worked.", ko: "내가 얼마나 열심히 했는지 아무도 몰라줬다는 뜻이에요.", tip: "노력을 인정받지 못했을 때." },
+      spicy: { en: "I busted my ass and no one gives a damn.", ko: "죽어라 했는데 아무도 신경 안 쓴다는 뜻이에요.", tip: "노력이 무시당한 것에 대한 분노." } },
+    { id: "s-datingcold", catId: "people", sub: "친구·애인", label: "썸·연애가 애매해짐",
+      mild: { en: "I hate mixed signals.", ko: "애매한 신호(썸)가 너무 싫다는 뜻이에요.", tip: "썸 타는 상대가 애매하게 굴 때." },
+      spicy: { en: "Just tell me what the hell you want.", ko: "도대체 뭘 원하는 건지 말해달라는 뜻이에요.", tip: "애매한 태도에 답답할 때, 직접적으로." } },
+    { id: "s-frienddisappoint", catId: "people", sub: "친구·애인", label: "친구가 실망시킴",
+      mild: { en: "I expected more from a friend.", ko: "친구한테는 더 기대했었다는 뜻이에요.", tip: "친구에게 서운함을 느꼈을 때." },
+      spicy: { en: "Some friend they turned out to be.", ko: "친구라는 게 참 대단하시네(비꼬는 말)라는 뜻이에요.", tip: "친구에게 실망해서 비꼴 때." } },
+    { id: "s-hierarchybully", catId: "people", sub: "위계 관계 (직장·학교)", label: "위(상사·선배)가 갑질함",
+      mild: { en: "They're pulling rank on me again.", ko: "또 직급·서열을 이용해서 누른다는 뜻이에요.", tip: "상사나 선배가 위계로 누를 때." },
+      spicy: { en: "They love throwing their weight around.", ko: "자기 힘 있는 걸 과시하며 누르는 걸 좋아한다는 뜻이에요.", tip: "권력을 과시하는 사람에 대한 비꼬는 표현." } },
+    { id: "s-hierarchyfavor", catId: "people", sub: "위계 관계 (직장·학교)", label: "편애당함",
+      mild: { en: "They clearly play favorites.", ko: "누가 봐도 편애한다는 뜻이에요.", tip: "상사나 선배가 특정 사람만 챙길 때." },
+      spicy: { en: "It's obvious who the favorite is.", ko: "누가 총애받는지 뻔히 보인다는(비꼬는) 뜻이에요.", tip: "편애가 너무 노골적일 때." } },
+    { id: "s-teacherunfair", catId: "people", sub: "선생님·교수님", label: "성적·평가가 부당함",
+      mild: { en: "That grade wasn't fair at all.", ko: "그 성적은 전혀 공정하지 않았다는 뜻이에요.", tip: "성적이나 평가가 부당하다고 느낄 때." },
+      spicy: { en: "That grading was total bullshit.", ko: "그 채점은 완전 개소리였다는 뜻이에요.", tip: "평가에 대한 강한 불만." } },
+    { id: "s-teacherharsh", catId: "people", sub: "선생님·교수님", label: "선생님·교수님이 심하게 대함",
+      mild: { en: "My professor was way too harsh.", ko: "교수님이 너무 심하게 대했다는 뜻이에요.", tip: "지도교수나 선생님의 태도가 과할 때." },
+      spicy: { en: "My professor was a total nightmare today.", ko: "오늘 교수님 때문에 완전 최악이었다는 뜻이에요.", tip: "강하게 힘들었던 하루를 표현할 때." } },
+    { id: "s-familynag", catId: "people", sub: "가족", label: "가족이 잔소리함",
+      mild: { en: "I wish my family would stop nagging me.", ko: "가족이 잔소리 좀 그만했으면 좋겠다는 뜻이에요.", tip: "반복되는 잔소리에 지쳤을 때." },
+      spicy: { en: "I'm so sick of the nagging.", ko: "잔소리 진짜 지긋지긋하다는 뜻이에요.", tip: "잔소리에 완전히 지쳤을 때." } },
+    { id: "s-familycompare", catId: "people", sub: "가족", label: "가족이 비교함",
+      mild: { en: "Stop comparing me to my siblings.", ko: "형제자매랑 그만 비교하라는 뜻이에요.", tip: "가족 간 비교가 힘들 때." },
+      spicy: { en: "I'm done being compared to everyone in my family.", ko: "가족들이랑 비교당하는 거 이제 지겹다는 뜻이에요.", tip: "가족 비교에 완전히 질렸을 때." } },
+    { id: "s-clientunreasonable", catId: "people", sub: "손님·거래처", label: "무리한 요구를 하는 손님·거래처",
+      mild: { en: "That client's request was way too much.", ko: "그 고객의 요구는 너무 과했다는 뜻이에요.", tip: "무리한 요구를 받았을 때 담담하게." },
+      spicy: { en: "That customer was being ridiculous.", ko: "그 손님 진짜 말도 안 됐다는 뜻이에요.", tip: "손님의 무리한 태도에 대한 강한 반응." } },
+    { id: "s-clientrude", catId: "people", sub: "손님·거래처", label: "무례한 손님·거래처 담당자",
+      mild: { en: "That person was incredibly rude to me.", ko: "그 사람이 나한테 진짜 무례했다는 뜻이에요.", tip: "고객·거래처 담당자의 무례함에 대한 표현." },
+      spicy: { en: "What an entitled jerk.", ko: "완전 특권의식 쩌는 인간이라는 뜻이에요.", tip: "무례하고 특권의식 있는 사람에 대한 강한 표현." } },
+    { id: "s-backstab", catId: "people", sub: "기타", label: "뒷담화·이간질 당함",
+      mild: { en: "I can't stand two-faced people.", ko: "앞뒤 다른(이중적인) 사람은 정말 못 참겠다는 뜻이에요.", tip: "뒤에서 딴소리하는 상사·동료한테 딱이에요." },
+      spicy: { en: "Stop stirring shit behind my back.", ko: "뒤에서 이간질(분란 조장)하지 좀 말라는 뜻이에요.", tip: "shit이 들어가 꽤 강한 표현, 편한 사이에서만." } },
+    { id: "s-ghosted", catId: "people", sub: "기타", label: "연락 씹힘·잠수",
+      mild: { en: "I hate being left on read.", ko: "읽씹당하는 거 진짜 싫다는 뜻이에요.", tip: "left on read는 '읽고 답 안 함'을 뜻하는 아주 흔한 표현이에요." },
+      spicy: { en: "Ghosting me? Real classy.", ko: "잠수타기? 참 대단하시네(비꼬는 말)라는 뜻이에요.", tip: "ghosting은 갑자기 연락을 끊는 것을 뜻해요." } },
+    { id: "s-conflict", catId: "people", sub: "기타", label: "싸움·갈등",
+      mild: { en: "I don't have the energy for this drama.", ko: "이 갈등 감당할 기운이 없다는 뜻이에요.", tip: "누군가의 감정 소모전에 끼고 싶지 않을 때." },
+      spicy: { en: "I'm done with their bullshit.", ko: "걔네 헛소리는 이제 끝이라는 뜻이에요.", tip: "반복된 갈등에 완전히 지쳤을 때." } },
+    { id: "s-rude", catId: "people", sub: "기타", label: "무례하게 행동함",
+      mild: { en: "That was so unnecessary.", ko: "그거 진짜 불필요했다는 뜻이에요.", tip: "상대의 말이나 행동이 과했을 때." },
+      spicy: { en: "What a jerk.", ko: "진짜 재수없는 인간이네, 라는 뜻이에요.", tip: "무난하게 자주 쓰는 정도의 표현이에요." } },
+    { id: "s-flaked", catId: "people", sub: "기타", label: "약속 펑크·노쇼",
+      mild: { en: "They just didn't show up.", ko: "그 사람이 그냥 안 나타났다는 뜻이에요.", tip: "약속이 깨졌을 때 담담하게." },
+      spicy: { en: "They straight up stood me up.", ko: "그 사람이 대놓고 바람맞혔다는 뜻이에요.", tip: "노쇼 당한 것에 대한 강한 표현." } },
+    { id: "s-compared", catId: "people", sub: "기타", label: "비교당함·무시당함",
+      mild: { en: "I hate being compared to other people.", ko: "다른 사람이랑 비교당하는 게 싫다는 뜻이에요.", tip: "비교당했을 때의 감정을 담담히." },
+      spicy: { en: "Stop comparing me to everyone else.", ko: "다른 사람이랑 그만 좀 비교하라는 뜻이에요.", tip: "비교질에 대한 직접적인 항의." } },
+    { id: "s-missedbus", catId: "small", label: "버스·지하철 놓침",
+      mild: { en: "Ugh, seriously?", ko: "아, 진짜?라는 짧은 탄식이에요.", tip: "가장 만능으로 쓸 수 있는 감탄사." },
+      spicy: { en: "Damn it, not again.", ko: "젠장, 또야, 라는 뜻이에요.", tip: "반복되는 불운에 대한 흔한 반응." } },
+    { id: "s-waiting", catId: "small", label: "줄서기·기다림",
+      mild: { en: "Why is this taking forever?", ko: "이거 왜 이렇게 오래 걸리냐는 뜻이에요.", tip: "줄 서거나 로딩 기다릴 때 딱." },
+      spicy: { en: "Screw this.", ko: "에라 모르겠다, 됐다는 뜻이에요.", tip: "그냥 포기하고 싶을 때 짧게." } },
+    { id: "s-techfail", catId: "small", label: "인터넷·기기 오류",
+      mild: { en: "This is so annoying.", ko: "이거 진짜 짜증난다는 뜻이에요.", tip: "가장 직접적이고 무난한 표현." },
+      spicy: { en: "Oh, for fuck's sake.", ko: "아 진짜 미치겠다는 뜻이에요.", tip: "만능 짜증 감탄사, 아주 흔하게 씁니다." } },
+    { id: "s-weather", catId: "small", label: "날씨·미세먼지",
+      mild: { en: "Come on, really?", ko: "아 진짜로?라는 뜻이에요.", tip: "믿기 힘든 상황에 짧게 반응할 때." },
+      spicy: { en: "This is bullshit.", ko: "이거 말도 안 된다는 뜻이에요.", tip: "상황 자체가 부당하다고 느낄 때." } },
+    { id: "s-deliveryfail", catId: "small", label: "배달 실수·누락",
+      mild: { en: "My order came out wrong again.", ko: "주문이 또 잘못 왔다는 뜻이에요.", tip: "배달 실수에 대한 가벼운 짜증." },
+      spicy: { en: "This delivery app screwed up my order again.", ko: "이 배달 앱이 또 주문을 망쳤다는 뜻이에요.", tip: "반복된 배달 실수에 대한 강한 짜증." } },
+    { id: "s-noise", catId: "small", label: "층간소음·시끄러움",
+      mild: { en: "The noise upstairs won't stop.", ko: "위층 소음이 멈추질 않는다는 뜻이에요.", tip: "층간소음에 대한 담담한 하소연." },
+      spicy: { en: "That noise upstairs is driving me insane.", ko: "위층 소음 때문에 미쳐버릴 것 같다는 뜻이에요.", tip: "층간소음이 극심할 때." } },
+    { id: "s-forgot", catId: "selfblame", label: "중요한 걸 깜빡함",
+      mild: { en: "I can't believe I did that.", ko: "내가 그걸 했다니 믿기지가 않는다는 뜻이에요.", tip: "본인 실수에 놀랐을 때." },
+      spicy: { en: "Shit, I can't believe I did that.", ko: "아 씨, 내가 그걸 했다니, 라는 뜻이에요.", tip: "놀람과 후회가 섞인 반응." } },
+    { id: "s-failed", catId: "selfblame", label: "시험·성과 망침",
+      mild: { en: "That was so unlike me.", ko: "나답지 않은 행동이었다는 뜻이에요.", tip: "평소와 다른 실수를 했을 때." },
+      spicy: { en: "I really fucked that up.", ko: "나 그거 완전 망쳤다는 뜻이에요.", tip: "실수를 강하게 인정할 때." } },
+    { id: "s-selfblame", catId: "selfblame", label: "계속 자책하게 됨",
+      mild: { en: "Stop beating yourself up.", ko: "자책 그만해, 라는 뜻이에요.", tip: "나 자신에게 하는 말로도 자연스러워요." },
+      spicy: { en: "I'm kicking myself for that.", ko: "그것 때문에 스스로를 자책하고 있다는 뜻이에요.", tip: "혼잣말로 자연스럽게 쓰는 관용구예요." } },
+    { id: "s-embarrassed", catId: "selfblame", label: "실수로 민폐 끼침",
+      mild: { en: "I feel bad for messing that up in front of everyone.", ko: "다들 보는 앞에서 그걸 망쳐서 미안하다는 뜻이에요.", tip: "공개적인 실수에 대한 민망함." },
+      spicy: { en: "I can't believe I screwed that up in front of everyone.", ko: "다들 앞에서 그걸 망쳤다는 게 믿기지 않는다는 뜻이에요.", tip: "공개 망신에 대한 강한 자책." } },
+    { id: "s-compareself", catId: "selfblame", label: "남과 비교하며 자괴감",
+      mild: { en: "I keep comparing myself to everyone else.", ko: "계속 남들이랑 나를 비교하게 된다는 뜻이에요.", tip: "자기 비교로 인한 씁쓸함." },
+      spicy: { en: "I hate how much I compare myself to everyone.", ko: "남들이랑 나를 이렇게 비교하는 내가 싫다는 뜻이에요.", tip: "자기혐오에 가까운 자괴감." } },
+    { id: "s-drained", catId: "exhausted", label: "하루 종일 지침",
+      mild: { en: "I'm completely drained.", ko: "진짜 완전히 지쳤다는 뜻이에요.", tip: "몸도 마음도 바닥났을 때." },
+      spicy: { en: "I'm fucking exhausted.", ko: "나 진짜 존나 지쳤다는 뜻이에요.", tip: "피로를 강하게 표현할 때, 편한 사이에서." } },
+    { id: "s-burnout", catId: "exhausted", label: "번아웃·의욕없음",
+      mild: { en: "I have nothing left today.", ko: "오늘은 남은 에너지가 없다는 뜻이에요.", tip: "하루를 마무리하며 쓰기 좋아요." },
+      spicy: { en: "I'm so over this week.", ko: "이번 주 진짜 지긋지긋하다는 뜻이에요.", tip: "반복된 피로가 쌓였을 때." } },
+    { id: "s-donothing", catId: "exhausted", label: "아무것도 하기 싫음",
+      mild: { en: "I just want to lie down and do nothing.", ko: "그냥 누워서 아무것도 안 하고 싶다는 뜻이에요.", tip: "가장 솔직한 소망을 말할 때." },
+      spicy: { en: "Screw it, I'm done for today.", ko: "됐고, 오늘은 여기까지라는 뜻이에요.", tip: "단호하게 하루를 마무리할 때." } },
+    { id: "s-sleepless", catId: "exhausted", label: "잠을 못 잠",
+      mild: { en: "I barely slept last night.", ko: "어젯밤 거의 못 잤다는 뜻이에요.", tip: "수면 부족에 대한 담담한 표현." },
+      spicy: { en: "I'm running on zero sleep and I hate it.", ko: "잠을 하나도 못 자서 완전 지쳤다는 뜻이에요.", tip: "수면 부족에 대한 강한 불만." } },
+    { id: "s-neverending", catId: "exhausted", label: "할 일이 안 끝남",
+      mild: { en: "This to-do list never seems to end.", ko: "할 일 목록이 끝나질 않는다는 뜻이에요.", tip: "끝없는 업무량에 대한 지침." },
+      spicy: { en: "This never-ending to-do list is killing me.", ko: "끝없는 할 일 목록 때문에 죽을 것 같다는 뜻이에요.", tip: "업무 과부하에 대한 강한 피로." } }
+  ];
+
+  var valveGrid = document.getElementById('valveGrid');
+  var situationPlaceholder = document.getElementById('situationPlaceholder');
+  var situationActive = document.getElementById('situationActive');
+  var situationContext = document.getElementById('situationContext');
+  var situationChips = document.getElementById('situationChips');
+  var releaseBtn = document.getElementById('releaseBtn');
+  var anotherBtn = document.getElementById('anotherBtn');
+  var speakBtn = document.getElementById('speakBtn');
+  var copyBtn = document.getElementById('copyBtn');
+  var starBtn = document.getElementById('starBtn');
+  var resultEl = document.getElementById('result');
+  var resultTag = document.getElementById('resultTag');
+  var resultEn = document.getElementById('resultEn');
+  var resultKo = document.getElementById('resultKo');
+  var resultTip = document.getElementById('resultTip');
+  var gaugeValue = document.getElementById('gaugeValue');
+  var gaugeNote = document.getElementById('gaugeNote');
+  var gaugeFill = document.getElementById('gaugeFill');
+  var needle = document.getElementById('needle');
+  var noSpeechNote = document.getElementById('noSpeechNote');
+  var intensityToggle = document.getElementById('intensityToggle');
+  var intensityNote = document.getElementById('intensityNote');
+  var favsToggleBtn = document.getElementById('favsToggleBtn');
+  var favsList = document.getElementById('favsList');
+
+  var activeCategoryId = null;
+  var currentPhrase = null;
+  var currentCategory = null;
+  var spicyMode = false;
+
+  // Phase 2 · T6 — 최근 노출 이력(세션 메모리 한정, localStorage 미사용)으로 연속 반복 방지
+  var recentEn = [];
+  var RECENT_MAX = 3;
+
+  var SPICY_KEY = 'pressure-valve-spicy-v1';
+  try {
+    spicyMode = localStorage.getItem(SPICY_KEY) === '1';
+  } catch (e) { spicyMode = false; }
+
+  var FAV_KEY = 'pressure-valve-favorites-v2';
+  function loadFavorites() {
+    try {
+      var raw = localStorage.getItem(FAV_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function persistFavorites(list) {
+    try { localStorage.setItem(FAV_KEY, JSON.stringify(list)); } catch (e) { /* ignore */ }
+  }
+  function saveFavorite(phrase, category) {
+    var favs = loadFavorites();
+    if (!favs.some(function (f) { return f.en === phrase.en; })) {
+      favs.push({ en: phrase.en, ko: phrase.ko, tip: phrase.tip, catLabel: category.label, spicy: spicyMode });
+      persistFavorites(favs);
+    }
+    renderFavorites();
+  }
+  function removeFavorite(en) {
+    var favs = loadFavorites().filter(function (f) { return f.en !== en; });
+    persistFavorites(favs);
+    renderFavorites();
+  }
+  function isFavorite(en) {
+    return loadFavorites().some(function (f) { return f.en === en; });
+  }
+
+  function renderValves() {
+    valveGrid.innerHTML = '';
+    CATEGORIES.forEach(function (cat) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'valve';
+      btn.setAttribute('data-id', cat.id);
+      btn.innerHTML = '<span class="dot"></span>' + cat.label;
+      btn.addEventListener('click', function () {
+        setActiveCategory(cat.id);
+        renderSituationsFor(cat.id);
+        showRandomFrom(cat);
+      });
+      valveGrid.appendChild(btn);
+    });
+  }
+
+  function setActiveCategory(id) {
+    activeCategoryId = id;
+    Array.prototype.forEach.call(valveGrid.children, function (el) {
+      el.classList.toggle('active', el.getAttribute('data-id') === id);
+    });
+  }
+
+  // Phase 5 · 상황 리스트 — 정확한 매칭이 필요할 때 쓰는, 랜덤이 아닌 결정적 선택지
+  var activeSituationId = null;
+
+  function buildChipsRow(items) {
+    var chips = document.createElement('div');
+    chips.className = 'sit-chips';
+    items.forEach(function (situation) {
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'sit-chip';
+      chip.setAttribute('data-id', situation.id);
+      chip.textContent = situation.label;
+      chip.addEventListener('click', function () {
+        selectSituation(situation);
+      });
+      chips.appendChild(chip);
+    });
+    return chips;
+  }
+
+  // Phase 6 · 밸브(1번)에서 고른 카테고리에 맞춰 상황(2번)을 그때그때 필터링 — 중복 표시 제거
+  function renderSituationsFor(catId) {
+    var cat = CATEGORIES.filter(function (c) { return c.id === catId; })[0];
+    if (!cat) return;
+    var items = SITUATIONS.filter(function (s) { return s.catId === catId; });
+    situationPlaceholder.hidden = true;
+    situationActive.hidden = items.length === 0;
+    situationContext.textContent = cat.label + ' 상황 고르기';
+    situationChips.innerHTML = '';
+    activeSituationId = null;
+    if (!items.length) return;
+
+    var hasSub = items.some(function (s) { return !!s.sub; });
+    if (!hasSub) {
+      situationChips.appendChild(buildChipsRow(items));
+    } else {
+      var subOrder = [];
+      var subMap = {};
+      items.forEach(function (s) {
+        var key = s.sub || '';
+        if (!subMap[key]) { subMap[key] = []; subOrder.push(key); }
+        subMap[key].push(s);
+      });
+      subOrder.forEach(function (key) {
+        var sub = document.createElement('div');
+        sub.className = 'sit-subgroup';
+        if (key) {
+          var subLabel = document.createElement('p');
+          subLabel.className = 'sit-subgroup-label';
+          subLabel.textContent = key;
+          sub.appendChild(subLabel);
+        }
+        sub.appendChild(buildChipsRow(subMap[key]));
+        situationChips.appendChild(sub);
+      });
+    }
+  }
+
+  function markActiveSituation(id) {
+    activeSituationId = id;
+    Array.prototype.forEach.call(situationChips.querySelectorAll('.sit-chip'), function (el) {
+      el.classList.toggle('active', el.getAttribute('data-id') === id);
+    });
+  }
+
+  function selectSituation(situation) {
+    var cat = CATEGORIES.filter(function (c) { return c.id === situation.catId; })[0];
+    if (!cat) return;
+    var phrase = spicyMode ? situation.spicy : situation.mild;
+    if (!phrase) phrase = situation.mild;
+    setActiveCategory(cat.id);
+    markActiveSituation(situation.id);
+    showPhrase(cat, phrase, spicyMode);
+    var cap = Math.max(1, Math.min(RECENT_MAX, (phrasesFor(cat).length || 1) - 1));
+    recentEn.push(phrase.en);
+    while (recentEn.length > cap) recentEn.shift();
+  }
+
+  function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function phrasesFor(category) {
+    var list = spicyMode ? category.spicy : category.mild;
+    if (list && list.length) return list;
+    return (category.mild && category.mild.length) ? category.mild : [];
+  }
+
+  // Phase 2 · T6 — 목록이 충분히 크면 최근 본 문구를 제외하고 뽑는다
+  function pickFresh(list) {
+    if (!list || !list.length) return null;
+    if (list.length <= 1) return list[0];
+    var candidates = list.filter(function (p) { return recentEn.indexOf(p.en) === -1; });
+    var pool = candidates.length ? candidates : list;
+    var choice = pool[Math.floor(Math.random() * pool.length)];
+    var cap = Math.max(1, Math.min(RECENT_MAX, list.length - 1));
+    recentEn.push(choice.en);
+    while (recentEn.length > cap) recentEn.shift();
+    return choice;
+  }
+
+  function updateGauge(released) {
+    if (released) {
+      gaugeValue.innerHTML = '38<span>%</span>';
+      gaugeNote.textContent = '조금 빠졌어요. 계속 눌러서 더 빼내도 돼요.';
+      needle.style.transform = 'rotate(-10deg)';
+      gaugeFill.style.strokeDashoffset = '110';
+    } else {
+      gaugeValue.innerHTML = '72<span>%</span>';
+      gaugeNote.textContent = '밸브를 열 때예요. 아래에서 표현을 골라보세요.';
+      needle.style.transform = 'rotate(45deg)';
+      gaugeFill.style.strokeDashoffset = '40';
+    }
+  }
+
+  function showPhrase(category, phrase, isSpicy) {
+    currentPhrase = phrase;
+    currentCategory = category;
+    resultTag.textContent = (isSpicy ? '🌶️ ' : '') + category.label;
+    resultTag.classList.toggle('spicy', !!isSpicy);
+    resultEn.textContent = '“' + phrase.en + '”';
+    resultKo.textContent = phrase.ko;
+    resultTip.textContent = phrase.tip;
+    resultEl.classList.add('show');
+    updateStarButton();
+    updateGauge(true);
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function showRandomFrom(category) {
+    var phrase = pickFresh(phrasesFor(category));
+    if (!phrase) return;
+    showPhrase(category, phrase, spicyMode);
+  }
+
+  function updateStarButton() {
+    if (!currentPhrase) return;
+    var fav = isFavorite(currentPhrase.en);
+    starBtn.textContent = fav ? '★' : '☆';
+    starBtn.classList.toggle('starred', fav);
+    starBtn.setAttribute('aria-label', fav ? '즐겨찾기 해제' : '즐겨찾기 추가');
+  }
+
+  function renderFavorites() {
+    var favs = loadFavorites();
+    if (!favs.length) {
+      favsList.innerHTML = '<p class="favs-empty">아직 즐겨찾기한 표현이 없어요. 결과 카드의 ☆를 눌러 저장해보세요.</p>';
+      return;
+    }
+    favsList.innerHTML = '';
+    favs.slice().reverse().forEach(function (f) {
+      var row = document.createElement('div');
+      row.className = 'fav-row';
+
+      var enSpan = document.createElement('span');
+      enSpan.className = 'fav-en';
+      enSpan.textContent = f.en;
+      row.appendChild(enSpan);
+
+      var catSpan = document.createElement('span');
+      catSpan.className = 'fav-cat';
+      catSpan.textContent = (f.spicy ? '🌶️ ' : '') + f.catLabel;
+      row.appendChild(catSpan);
+
+      var viewBtn = document.createElement('button');
+      viewBtn.type = 'button';
+      viewBtn.className = 'fav-btn';
+      viewBtn.textContent = '보기';
+      viewBtn.addEventListener('click', function () {
+        var realCat = CATEGORIES.filter(function (c) { return c.label === f.catLabel; })[0] || { label: f.catLabel };
+        showPhrase(realCat, { en: f.en, ko: f.ko, tip: f.tip }, f.spicy);
+      });
+      row.appendChild(viewBtn);
+
+      var delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'fav-btn';
+      delBtn.textContent = '삭제';
+      delBtn.addEventListener('click', function () {
+        removeFavorite(f.en);
+        if (currentPhrase && currentPhrase.en === f.en) updateStarButton();
+      });
+      row.appendChild(delBtn);
+
+      favsList.appendChild(row);
+    });
+  }
+
+  releaseBtn.addEventListener('click', function () {
+    var cat = activeCategoryId
+      ? CATEGORIES.filter(function (c) { return c.id === activeCategoryId; })[0]
+      : pickRandom(CATEGORIES);
+    if (!activeCategoryId) setActiveCategory(cat.id);
+    showRandomFrom(cat);
+  });
+
+  anotherBtn.addEventListener('click', function () {
+    // 상황 칩을 고른 뒤 "다른 표현"을 눌러도 방금 고른 칩 표시가 사라지지 않도록 유지
+    // (예전엔 여기서 markActiveSituation(null)을 호출해 매번 선택 해제됐음 — 사용자 피드백으로 제거)
+    if (currentCategory) showRandomFrom(currentCategory);
+  });
+
+  starBtn.addEventListener('click', function () {
+    if (!currentPhrase || !currentCategory) return;
+    if (isFavorite(currentPhrase.en)) {
+      removeFavorite(currentPhrase.en);
+    } else {
+      saveFavorite(currentPhrase, currentCategory);
+    }
+    updateStarButton();
+  });
+
+  // Phase 2 · T7 — 클립보드 복사 (navigator.clipboard 우선, 미지원 시 execCommand fallback)
+  function fallbackCopy(text, cb) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (cb) cb();
+    } catch (e) { /* ignore */ }
+  }
+
+  copyBtn.addEventListener('click', function () {
+    if (!currentPhrase) return;
+    var text = currentPhrase.en;
+    var showCopied = function () {
+      copyBtn.textContent = '✅';
+      copyBtn.classList.add('copied');
+      copyBtn.setAttribute('aria-label', '복사됨');
+      setTimeout(function () {
+        copyBtn.textContent = '📋';
+        copyBtn.classList.remove('copied');
+        copyBtn.setAttribute('aria-label', '문구 복사하기');
+      }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(showCopied, function () { fallbackCopy(text, showCopied); });
+    } else {
+      fallbackCopy(text, showCopied);
+    }
+  });
+
+  favsToggleBtn.addEventListener('click', function () {
+    var hidden = favsList.hidden;
+    favsList.hidden = !hidden;
+    favsToggleBtn.textContent = hidden ? '⭐ 즐겨찾기 숨기기' : '⭐ 즐겨찾기 보기';
+    if (hidden) renderFavorites();
+  });
+
+  intensityToggle.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-mode]');
+    if (!btn) return;
+    spicyMode = btn.getAttribute('data-mode') === 'spicy';
+    try { localStorage.setItem(SPICY_KEY, spicyMode ? '1' : '0'); } catch (err) { /* ignore */ }
+    Array.prototype.forEach.call(intensityToggle.children, function (b) {
+      b.classList.toggle('active', b === btn);
+    });
+    intensityNote.textContent = spicyMode
+      ? '매운맛 — 진짜 육두문자 포함이에요. 편한 사이·혼잣말용으로만 살살 쓰기.'
+      : '순한맛 — 육두문자 없이, 그래도 시원한 표현들이에요.';
+    if (currentCategory) showRandomFrom(currentCategory);
+  });
+
+  var speechOk = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+  if (!speechOk) {
+    speakBtn.hidden = true;
+    noSpeechNote.hidden = false;
+  } else {
+    // 세션 스코프에 유지되는 참조 — 일부 구형 WebKit(iOS Safari)에서 발화 도중
+    // utterance가 지역 스코프를 벗어나면 조기 GC되어 소리가 안 나는 경우가 있어 방지
+    var pendingUtterance = null;
+    var speakRetryTimer = null;
+
+    // 안드로이드 Chrome·삼성 인터넷 등 다수 브라우저는 페이지 로드 직후
+    // getVoices()를 호출하면 빈 배열을 반환하고, 목소리 목록이 비동기로 준비된 뒤
+    // 'voiceschanged' 이벤트가 뜬다. 클릭 시점에만 조회하면 이 타이밍을 놓쳐
+    // (영어 목소리가 실제로 있어도) 못 찾고 기본 목소리로 새는 경우가 흔하다 —
+    // 그래서 로드 시점부터 미리 캐시해두고, 이벤트로 갱신한다.
+    var cachedVoices = [];
+    function refreshVoiceCache() {
+      try { cachedVoices = window.speechSynthesis.getVoices() || []; } catch (e) { cachedVoices = []; }
+    }
+    refreshVoiceCache();
+    if ('onvoiceschanged' in window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = refreshVoiceCache;
+    }
+
+    function pickEnglishVoice() {
+      try {
+        var voices = cachedVoices.length ? cachedVoices : (window.speechSynthesis.getVoices() || []);
+        var enVoices = voices.filter(function (v) { return /^en/i.test(v.lang); });
+        var us = enVoices.filter(function (v) { return /en-US/i.test(v.lang); });
+        return us[0] || enVoices[0] || null;
+      } catch (e) { return null; }
+    }
+
+    function flashSpeakError() {
+      speakBtn.classList.add('speak-error');
+      var prevLabel = speakBtn.getAttribute('aria-label');
+      speakBtn.setAttribute('aria-label', '재생 실패, 다시 눌러보세요');
+      setTimeout(function () {
+        speakBtn.classList.remove('speak-error');
+        speakBtn.setAttribute('aria-label', prevLabel || '영어로 들어보기');
+      }, 1500);
+    }
+
+    function doSpeak(text) {
+      var utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'en-US';
+      utter.rate = 0.95;
+      utter.volume = 1;
+      utter.pitch = 1;
+      var voice = pickEnglishVoice();
+      if (voice) utter.voice = voice;
+      utter.onerror = flashSpeakError;
+      pendingUtterance = utter;
+      // 크롬 계열 브라우저에서 speechSynthesis 큐가 'paused' 상태로 멈춰
+      // speak()을 불러도 조용히 아무 일도 안 일어나는 알려진 버그가 있어,
+      // 매번 발화 전에 resume()을 먼저 불러 방어한다(정상 상태면 아무 효과 없음).
+      try { window.speechSynthesis.resume(); } catch (e) { /* ignore */ }
+      window.speechSynthesis.speak(utter);
+    }
+
+    speakBtn.addEventListener('click', function () {
+      if (!currentPhrase) return;
+      var text = currentPhrase.en;
+      try {
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+          window.speechSynthesis.cancel();
+          // cancel()은 브라우저에 따라 비동기라, 곧바로 speak()하면 씹히는 경우가 있어
+          // 한 틱 쉬었다가 새로 발화한다
+          clearTimeout(speakRetryTimer);
+          speakRetryTimer = setTimeout(function () { doSpeak(text); }, 60);
+        } else {
+          doSpeak(text);
+        }
+      } catch (e) { flashSpeakError(); }
+    });
+  }
+
+  // init intensity toggle UI to match persisted state
+  Array.prototype.forEach.call(intensityToggle.children, function (b) {
+    b.classList.toggle('active', b.getAttribute('data-mode') === (spicyMode ? 'spicy' : 'mild'));
+  });
+  intensityNote.textContent = spicyMode
+    ? '매운맛 — 진짜 육두문자 포함이에요. 편한 사이·혼잣말용으로만 살살 쓰기.'
+    : '순한맛 — 육두문자 없이, 그래도 시원한 표현들이에요.';
+
+  renderValves();
+  renderFavorites();
+})();
+</script>
