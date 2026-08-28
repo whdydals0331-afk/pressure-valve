@@ -1,4 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pressure Valve</title>
+<meta name="description" content="영어 표현으로 하루의 스트레스를 짧게 배출하는 인터랙티브 벤팅 앱">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#161310">
+<link rel="icon" href="/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pressure Valve">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
@@ -489,6 +502,8 @@
     clip: rect(0,0,0,0); white-space: nowrap; border: 0;
   }
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <p class="eyebrow">Stress Release Valve</p>
@@ -1071,6 +1086,12 @@
   }
 
   releaseBtn.addEventListener('click', function () {
+    // 2번에서 상황 칩을 이미 골라 특정 문장이 떠 있는 상태면, 여기서 또 랜덤으로 덮어쓰지 않는다
+    // (문장을 바꾸고 싶으면 결과 카드의 "다른 표현" 버튼을 쓰면 됨 — 사용자 피드백으로 추가)
+    if (activeSituationId && currentPhrase) {
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
     var cat = activeCategoryId
       ? CATEGORIES.filter(function (c) { return c.id === activeCategoryId; })[0]
       : pickRandom(CATEGORIES);
@@ -1240,3 +1261,14 @@
   renderFavorites();
 })();
 </script>
+
+<script>
+  // PWA · 서비스 워커 등록 (지원 안 하거나 실패해도 앱 본체 동작에는 영향 없음)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/sw.js").catch(function () { /* PWA 기능은 선택사항 — 실패해도 무시 */ });
+    });
+  }
+</script>
+</body>
+</html>
