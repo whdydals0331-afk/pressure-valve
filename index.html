@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Pressure Valve</title>
+<title>영어로 욕해 · Stress Gauge</title>
 <meta name="description" content="영어 표현으로 하루의 스트레스를 짧게 배출하는 인터랙티브 벤팅 앱">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#161310">
@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Pressure Valve">
+<meta name="apple-mobile-web-app-title" content="Stress Gauge">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap');
 
@@ -198,6 +198,58 @@
     margin-top: 6px;
   }
 
+  /* STRESS SLIDER — 게이지 %를 직접 측정값으로 입력 */
+  .gauge-slider-row {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .gauge-slider-label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  #stressSlider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--gauge-track);
+    outline: none;
+    cursor: pointer;
+  }
+  #stressSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--ember);
+    border: 3px solid var(--surface);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+    cursor: pointer;
+  }
+  #stressSlider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--ember);
+    border: 3px solid var(--surface);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+    cursor: pointer;
+  }
+  #stressSlider::-moz-range-track {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--gauge-track);
+  }
+  #stressSlider:focus-visible {
+    outline: 3px solid var(--relief);
+    outline-offset: 3px;
+  }
+
   /* CATEGORY VALVES */
   h2.section-title {
     font-family: 'IBM Plex Mono', monospace;
@@ -327,31 +379,6 @@
     color: var(--ink-soft);
     margin-top: 10px;
   }
-
-  /* RELEASE BUTTON */
-  .release-zone {
-    display: flex;
-    justify-content: center;
-    margin: 8px 0 24px;
-  }
-  #releaseBtn {
-    font-family: 'Big Shoulders Display', sans-serif;
-    font-weight: 800;
-    font-size: 22px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #fff8f2;
-    background: var(--ember);
-    border: none;
-    border-radius: 999px;
-    padding: 18px 46px;
-    cursor: pointer;
-    box-shadow: 0 3px 0 var(--ember-deep);
-    transition: transform .08s ease, box-shadow .08s ease;
-  }
-  #releaseBtn:hover { background: var(--ember-deep); }
-  #releaseBtn:active { transform: translateY(3px); box-shadow: 0 0 0 var(--ember-deep); }
-  #releaseBtn:focus-visible { outline: 3px solid var(--relief); outline-offset: 3px; }
 
   /* RESULT CARD */
   .result {
@@ -506,8 +533,8 @@
 <body>
 
 <div class="wrap">
-  <p class="eyebrow">Stress Release Valve</p>
-  <h1>Pressure Valve</h1>
+  <p class="eyebrow">Vent In English</p>
+  <h1>영어로 욕해 · Stress Gauge</h1>
   <p class="lede">오늘 쌓인 거, 영어로 짧게 내뱉고 시원하게 풀어버리기.</p>
 
   <div class="intensity-row">
@@ -522,15 +549,19 @@
     <div class="gauge-row">
       <svg class="gauge-svg" id="gaugeSvg" viewBox="0 0 130 78" aria-hidden="true">
         <path d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke-width="12" stroke-linecap="round" style="stroke: var(--gauge-track)"></path>
-        <path id="gaugeFill" d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke-width="12" stroke-linecap="round" style="stroke: var(--danger-fill); stroke-dasharray: 173; stroke-dashoffset: 40"></path>
-        <line id="needle" x1="65" y1="70" x2="65" y2="24" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" style="transform-origin: 65px 70px; transform: rotate(45deg); transition: transform .5s cubic-bezier(.3,1.4,.4,1)"></line>
+        <path id="gaugeFill" d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke-width="12" stroke-linecap="round" style="stroke: var(--danger-fill); stroke-dasharray: 173; stroke-dashoffset: 86.5"></path>
+        <line id="needle" x1="65" y1="70" x2="65" y2="24" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" style="transform-origin: 65px 70px; transform: rotate(0deg); transition: transform .5s cubic-bezier(.3,1.4,.4,1)"></line>
         <circle cx="65" cy="70" r="5" fill="var(--ink)"></circle>
       </svg>
       <div class="gauge-readout">
-        <p class="gauge-label">Pressure Level</p>
-        <p class="gauge-value" id="gaugeValue">72<span>%</span></p>
-        <p class="gauge-note" id="gaugeNote">밸브를 열 때예요. 아래에서 표현을 골라보세요.</p>
+        <p class="gauge-label">Stress Level</p>
+        <p class="gauge-value" id="gaugeValue">50<span>%</span></p>
+        <p class="gauge-note" id="gaugeNote">빡침 시작</p>
       </div>
+    </div>
+    <div class="gauge-slider-row">
+      <label for="stressSlider" class="gauge-slider-label">지금 스트레스, 얼마나 쌓였어요?</label>
+      <input type="range" id="stressSlider" min="0" max="100" step="1" value="50" aria-label="스트레스 정도, 0에서 100퍼센트">
     </div>
   </section>
 
@@ -539,16 +570,12 @@
 
   <h2 class="section-title">2 · 정확히 무슨 일이었어요? (선택)</h2>
   <div class="situations" id="situationWrap">
-    <p class="situation-placeholder" id="situationPlaceholder">위에서 밸브를 먼저 하나 골라보세요. 그 카테고리에 딱 맞는 상황이 여기 떠요.</p>
+    <p class="situation-placeholder" id="situationPlaceholder">위에서 카테고리를 먼저 하나 골라보세요. 거기에 딱 맞는 상황이 여기 떠요.</p>
     <div id="situationActive" hidden>
       <p class="situation-context" id="situationContext"></p>
       <div id="situationChips"></div>
     </div>
     <p class="privacy-note">여기서 고르면 그 상황에 딱 맞춰 미리 준비된 표현이 바로 나와요. 이 페이지는 서버로 아무것도 전송하지 않아요.</p>
-  </div>
-
-  <div class="release-zone">
-    <button id="releaseBtn" type="button">Release ↓</button>
   </div>
 
   <section class="result" id="result" aria-live="polite">
@@ -571,7 +598,7 @@
   </div>
 
   <footer>
-    Pressure Valve · 매일 조금씩 새어나가야 터지지 않아요.
+    영어로 욕해 · Stress Gauge · 매일 조금씩 새어나가야 터지지 않아요.
   </footer>
 </div>
 
@@ -812,7 +839,6 @@
   var situationActive = document.getElementById('situationActive');
   var situationContext = document.getElementById('situationContext');
   var situationChips = document.getElementById('situationChips');
-  var releaseBtn = document.getElementById('releaseBtn');
   var anotherBtn = document.getElementById('anotherBtn');
   var speakBtn = document.getElementById('speakBtn');
   var copyBtn = document.getElementById('copyBtn');
@@ -826,6 +852,7 @@
   var gaugeNote = document.getElementById('gaugeNote');
   var gaugeFill = document.getElementById('gaugeFill');
   var needle = document.getElementById('needle');
+  var stressSlider = document.getElementById('stressSlider');
   var noSpeechNote = document.getElementById('noSpeechNote');
   var intensityToggle = document.getElementById('intensityToggle');
   var intensityNote = document.getElementById('intensityNote');
@@ -884,7 +911,12 @@
       btn.addEventListener('click', function () {
         setActiveCategory(cat.id);
         renderSituationsFor(cat.id);
-        showRandomFrom(cat);
+        // 밸브만 눌러서는 바로 문장을 보여주지 않는다 — 2번에서 구체적인 상황을
+        // 골라야 문장이 뜬다 (사용자 피드백: "2번 항목을 선택도 안했는데 바로
+        // 영어문장이 나온다"). 이전 카테고리에서 보고 있던 결과가 있었다면 감춘다.
+        currentPhrase = null;
+        currentCategory = null;
+        resultEl.classList.remove('show');
       });
       valveGrid.appendChild(btn);
     });
@@ -998,18 +1030,32 @@
     return choice;
   }
 
-  function updateGauge(released) {
-    if (released) {
-      gaugeValue.innerHTML = '38<span>%</span>';
-      gaugeNote.textContent = '조금 빠졌어요. 계속 눌러서 더 빼내도 돼요.';
-      needle.style.transform = 'rotate(-10deg)';
-      gaugeFill.style.strokeDashoffset = '110';
-    } else {
-      gaugeValue.innerHTML = '72<span>%</span>';
-      gaugeNote.textContent = '밸브를 열 때예요. 아래에서 표현을 골라보세요.';
-      needle.style.transform = 'rotate(45deg)';
-      gaugeFill.style.strokeDashoffset = '40';
-    }
+  // Phase 7 · 게이지 %를 실제 자가진단 측정값으로 — 슬라이더로 직접 입력받고
+  // 10개 구간으로 나눠 단계 이름을 보여준다. 순한맛/매운맛 콘텐츠를 구간마다
+  // 새로 만드는 대신, 기존 순한맛/매운맛 토글에 자동으로 값만 추천해준다.
+  var STAGE_LABELS = [
+    '여유 있음', '살짝 신경쓰임', '조금 쌓임', '슬슬 답답함', '꽤 쌓였음',
+    '빡침 시작', '많이 빡침', '터지기 직전', '위험 수위', '폭발 직전'
+  ];
+  function stageLabel(pct) {
+    var idx = Math.min(9, Math.max(0, Math.floor(pct / 10)));
+    return STAGE_LABELS[idx];
+  }
+  var SPICY_SUGGEST_THRESHOLD = 60;
+  var userSetIntensity = false; // 사용자가 순한맛/매운맛을 직접 누르면 true — 이후 슬라이더가 더 이상 자동으로 안 바꿈
+  var stressLevel = 50;
+  function renderGauge(pct) {
+    pct = Math.max(0, Math.min(100, Math.round(pct)));
+    stressLevel = pct;
+    gaugeValue.innerHTML = pct + '<span>%</span>';
+    gaugeNote.textContent = stageLabel(pct);
+    needle.style.transform = 'rotate(' + (-90 + (pct / 100) * 180) + 'deg)';
+    gaugeFill.style.strokeDashoffset = String(173 * (1 - pct / 100));
+    if (stressSlider) stressSlider.value = pct;
+  }
+  function applyIntensitySuggestion(pct) {
+    if (userSetIntensity) return;
+    setSpicyMode(pct >= SPICY_SUGGEST_THRESHOLD, false);
   }
 
   function showPhrase(category, phrase, isSpicy) {
@@ -1022,7 +1068,7 @@
     resultTip.textContent = phrase.tip;
     resultEl.classList.add('show');
     updateStarButton();
-    updateGauge(true);
+    renderGauge(stressLevel - 15); // 표현을 하나 꺼내볼 때마다 게이지가 조금씩 빠짐
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -1085,20 +1131,6 @@
     });
   }
 
-  releaseBtn.addEventListener('click', function () {
-    // 2번에서 상황 칩을 이미 골라 특정 문장이 떠 있는 상태면, 여기서 또 랜덤으로 덮어쓰지 않는다
-    // (문장을 바꾸고 싶으면 결과 카드의 "다른 표현" 버튼을 쓰면 됨 — 사용자 피드백으로 추가)
-    if (activeSituationId && currentPhrase) {
-      resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      return;
-    }
-    var cat = activeCategoryId
-      ? CATEGORIES.filter(function (c) { return c.id === activeCategoryId; })[0]
-      : pickRandom(CATEGORIES);
-    if (!activeCategoryId) setActiveCategory(cat.id);
-    showRandomFrom(cat);
-  });
-
   anotherBtn.addEventListener('click', function () {
     // 상황 칩을 고른 뒤 "다른 표현"을 눌러도 방금 고른 칩 표시가 사라지지 않도록 유지
     // (예전엔 여기서 markActiveSituation(null)을 호출해 매번 선택 해제됐음 — 사용자 피드백으로 제거)
@@ -1158,19 +1190,33 @@
     if (hidden) renderFavorites();
   });
 
-  intensityToggle.addEventListener('click', function (e) {
-    var btn = e.target.closest('button[data-mode]');
-    if (!btn) return;
-    spicyMode = btn.getAttribute('data-mode') === 'spicy';
-    try { localStorage.setItem(SPICY_KEY, spicyMode ? '1' : '0'); } catch (err) { /* ignore */ }
+  function setSpicyMode(value, save) {
+    spicyMode = value;
+    if (save) {
+      try { localStorage.setItem(SPICY_KEY, spicyMode ? '1' : '0'); } catch (err) { /* ignore */ }
+    }
     Array.prototype.forEach.call(intensityToggle.children, function (b) {
-      b.classList.toggle('active', b === btn);
+      b.classList.toggle('active', b.getAttribute('data-mode') === (spicyMode ? 'spicy' : 'mild'));
     });
     intensityNote.textContent = spicyMode
       ? '매운맛 — 진짜 육두문자 포함이에요. 편한 사이·혼잣말용으로만 살살 쓰기.'
       : '순한맛 — 육두문자 없이, 그래도 시원한 표현들이에요.';
+  }
+
+  intensityToggle.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-mode]');
+    if (!btn) return;
+    userSetIntensity = true; // 직접 고른 뒤에는 슬라이더가 더 이상 자동으로 바꾸지 않는다
+    setSpicyMode(btn.getAttribute('data-mode') === 'spicy', true);
     if (currentCategory) showRandomFrom(currentCategory);
   });
+
+  if (stressSlider) {
+    stressSlider.addEventListener('input', function () {
+      renderGauge(parseInt(stressSlider.value, 10));
+      applyIntensitySuggestion(stressLevel);
+    });
+  }
 
   var speechOk = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
   if (!speechOk) {
@@ -1249,13 +1295,9 @@
     });
   }
 
-  // init intensity toggle UI to match persisted state
-  Array.prototype.forEach.call(intensityToggle.children, function (b) {
-    b.classList.toggle('active', b.getAttribute('data-mode') === (spicyMode ? 'spicy' : 'mild'));
-  });
-  intensityNote.textContent = spicyMode
-    ? '매운맛 — 진짜 육두문자 포함이에요. 편한 사이·혼잣말용으로만 살살 쓰기.'
-    : '순한맛 — 육두문자 없이, 그래도 시원한 표현들이에요.';
+  // init — 저장된 순한맛/매운맛 상태와 게이지 초기값을 화면에 반영
+  setSpicyMode(spicyMode, false);
+  renderGauge(stressLevel);
 
   renderValves();
   renderFavorites();
