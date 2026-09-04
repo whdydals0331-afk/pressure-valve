@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>영어로 욕해 · Stress Gauge</title>
 <meta name="description" content="영어 표현으로 하루의 스트레스를 짧게 배출하는 인터랙티브 벤팅 앱">
+<meta property="og:type" content="website">
+<meta property="og:title" content="영어로 욕해 · Stress Gauge">
+<meta property="og:description" content="영어 표현으로 하루의 스트레스를 짧게 배출하는 인터랙티브 벤팅 앱">
+<meta property="og:image" content="/icon-512.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="영어로 욕해 · Stress Gauge">
+<meta name="twitter:description" content="영어 표현으로 하루의 스트레스를 짧게 배출하는 인터랙티브 벤팅 앱">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#161310">
 <link rel="icon" href="/icon-192.png" type="image/png">
@@ -80,7 +87,7 @@
   .wrap {
     max-width: 640px;
     margin: 0 auto;
-    padding: 28px 18px 60px;
+    padding: calc(28px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(60px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
   }
 
   .eyebrow {
@@ -89,7 +96,7 @@
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--ember);
+    color: var(--ember-deep);
     display: flex;
     align-items: center;
     gap: 8px;
@@ -249,6 +256,11 @@
     outline: 3px solid var(--relief);
     outline-offset: 3px;
   }
+  .gauge-slider-hint {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin: 8px 0 0;
+  }
 
   /* CATEGORY VALVES */
   h2.section-title {
@@ -380,6 +392,70 @@
     margin-top: 10px;
   }
 
+  /* AI VENT · Phase 11 — 고정 메뉴에 안 맞을 때 쓰는 opt-in 자유 입력 (프로토타입) */
+  .ai-vent { margin: 4px 0 22px; }
+  .ai-vent-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    padding: 11px 14px;
+    cursor: pointer;
+  }
+  .ai-vent-toggle:hover { border-color: var(--ember); }
+  .ai-vent-toggle:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .ai-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background: var(--ember-tint);
+    color: var(--ember-deep);
+    border-radius: 999px;
+    padding: 2px 8px;
+  }
+  .ai-vent-panel {
+    margin-top: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .ai-vent-note {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin: 0 0 10px;
+  }
+  .ai-vent-input {
+    width: 100%;
+    min-height: 68px;
+    resize: vertical;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+  }
+  .ai-vent-input:focus-visible { outline: 2px solid var(--ember); outline-offset: 1px; }
+  .ai-vent-status {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 10px 0 0;
+  }
+  .ai-vent-status.error { color: var(--ember-deep); }
+
   /* RESULT CARD */
   .result {
     background: var(--surface);
@@ -435,6 +511,32 @@
     padding-left: 12px;
     border-left: 2px solid var(--line);
   }
+  .speak-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 13px 16px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--relief);
+    background: var(--relief);
+    color: #fff;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 14.5px;
+    cursor: pointer;
+  }
+  .speak-cta-icon { font-size: 18px; }
+  .speak-cta:hover { filter: brightness(0.93); }
+  .speak-cta:focus-visible { outline: 2px solid var(--relief); outline-offset: 2px; }
+  .speak-cta.playing { animation: speakPulse 1s ease-in-out infinite; }
+  @keyframes speakPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.015); } }
+  @media (prefers-reduced-motion: reduce) { .speak-cta.playing { animation: none; } }
+  .speak-cta.speak-error { background: var(--ember-deep); border-color: var(--ember-deep); animation: shake .3s ease; }
+  @media (prefers-reduced-motion: reduce) { .speak-cta.speak-error { animation: none; } }
+
   .result-actions {
     display: flex;
     gap: 8px;
@@ -442,11 +544,11 @@
     align-items: center;
   }
   button.icon-btn {
-    font-size: 15px;
+    font-size: 16px;
     background: var(--surface-2);
     border: 1px solid var(--line);
     border-radius: 999px;
-    width: 36px; height: 36px;
+    width: 44px; height: 44px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -456,14 +558,14 @@
   button.icon-btn:hover { border-color: var(--ember); }
   button.icon-btn.starred { color: var(--ember); border-color: var(--ember); background: var(--ember-tint); }
   button.icon-btn.copied { color: var(--relief); border-color: var(--relief); background: var(--relief-tint); }
-  button.icon-btn.speak-error { color: var(--ember-deep); border-color: var(--ember-deep); background: var(--ember-tint); animation: shake .3s ease; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-2px)} 75%{transform:translateX(2px)} }
-  @media (prefers-reduced-motion: reduce) { button.icon-btn.speak-error { animation: none; } }
   button.icon-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 
   .no-speech-note {
+    display: block;
     font-size: 11.5px;
     color: var(--ink-soft);
+    margin-bottom: 10px;
   }
 
   /* FAVORITES */
@@ -563,6 +665,7 @@
     <div class="gauge-slider-row">
       <label for="stressSlider" class="gauge-slider-label">지금 스트레스, 얼마나 쌓였어요?</label>
       <input type="range" id="stressSlider" min="0" max="100" step="1" value="50" aria-label="스트레스 정도, 0에서 100퍼센트">
+      <p class="gauge-slider-hint" id="gaugeSliderHint"></p>
     </div>
   </section>
 
@@ -579,17 +682,32 @@
     <p class="privacy-note">여기서 고르면 그 상황에 딱 맞춰 미리 준비된 표현이 바로 나와요. 이 페이지는 서버로 아무것도 전송하지 않아요.</p>
   </div>
 
+  <section class="ai-vent" id="aiVent">
+    <button type="button" class="ai-vent-toggle" id="aiVentToggle" aria-expanded="false" aria-controls="aiVentPanel">
+      ✍️ 내 말로 직접 써보기 <span class="ai-badge">AI · 프로토타입</span>
+    </button>
+    <div class="ai-vent-panel" id="aiVentPanel" hidden>
+      <p class="ai-vent-note">정해진 상황에 안 맞아도 괜찮아요 — 있는 그대로 적으면 AI가 맞춰서 문구를 만들어줘요. 이 기능을 쓸 때만 입력한 내용이 외부 AI 서버로 전송돼요.</p>
+      <textarea class="ai-vent-input" id="aiVentInput" maxlength="300" rows="3" placeholder="예: 팀장이 또 나만 시키고 생색은 지가 다 냄"></textarea>
+      <button type="button" class="pill primary" id="aiVentSubmit">문구 만들기</button>
+      <p class="ai-vent-status" id="aiVentStatus" hidden></p>
+    </div>
+  </section>
+
   <section class="result" id="result" aria-live="polite">
     <span class="result-tag" id="resultTag">Work &amp; Deadlines</span>
-    <p class="result-en" id="resultEn">"I am so done with today."</p>
+    <p class="result-en" id="resultEn" lang="en">"I am so done with today."</p>
     <p class="result-ko" id="resultKo">오늘 진짜 지쳤다, 끝났다는 뜻이에요.</p>
     <p class="result-tip" id="resultTip">퇴근길에 혼잣말처럼 던지기 좋은 톤이에요.</p>
+    <button class="speak-cta" id="speakBtn" type="button" aria-label="영어로 들어보기">
+      <span class="speak-cta-icon" aria-hidden="true">🔊</span>
+      <span class="speak-cta-label" id="speakCtaLabel">영어로 들어보기</span>
+    </button>
+    <span class="no-speech-note" id="noSpeechNote" hidden>이 브라우저는 음성 재생을 지원하지 않아요.</span>
     <div class="result-actions">
-      <button class="icon-btn" id="speakBtn" type="button" title="영어로 들어보기" aria-label="영어로 들어보기">🔊</button>
       <button class="icon-btn" id="copyBtn" type="button" title="문구 복사하기" aria-label="문구 복사하기">📋</button>
       <button class="icon-btn" id="starBtn" type="button" title="즐겨찾기" aria-label="즐겨찾기">☆</button>
       <button class="pill" id="anotherBtn" type="button">다른 표현</button>
-      <span class="no-speech-note" id="noSpeechNote" hidden>이 브라우저는 음성 재생을 지원하지 않아요.</span>
     </div>
   </section>
 
@@ -630,10 +748,10 @@
       spicy: [
         { en: "This is such bullshit.", ko: "이건 진짜 개소리(말도 안 됨)라는 뜻이에요.", tip: "친한 동료끼리 혼잣말이나 메신저용. 상사 앞에서는 절대 금지." },
         { en: "I'm so fucking done with this.", ko: "나 이거 진짜 존나 지쳤다는 뜻이에요.", tip: "강도가 센 표현이라 아주 편한 사이에서만." },
-        { en: "Screw this deadline.", ko: "이 마감 엿 먹어라, 라는 뜻이에요.", tip: "마감에 대한 분노를 캐주얼하게 던질 때." },
+        { en: "This deadline is bullshit.", ko: "이 마감 진짜 개소리(말도 안 됨)라는 뜻이에요.", tip: "마감 자체를 평가하며 욕하는 방식, 원어민들이 마감에 화날 때 자주 쓰는 패턴이에요." },
         { en: "This job is kicking my ass.", ko: "이 일이 나를 완전히 조지고 있다는 관용구예요.", tip: "업무 강도가 너무 셀 때, 편한 대화에서." },
         { en: "I don't give a shit anymore.", ko: "이제 신경 하나도 안 쓴다(될 대로 되라)는 뜻이에요.", tip: "체념 섞인 포기의 뉘앙스." },
-        { en: "What the hell is going on today?", ko: "오늘 도대체 뭔 일이냐는 뜻이에요.", tip: "hell은 다른 단어보다 순한 편이라 비교적 무난하게 쓸 수 있어요." }
+        { en: "What the fuck is going on today?", ko: "오늘 진짜 대체 뭔 일이냐는 뜻이에요(강한 버전).", tip: "hell보다 훨씬 강한 fuck으로 바꾼 표현, 아주 편한 사이·혼잣말용." }
       ]
     },
     {
@@ -665,9 +783,9 @@
         { en: "Stop stirring shit behind my back.", ko: "뒤에서 이간질(분란 조장)하지 좀 말라는 뜻이에요.", tip: "shit이 들어가 꽤 강한 표현, 편한 사이에서만." },
         { en: "Two-faced people like that piss me off.", ko: "그렇게 앞뒤 다른 사람들 진짜 열받는다는 뜻이에요.", tip: "겉과 속이 다른 사람에 대한 분노." },
         { en: "I'm so pissed off right now.", ko: "나 지금 진짜 열받았다는 뜻이에요.", tip: "화남을 직접적으로, 아주 흔하게 쓰는 표현." },
-        { en: "They can go to hell.", ko: "걔넨 알아서 하라 그래(꺼지라 해)라는 뜻이에요.", tip: "강한 거리두기 표현, 실제 저주는 아니에요." },
+        { en: "They can go fuck themselves.", ko: "걔넨 꺼지라 그래(아주 강한 거리두기 표현)라는 뜻이에요.", tip: "강한 거리두기·분노 표현, 아주 편한 사이·혼잣말용. 실제 저주는 아니에요." },
         { en: "I'm done with their bullshit.", ko: "걔네 헛소리는 이제 끝이라는 뜻이에요.", tip: "반복된 갈등에 완전히 지쳤을 때." },
-        { en: "What a jerk.", ko: "진짜 재수없는 인간이네, 라는 뜻이에요.", tip: "무난하게 자주 쓰는 정도의 표현이에요." },
+        { en: "What a fucking jerk.", ko: "완전 존나 재수없는 인간이라는 뜻이에요.", tip: "jerk 앞에 fucking을 붙여 강도를 확 올린 표현이에요. 아주 편한 사이에서만." },
         { en: "I swear, some people are just assholes.", ko: "진짜, 어떤 사람들은 그냥 개xx라는 뜻이에요.", tip: "강한 표현이라 아주 편한 사이에서만." }
       ]
     },
@@ -694,11 +812,11 @@
       ],
       spicy: [
         { en: "Oh, for fuck's sake.", ko: "아 진짜 미치겠다는 뜻이에요.", tip: "만능 짜증 감탄사, 아주 흔하게 씁니다." },
-        { en: "This is such crap.", ko: "이거 완전 별로다(쓰레기 같다)는 뜻이에요.", tip: "상황이나 물건에 대한 짜증." },
-        { en: "Damn it, not again.", ko: "젠장, 또야, 라는 뜻이에요.", tip: "반복되는 불운에 대한 흔한 반응." },
+        { en: "This is such fucking bullshit.", ko: "이거 완전 개소리(말도 안 됨)라는 뜻이에요.", tip: "crap보다 훨씬 강한 fucking bullshit으로 바꾼 표현이에요." },
+        { en: "Fuck, not again.", ko: "아씨, 또야, 라는 뜻이에요(강한 버전).", tip: "damn it보다 강한 fuck으로, 반복되는 불운에 대한 강한 반응이에요." },
         { en: "What the fuck.", ko: "뭐야 진짜(황당함)라는 뜻이에요.", tip: "아주 강한 감탄사라 상황 가려서." },
         { en: "This is bullshit.", ko: "이거 말도 안 된다는 뜻이에요.", tip: "상황 자체가 부당하다고 느낄 때." },
-        { en: "Screw this.", ko: "에라 모르겠다, 됐다는 뜻이에요.", tip: "그냥 포기하고 싶을 때 짧게." }
+        { en: "Fuck this.", ko: "됐다, 진짜 존나 못 하겠다는 뜻이에요.", tip: "screw보다 강한 fuck this, 아주 흔하게 쓰는 포기 선언이에요." }
       ]
     },
     {
@@ -723,12 +841,12 @@
         { en: "Damn it, I should've caught that.", ko: "젠장, 그걸 알아챘어야 했는데, 라는 뜻이에요.", tip: "놓친 실수에 대한 후회를 담은 표현이에요." }
       ],
       spicy: [
-        { en: "God, I'm such an idiot.", ko: "아 나 진짜 바보 같다는 뜻이에요.", tip: "자기 자신에게, 가볍게 넘기는 톤으로." },
+        { en: "God, I'm such a fucking idiot.", ko: "아 나 진짜 존나 바보 같다는 뜻이에요.", tip: "자책을 강하게, 그래도 웃프게 넘기는 톤으로. 편한 사이·혼잣말용." },
         { en: "I really fucked that up.", ko: "나 그거 완전 망쳤다는 뜻이에요.", tip: "실수를 강하게 인정할 때." },
         { en: "Shit, I can't believe I did that.", ko: "아 씨, 내가 그걸 했다니, 라는 뜻이에요.", tip: "놀람과 후회가 섞인 반응." },
         { en: "Well, that was a shitshow.", ko: "아주 개판이었다(그 상황)는 뜻이에요.", tip: "상황 전체를 유머러스하게 자책할 때." },
-        { en: "Damn it, I should've known better.", ko: "젠장, 알았어야 했는데, 라는 뜻이에요.", tip: "후회 섞인 자책의 표현." },
-        { en: "I'm kicking myself for that.", ko: "그것 때문에 스스로를 자책하고 있다는 뜻이에요.", tip: "혼잣말로 자연스럽게 쓰는 관용구예요." }
+        { en: "Shit, I should've known better.", ko: "아 씨, 알았어야 했는데, 라는 뜻이에요(강한 버전).", tip: "damn it보다 강한 shit으로 후회를 표현, 특정 실수에 대한 반응이지 자기비하는 아니에요." },
+        { en: "Fuck, I'm still kicking myself for that.", ko: "아씨, 아직도 그것 때문에 존나 자책하고 있다는 뜻이에요.", tip: "혼잣말로 자연스럽게 쓰는 표현에 fuck을 더해 강도를 올렸어요." }
       ]
     },
     {
@@ -754,11 +872,11 @@
       ],
       spicy: [
         { en: "I'm fucking exhausted.", ko: "나 진짜 존나 지쳤다는 뜻이에요.", tip: "피로를 강하게 표현할 때, 편한 사이에서." },
-        { en: "I can't even, today just sucked.", ko: "오늘 진짜 최악이었다(말을 잇지 못할 정도)는 뜻이에요.", tip: "캐주얼한 SNS식 표현." },
+        { en: "I can't even, today was fucking shit.", ko: "말을 잇지 못할 정도로 오늘 진짜 존나 거지 같았다는 뜻이에요.", tip: "sucked보다 강한 fucking shit으로 바꾼, 캐주얼한 SNS식 표현이에요." },
         { en: "Today was a shitty day.", ko: "오늘 진짜 거지 같은 하루였다는 뜻이에요.", tip: "하루 전체를 강하게 평가할 때." },
-        { en: "I'm so over this week.", ko: "이번 주 진짜 지긋지긋하다는 뜻이에요.", tip: "반복된 피로가 쌓였을 때." },
-        { en: "Screw it, I'm done for today.", ko: "됐고, 오늘은 여기까지라는 뜻이에요.", tip: "단호하게 하루를 마무리할 때." },
-        { en: "I'm running on empty, for real.", ko: "진짜로 완전히 방전됐다는 뜻이에요.", tip: "run on empty는 기름 없이 달리는 차에서 온 관용구예요." }
+        { en: "I'm so fucking over this week.", ko: "이번 주 진짜 존나 지긋지긋하다는 뜻이에요.", tip: "반복된 피로가 쌓였을 때, 강하게." },
+        { en: "Fuck it, I'm done for today.", ko: "됐고, 오늘은 진짜 여기까지라는 뜻이에요.", tip: "screw it보다 강한 fuck it, 단호하게 하루를 마무리할 때." },
+        { en: "I'm running on fucking empty.", ko: "완전히 존나 방전됐다는 뜻이에요.", tip: "run on empty(기름 없이 달리는 차) 관용구에 fucking을 더해 강도를 올린 표현이에요." }
       ]
     }
   ];
@@ -768,7 +886,7 @@
     { id: "s-taskdump", catId: "work", label: "상사가 갑자기 일 던짐",
       mild: { en: "This deadline is killing me.", ko: "이 마감 때문에 죽겠다는 과장된 표현이에요.", tip: "실제로 힘들다는 뜻이지 진짜 위협이 아니라, 캐주얼하게 씁니다." },
       medium: { en: "Damn, another thing just got dumped on me.", ko: "젠장, 또 일이 던져졌다는 뜻이에요.", tip: "갑자기 일이 떨어졌을 때 가볍게 욕 섞어서 말할 때." },
-      spicy: { en: "Screw this deadline.", ko: "이 마감 엿 먹어라, 라는 뜻이에요.", tip: "마감에 대한 분노를 캐주얼하게 던질 때." } },
+      spicy: { en: "This deadline is bullshit.", ko: "이 마감 진짜 개소리(말도 안 됨)라는 뜻이에요.", tip: "마감 자체를 평가하며 욕하는 방식, 원어민들이 마감에 화날 때 자주 쓰는 패턴이에요." } },
     { id: "s-lateleave", catId: "work", label: "퇴근 직전에 일 생김",
       mild: { en: "I am so done with today.", ko: "오늘 진짜 지쳤다, 끝났다는 뜻이에요.", tip: "퇴근길에 혼잣말처럼 던지기 좋은 톤이에요." },
       medium: { en: "Damn it, right before I leave?", ko: "젠장, 퇴근 직전에?라는 뜻이에요.", tip: "타이밍이 최악일 때 가볍게 욕을 섞어서." },
@@ -776,7 +894,7 @@
     { id: "s-meeting", catId: "work", label: "회의·보고 스트레스",
       mild: { en: "Can we please just stop for today?", ko: "오늘은 제발 여기까지 하자는 뜻이에요.", tip: "회의나 야근을 끊고 싶을 때." },
       medium: { en: "This meeting is dragging on forever, damn it.", ko: "이 회의 진짜 안 끝난다는 뜻이에요.", tip: "지루하게 늘어지는 회의에 대한 중간 강도 표현이에요." },
-      spicy: { en: "What the hell is going on today?", ko: "오늘 도대체 뭔 일이냐는 뜻이에요.", tip: "hell은 다른 단어보다 순한 편이라 비교적 무난하게 쓸 수 있어요." } },
+      spicy: { en: "What the fuck is going on today?", ko: "오늘 진짜 대체 뭔 일이냐는 뜻이에요(강한 버전).", tip: "hell보다 훨씬 강한 fuck으로 바꾼 표현, 아주 편한 사이·혼잣말용." } },
     { id: "s-overload", catId: "work", label: "일이 한꺼번에 몰림",
       mild: { en: "Why does everything happen at once?", ko: "왜 이렇게 한꺼번에 몰리는 거야, 라는 한탄이에요.", tip: "일이 겹칠 때 자연스럽게 나오는 말." },
       medium: { en: "Everything's piling up and it's driving me crazy.", ko: "다 한꺼번에 쌓여서 미치겠다는 뜻이에요.", tip: "여러 일이 겹쳐서 답답할 때 쓰는 표현이에요." },
@@ -792,19 +910,19 @@
     { id: "s-datingcold", catId: "people", sub: "친구·애인", label: "썸·연애가 애매해짐",
       mild: { en: "I hate mixed signals.", ko: "애매한 신호(썸)가 너무 싫다는 뜻이에요.", tip: "썸 타는 상대가 애매하게 굴 때." },
       medium: { en: "I'm so damn tired of the mixed signals.", ko: "그 애매한 신호 진짜 지친다는 뜻이에요.", tip: "썸 타는 상대의 애매함에 지쳤을 때." },
-      spicy: { en: "Just tell me what the hell you want.", ko: "도대체 뭘 원하는 건지 말해달라는 뜻이에요.", tip: "애매한 태도에 답답할 때, 직접적으로." } },
+      spicy: { en: "Just tell me what the fuck you want.", ko: "도대체 뭘 원하는 건지 말해달라는 뜻이에요(강한 버전).", tip: "hell보다 강한 fuck으로, 애매한 태도에 대한 강한 답답함을 표현할 때." } },
     { id: "s-frienddisappoint", catId: "people", sub: "친구·애인", label: "친구가 실망시킴",
       mild: { en: "I expected more from a friend.", ko: "친구한테는 더 기대했었다는 뜻이에요.", tip: "친구에게 서운함을 느꼈을 때." },
       medium: { en: "Honestly, that was a pretty crappy thing for a friend to do.", ko: "솔직히 친구가 그러는 건 좀 치사했다는 뜻이에요.", tip: "친구에게 서운함을 살짝 세게 표현할 때." },
-      spicy: { en: "Some friend they turned out to be.", ko: "친구라는 게 참 대단하시네(비꼬는 말)라는 뜻이에요.", tip: "친구에게 실망해서 비꼴 때." } },
+      spicy: { en: "Some fucking friend they turned out to be.", ko: "진짜 대단한 친구네, 존나 비꼬는 말이라는 뜻이에요.", tip: "친구에게 완전히 실망해서 강하게 비꼴 때." } },
     { id: "s-hierarchybully", catId: "people", sub: "위계 관계 (직장·학교)", label: "위(상사·선배)가 갑질함",
       mild: { en: "They're pulling rank on me again.", ko: "또 직급·서열을 이용해서 누른다는 뜻이에요.", tip: "상사나 선배가 위계로 누를 때." },
       medium: { en: "They're pulling rank again, and it's damn annoying.", ko: "또 서열로 누르네, 진짜 짜증난다는 뜻이에요.", tip: "위계로 누르는 사람에 대한 중간 강도 반응." },
-      spicy: { en: "They love throwing their weight around.", ko: "자기 힘 있는 걸 과시하며 누르는 걸 좋아한다는 뜻이에요.", tip: "권력을 과시하는 사람에 대한 비꼬는 표현." } },
+      spicy: { en: "They love throwing their fucking weight around.", ko: "지들 힘 있는 거 존나 과시하면서 누르는 걸 좋아한다는 뜻이에요.", tip: "위계 갑질에 대한 강한 비꼼, 편한 사이에서만." } },
     { id: "s-hierarchyfavor", catId: "people", sub: "위계 관계 (직장·학교)", label: "편애당함",
       mild: { en: "They clearly play favorites.", ko: "누가 봐도 편애한다는 뜻이에요.", tip: "상사나 선배가 특정 사람만 챙길 때." },
       medium: { en: "The favoritism is getting kind of ridiculous.", ko: "편애가 좀 심해지고 있다는 뜻이에요.", tip: "노골적인 편애에 대한 살짝 날카로운 반응." },
-      spicy: { en: "It's obvious who the favorite is.", ko: "누가 총애받는지 뻔히 보인다는(비꼬는) 뜻이에요.", tip: "편애가 너무 노골적일 때." } },
+      spicy: { en: "It's so fucking obvious who the favorite is.", ko: "누가 총애받는지 진짜 존나 뻔히 보인다는(비꼬는) 뜻이에요.", tip: "노골적인 편애에 대한 강한 비꼼." } },
     { id: "s-teacherunfair", catId: "people", sub: "선생님·교수님", label: "성적·평가가 부당함",
       mild: { en: "That grade wasn't fair at all.", ko: "그 성적은 전혀 공정하지 않았다는 뜻이에요.", tip: "성적이나 평가가 부당하다고 느낄 때." },
       medium: { en: "That grading was such crap.", ko: "그 채점은 완전 엉망이었다는 뜻이에요.", tip: "부당한 평가에 대한 중간 강도 표현." },
@@ -812,23 +930,23 @@
     { id: "s-teacherharsh", catId: "people", sub: "선생님·교수님", label: "선생님·교수님이 심하게 대함",
       mild: { en: "My professor was way too harsh.", ko: "교수님이 너무 심하게 대했다는 뜻이에요.", tip: "지도교수나 선생님의 태도가 과할 때." },
       medium: { en: "My professor was way too damn harsh today.", ko: "오늘 교수님 진짜 너무 심했다는 뜻이에요.", tip: "강한 질책에 대한 감정을 살짝 세게 표현할 때." },
-      spicy: { en: "My professor was a total nightmare today.", ko: "오늘 교수님 때문에 완전 최악이었다는 뜻이에요.", tip: "강하게 힘들었던 하루를 표현할 때." } },
+      spicy: { en: "My professor was a total fucking nightmare today.", ko: "오늘 교수님 때문에 진짜 존나 최악이었다는 뜻이에요.", tip: "강하게 힘들었던 하루를 표현할 때, 아주 편한 사이·혼잣말용." } },
     { id: "s-familynag", catId: "people", sub: "가족", label: "가족이 잔소리함",
       mild: { en: "I wish my family would stop nagging me.", ko: "가족이 잔소리 좀 그만했으면 좋겠다는 뜻이에요.", tip: "반복되는 잔소리에 지쳤을 때." },
       medium: { en: "I'm so damn sick of the nagging.", ko: "잔소리 진짜 지긋지긋하다는 뜻이에요.", tip: "반복되는 잔소리에 대한 중간 강도 표현." },
-      spicy: { en: "I'm so sick of the nagging.", ko: "잔소리 진짜 지긋지긋하다는 뜻이에요.", tip: "잔소리에 완전히 지쳤을 때." } },
+      spicy: { en: "I'm so fucking sick of the nagging.", ko: "잔소리 진짜 존나 지긋지긋하다는 뜻이에요.", tip: "반복되는 잔소리에 완전히 질렸을 때, 아주 편한 사이·혼잣말용." } },
     { id: "s-familycompare", catId: "people", sub: "가족", label: "가족이 비교함",
       mild: { en: "Stop comparing me to my siblings.", ko: "형제자매랑 그만 비교하라는 뜻이에요.", tip: "가족 간 비교가 힘들 때." },
       medium: { en: "Screw the comparisons, seriously.", ko: "그 비교질 진짜 됐다는 뜻이에요.", tip: "가족 간 비교에 대한 거부 반응." },
-      spicy: { en: "I'm done being compared to everyone in my family.", ko: "가족들이랑 비교당하는 거 이제 지겹다는 뜻이에요.", tip: "가족 비교에 완전히 질렸을 때." } },
+      spicy: { en: "I'm so fucking done being compared to everyone in my family.", ko: "가족들이랑 비교당하는 거 진짜 존나 지겹다는 뜻이에요.", tip: "가족 비교에 완전히 질렸을 때, 강하게." } },
     { id: "s-clientunreasonable", catId: "people", sub: "손님·거래처", label: "무리한 요구를 하는 손님·거래처",
       mild: { en: "That client's request was way too much.", ko: "그 고객의 요구는 너무 과했다는 뜻이에요.", tip: "무리한 요구를 받았을 때 담담하게." },
       medium: { en: "That client's request was kind of ridiculous.", ko: "그 고객 요구는 좀 말이 안 됐다는 뜻이에요.", tip: "무리한 요구에 대한 중간 강도 반응." },
-      spicy: { en: "That customer was being ridiculous.", ko: "그 손님 진짜 말도 안 됐다는 뜻이에요.", tip: "손님의 무리한 태도에 대한 강한 반응." } },
+      spicy: { en: "That customer was being fucking ridiculous.", ko: "그 손님 진짜 존나 말도 안 됐다는 뜻이에요.", tip: "무리한 요구에 대한 강한 반응." } },
     { id: "s-clientrude", catId: "people", sub: "손님·거래처", label: "무례한 손님·거래처 담당자",
       mild: { en: "That person was incredibly rude to me.", ko: "그 사람이 나한테 진짜 무례했다는 뜻이에요.", tip: "고객·거래처 담당자의 무례함에 대한 표현." },
       medium: { en: "That guy was being a real pain.", ko: "그 사람 진짜 골치 아프게 굴었다는 뜻이에요.", tip: "무례한 손님·담당자에 대한 표현." },
-      spicy: { en: "What an entitled jerk.", ko: "완전 특권의식 쩌는 인간이라는 뜻이에요.", tip: "무례하고 특권의식 있는 사람에 대한 강한 표현." } },
+      spicy: { en: "What an entitled fucking jerk.", ko: "완전 존나 특권의식 쩌는 인간이라는 뜻이에요.", tip: "무례하고 특권의식 있는 사람에 대한 강한 표현." } },
     { id: "s-backstab", catId: "people", sub: "기타", label: "뒷담화·이간질 당함",
       mild: { en: "I can't stand two-faced people.", ko: "앞뒤 다른(이중적인) 사람은 정말 못 참겠다는 뜻이에요.", tip: "뒤에서 딴소리하는 상사·동료한테 딱이에요." },
       medium: { en: "Screw people who talk behind your back.", ko: "뒤에서 험담하는 사람들 진짜 됐다는 뜻이에요.", tip: "뒷담화에 대한 중간 강도 거부감." },
@@ -836,7 +954,7 @@
     { id: "s-ghosted", catId: "people", sub: "기타", label: "연락 씹힘·잠수",
       mild: { en: "I hate being left on read.", ko: "읽씹당하는 거 진짜 싫다는 뜻이에요.", tip: "left on read는 '읽고 답 안 함'을 뜻하는 아주 흔한 표현이에요." },
       medium: { en: "Being ghosted like that is just damn rude.", ko: "그렇게 잠수타는 거 진짜 무례하다는 뜻이에요.", tip: "연락 두절에 대한 중간 강도 반응." },
-      spicy: { en: "Ghosting me? Real classy.", ko: "잠수타기? 참 대단하시네(비꼬는 말)라는 뜻이에요.", tip: "ghosting은 갑자기 연락을 끊는 것을 뜻해요." } },
+      spicy: { en: "Ghosting me? Real fucking classy.", ko: "잠수타기? 참 존나 대단하시네(비꼬는 말)라는 뜻이에요.", tip: "ghosting(갑자기 연락 끊기)에 대한 강한 비꼼." } },
     { id: "s-conflict", catId: "people", sub: "기타", label: "싸움·갈등",
       mild: { en: "I don't have the energy for this drama.", ko: "이 갈등 감당할 기운이 없다는 뜻이에요.", tip: "누군가의 감정 소모전에 끼고 싶지 않을 때." },
       medium: { en: "I don't have the energy for this crap.", ko: "이 갈등 감당할 에너지가 없다는 뜻이에요.", tip: "감정 소모전에 지쳤을 때 쓰는 표현이에요." },
@@ -844,23 +962,23 @@
     { id: "s-rude", catId: "people", sub: "기타", label: "무례하게 행동함",
       mild: { en: "That was so unnecessary.", ko: "그거 진짜 불필요했다는 뜻이에요.", tip: "상대의 말이나 행동이 과했을 때." },
       medium: { en: "That was pretty damn rude, not gonna lie.", ko: "그거 진짜 무례했다, 솔직히, 라는 뜻이에요.", tip: "무례한 행동에 대한 솔직한 반응." },
-      spicy: { en: "What a jerk.", ko: "진짜 재수없는 인간이네, 라는 뜻이에요.", tip: "무난하게 자주 쓰는 정도의 표현이에요." } },
+      spicy: { en: "What a fucking jerk.", ko: "완전 존나 재수없는 인간이라는 뜻이에요.", tip: "jerk 앞에 fucking을 붙여 강도를 확 올린 표현이에요. 아주 편한 사이에서만." } },
     { id: "s-flaked", catId: "people", sub: "기타", label: "약속 펑크·노쇼",
       mild: { en: "They just didn't show up.", ko: "그 사람이 그냥 안 나타났다는 뜻이에요.", tip: "약속이 깨졌을 때 담담하게." },
       medium: { en: "They just flaked on me, how messed up is that.", ko: "그냥 약속 펑크냈어, 참 어이없다는 뜻이에요.", tip: "노쇼당한 것에 대한 중간 강도 반응." },
-      spicy: { en: "They straight up stood me up.", ko: "그 사람이 대놓고 바람맞혔다는 뜻이에요.", tip: "노쇼 당한 것에 대한 강한 표현." } },
+      spicy: { en: "They straight up fucking stood me up.", ko: "그 사람이 진짜 존나 대놓고 바람맞혔다는 뜻이에요.", tip: "노쇼당한 것에 대한 강한 표현." } },
     { id: "s-compared", catId: "people", sub: "기타", label: "비교당함·무시당함",
       mild: { en: "I hate being compared to other people.", ko: "다른 사람이랑 비교당하는 게 싫다는 뜻이에요.", tip: "비교당했을 때의 감정을 담담히." },
       medium: { en: "I'm damn tired of being compared to everyone.", ko: "다른 사람이랑 비교당하는 거 진짜 지친다는 뜻이에요.", tip: "비교당하는 것에 대한 중간 강도 피로감." },
-      spicy: { en: "Stop comparing me to everyone else.", ko: "다른 사람이랑 그만 좀 비교하라는 뜻이에요.", tip: "비교질에 대한 직접적인 항의." } },
+      spicy: { en: "Stop comparing me to everyone else, for fuck's sake.", ko: "다른 사람이랑 그만 좀 비교하라고, 제발!이라는 뜻이에요.", tip: "비교질에 대한 강한 항의, for fuck's sake로 강도를 확 올렸어요." } },
     { id: "s-missedbus", catId: "small", label: "버스·지하철 놓침",
       mild: { en: "Ugh, seriously?", ko: "아, 진짜?라는 짧은 탄식이에요.", tip: "가장 만능으로 쓸 수 있는 감탄사." },
       medium: { en: "Damn it, I missed the bus again.", ko: "젠장, 또 버스를 놓쳤다는 뜻이에요.", tip: "일상적인 불운에 대한 중간 강도 반응." },
-      spicy: { en: "Damn it, not again.", ko: "젠장, 또야, 라는 뜻이에요.", tip: "반복되는 불운에 대한 흔한 반응." } },
+      spicy: { en: "Fuck, not again.", ko: "아씨, 또야, 라는 뜻이에요(강한 버전).", tip: "damn it보다 강한 fuck으로, 반복되는 불운에 대한 강한 반응이에요." } },
     { id: "s-waiting", catId: "small", label: "줄서기·기다림",
       mild: { en: "Why is this taking forever?", ko: "이거 왜 이렇게 오래 걸리냐는 뜻이에요.", tip: "줄 서거나 로딩 기다릴 때 딱." },
       medium: { en: "This wait is so damn long.", ko: "이 기다림 진짜 너무 길다는 뜻이에요.", tip: "긴 대기 시간에 대한 짜증을 담아서." },
-      spicy: { en: "Screw this.", ko: "에라 모르겠다, 됐다는 뜻이에요.", tip: "그냥 포기하고 싶을 때 짧게." } },
+      spicy: { en: "Fuck this.", ko: "됐다, 진짜 존나 못 하겠다는 뜻이에요.", tip: "screw보다 강한 fuck this, 아주 흔하게 쓰는 포기 선언이에요." } },
     { id: "s-techfail", catId: "small", label: "인터넷·기기 오류",
       mild: { en: "This is so annoying.", ko: "이거 진짜 짜증난다는 뜻이에요.", tip: "가장 직접적이고 무난한 표현." },
       medium: { en: "This app is being such a pain today.", ko: "이 앱 오늘 진짜 말썽이라는 뜻이에요.", tip: "기기·인터넷 오류에 대한 중간 강도 짜증." },
@@ -872,11 +990,11 @@
     { id: "s-deliveryfail", catId: "small", label: "배달 실수·누락",
       mild: { en: "My order came out wrong again.", ko: "주문이 또 잘못 왔다는 뜻이에요.", tip: "배달 실수에 대한 가벼운 짜증." },
       medium: { en: "This delivery app screwed up again, damn it.", ko: "이 배달 앱이 또 실수했다는 뜻이에요, 젠장.", tip: "반복된 배달 실수에 대한 중간 강도 짜증." },
-      spicy: { en: "This delivery app screwed up my order again.", ko: "이 배달 앱이 또 주문을 망쳤다는 뜻이에요.", tip: "반복된 배달 실수에 대한 강한 짜증." } },
+      spicy: { en: "This delivery app fucking screwed up my order again.", ko: "이 배달 앱이 또 존나 주문을 망쳤다는 뜻이에요.", tip: "반복된 배달 실수에 대한 강한 짜증." } },
     { id: "s-noise", catId: "small", label: "층간소음·시끄러움",
       mild: { en: "The noise upstairs won't stop.", ko: "위층 소음이 멈추질 않는다는 뜻이에요.", tip: "층간소음에 대한 담담한 하소연." },
       medium: { en: "That noise upstairs is damn annoying.", ko: "위층 소음 진짜 짜증난다는 뜻이에요.", tip: "층간소음에 대한 중간 강도 반응." },
-      spicy: { en: "That noise upstairs is driving me insane.", ko: "위층 소음 때문에 미쳐버릴 것 같다는 뜻이에요.", tip: "층간소음이 극심할 때." } },
+      spicy: { en: "That noise upstairs is driving me fucking insane.", ko: "위층 소음 때문에 진짜 존나 미쳐버릴 것 같다는 뜻이에요.", tip: "층간소음이 극심할 때, 강하게." } },
     { id: "s-forgot", catId: "selfblame", label: "중요한 걸 깜빡함",
       mild: { en: "I can't believe I did that.", ko: "내가 그걸 했다니 믿기지가 않는다는 뜻이에요.", tip: "본인 실수에 놀랐을 때." },
       medium: { en: "Damn it, I can't believe I forgot that.", ko: "젠장, 그걸 깜빡했다니 믿기지 않는다는 뜻이에요.", tip: "중요한 걸 놓쳤을 때의 자책을 담아서." },
@@ -888,15 +1006,15 @@
     { id: "s-selfblame", catId: "selfblame", label: "계속 자책하게 됨",
       mild: { en: "Stop beating yourself up.", ko: "자책 그만해, 라는 뜻이에요.", tip: "나 자신에게 하는 말로도 자연스러워요." },
       medium: { en: "Damn it, stop beating yourself up.", ko: "젠장, 자책 좀 그만해라는 뜻이에요.", tip: "스스로에게 하는 중간 강도의 다독임." },
-      spicy: { en: "I'm kicking myself for that.", ko: "그것 때문에 스스로를 자책하고 있다는 뜻이에요.", tip: "혼잣말로 자연스럽게 쓰는 관용구예요." } },
+      spicy: { en: "Fuck, I'm still kicking myself for that.", ko: "아씨, 아직도 그것 때문에 존나 자책하고 있다는 뜻이에요.", tip: "혼잣말로 자연스럽게 쓰는 표현에 fuck을 더해 강도를 올렸어요." } },
     { id: "s-embarrassed", catId: "selfblame", label: "실수로 민폐 끼침",
       mild: { en: "I feel bad for messing that up in front of everyone.", ko: "다들 보는 앞에서 그걸 망쳐서 미안하다는 뜻이에요.", tip: "공개적인 실수에 대한 민망함." },
       medium: { en: "That was kind of embarrassing, not gonna lie.", ko: "그거 좀 민망했다, 솔직히, 라는 뜻이에요.", tip: "공개적인 실수에 대한 솔직한 인정." },
-      spicy: { en: "I can't believe I screwed that up in front of everyone.", ko: "다들 앞에서 그걸 망쳤다는 게 믿기지 않는다는 뜻이에요.", tip: "공개 망신에 대한 강한 자책." } },
+      spicy: { en: "I can't believe I fucking screwed that up in front of everyone.", ko: "다들 앞에서 그걸 존나 망쳤다는 게 믿기지 않는다는 뜻이에요.", tip: "공개 망신에 대한 강한 자책, 실수 자체에 대한 반응으로." } },
     { id: "s-compareself", catId: "selfblame", label: "남과 비교하며 자괴감",
       mild: { en: "I keep comparing myself to everyone else.", ko: "계속 남들이랑 나를 비교하게 된다는 뜻이에요.", tip: "자기 비교로 인한 씁쓸함." },
       medium: { en: "I hate how much I compare myself, honestly.", ko: "솔직히 나 자신을 비교하는 게 너무 싫다는 뜻이에요.", tip: "자기 비교에서 오는 자괴감을 담아서." },
-      spicy: { en: "I hate how much I compare myself to everyone.", ko: "남들이랑 나를 이렇게 비교하는 내가 싫다는 뜻이에요.", tip: "자기혐오에 가까운 자괴감." } },
+      spicy: { en: "This shit, comparing myself to everyone, needs to fucking stop.", ko: "다른 사람이랑 비교하는 이 짓거리 좀 존나 그만해야겠다는 뜻이에요.", tip: "자기 비교 습관 자체를 향한 강한 거부감으로, 자기혐오보다는 습관을 끊고 싶다는 쪽으로 방향을 틀었어요." } },
     { id: "s-drained", catId: "exhausted", label: "하루 종일 지침",
       mild: { en: "I'm completely drained.", ko: "진짜 완전히 지쳤다는 뜻이에요.", tip: "몸도 마음도 바닥났을 때." },
       medium: { en: "Damn, I'm completely drained today.", ko: "아 진짜, 오늘 완전히 지쳤다는 뜻이에요.", tip: "하루 종일 지쳤을 때의 중간 강도 표현." },
@@ -904,19 +1022,19 @@
     { id: "s-burnout", catId: "exhausted", label: "번아웃·의욕없음",
       mild: { en: "I have nothing left today.", ko: "오늘은 남은 에너지가 없다는 뜻이에요.", tip: "하루를 마무리하며 쓰기 좋아요." },
       medium: { en: "I'm so damn burnt out right now.", ko: "나 지금 진짜 번아웃이라는 뜻이에요.", tip: "의욕 없음에 대한 중간 강도 표현." },
-      spicy: { en: "I'm so over this week.", ko: "이번 주 진짜 지긋지긋하다는 뜻이에요.", tip: "반복된 피로가 쌓였을 때." } },
+      spicy: { en: "I'm so fucking over this week.", ko: "이번 주 진짜 존나 지긋지긋하다는 뜻이에요.", tip: "반복된 피로가 쌓였을 때, 강하게." } },
     { id: "s-donothing", catId: "exhausted", label: "아무것도 하기 싫음",
       mild: { en: "I just want to lie down and do nothing.", ko: "그냥 누워서 아무것도 안 하고 싶다는 뜻이에요.", tip: "가장 솔직한 소망을 말할 때." },
       medium: { en: "Screw it, I just want to do nothing.", ko: "됐고, 그냥 아무것도 안 하고 싶다는 뜻이에요.", tip: "무기력함을 솔직하게 표현할 때." },
-      spicy: { en: "Screw it, I'm done for today.", ko: "됐고, 오늘은 여기까지라는 뜻이에요.", tip: "단호하게 하루를 마무리할 때." } },
+      spicy: { en: "Fuck it, I'm done for today.", ko: "됐고, 오늘은 진짜 여기까지라는 뜻이에요.", tip: "screw it보다 강한 fuck it, 단호하게 하루를 마무리할 때." } },
     { id: "s-sleepless", catId: "exhausted", label: "잠을 못 잠",
       mild: { en: "I barely slept last night.", ko: "어젯밤 거의 못 잤다는 뜻이에요.", tip: "수면 부족에 대한 담담한 표현." },
       medium: { en: "I barely slept and it sucks.", ko: "거의 못 자서 진짜 별로라는 뜻이에요.", tip: "수면 부족에 대한 중간 강도 짜증." },
-      spicy: { en: "I'm running on zero sleep and I hate it.", ko: "잠을 하나도 못 자서 완전 지쳤다는 뜻이에요.", tip: "수면 부족에 대한 강한 불만." } },
+      spicy: { en: "I'm running on zero fucking sleep.", ko: "잠을 하나도 못 자서 진짜 존나 힘들다는 뜻이에요.", tip: "수면 부족에 대한 강한 불만, 편한 사이에서만." } },
     { id: "s-neverending", catId: "exhausted", label: "할 일이 안 끝남",
       mild: { en: "This to-do list never seems to end.", ko: "할 일 목록이 끝나질 않는다는 뜻이에요.", tip: "끝없는 업무량에 대한 지침." },
       medium: { en: "This to-do list is driving me damn crazy.", ko: "이 할 일 목록이 진짜 미치게 만든다는 뜻이에요.", tip: "끝없는 업무량에 대한 중간 강도 표현." },
-      spicy: { en: "This never-ending to-do list is killing me.", ko: "끝없는 할 일 목록 때문에 죽을 것 같다는 뜻이에요.", tip: "업무 과부하에 대한 강한 피로." } }
+      spicy: { en: "This never-ending to-do list is fucking killing me.", ko: "끝없는 할 일 목록 때문에 진짜 존나 죽을 것 같다는 뜻이에요.", tip: "업무 과부하에 대한 강한 피로, 혼잣말용." } }
   ];
 
   var valveGrid = document.getElementById('valveGrid');
@@ -926,6 +1044,10 @@
   var situationChips = document.getElementById('situationChips');
   var anotherBtn = document.getElementById('anotherBtn');
   var speakBtn = document.getElementById('speakBtn');
+  var speakCtaLabel = document.getElementById('speakCtaLabel');
+  var SPEAK_LABEL_DEFAULT = '영어로 들어보기';
+  var SPEAK_LABEL_PLAYING = '재생 중…';
+  var SPEAK_LABEL_ERROR = '재생 실패, 다시 눌러보세요';
   var copyBtn = document.getElementById('copyBtn');
   var starBtn = document.getElementById('starBtn');
   var resultEl = document.getElementById('result');
@@ -938,6 +1060,7 @@
   var gaugeFill = document.getElementById('gaugeFill');
   var needle = document.getElementById('needle');
   var stressSlider = document.getElementById('stressSlider');
+  var gaugeSliderHint = document.getElementById('gaugeSliderHint');
   var noSpeechNote = document.getElementById('noSpeechNote');
   var intensityToggle = document.getElementById('intensityToggle');
   var intensityNote = document.getElementById('intensityNote');
@@ -1166,6 +1289,9 @@
   }
 
   function showPhrase(category, phrase, level) {
+    // 버그 수정 — 같은 상황 칩을 반복 클릭하면 매번 똑같은 고정 문구가 다시 뜨는데도
+    // 게이지가 계속 깎였음(새로 "꺼내본" 게 없는데도 감소). 실제로 다른 문구가 떴을 때만 깎이게 함.
+    var isNewPhrase = phrase !== currentPhrase;
     currentPhrase = phrase;
     currentCategory = category;
     resultTag.textContent = intensityIcon(level) + category.label;
@@ -1174,8 +1300,12 @@
     resultKo.textContent = phrase.ko;
     resultTip.textContent = phrase.tip;
     resultEl.classList.add('show');
+    // Phase 11 · AI 자유 입력 문구엔 "다른 표현"을 뽑아올 고정 카테고리 배열이 없어서 숨긴다
+    anotherBtn.hidden = !!category.isAiGenerated;
     updateStarButton();
-    renderGauge(stressLevel - 15); // 표현을 하나 꺼내볼 때마다 게이지가 조금씩 빠짐
+    if (isNewPhrase) {
+      renderGauge(stressLevel - 15); // 새로운 표현을 하나 꺼내볼 때마다 게이지가 조금씩 빠짐
+    }
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
@@ -1315,6 +1445,13 @@
       : intensity === 'medium'
       ? '중간맛 — damn, hell, crap처럼 살짝 센 표현이 섞여요. 순한맛보단 강하고 매운맛보단 약해요.'
       : '순한맛 — 육두문자 없이, 그래도 시원한 표현들이에요.';
+    // Phase 9 · 슬라이더 힌트 — 게이지를 움직이면 강도가 자동으로 같이 바뀐다는 걸
+    // 사용자가 처음 봐도 알 수 있게, 지금 자동/수동 상태를 그때그때 알려준다.
+    if (gaugeSliderHint) {
+      gaugeSliderHint.textContent = userSetIntensity
+        ? '지금은 강도를 직접 골라둔 상태라, 슬라이더를 움직여도 강도는 안 바뀌어요.'
+        : '슬라이더를 움직이면 강도(순한맛·중간맛·매운맛)도 자동으로 같이 바뀌어요.';
+    }
   }
 
   intensityToggle.addEventListener('click', function (e) {
@@ -1322,6 +1459,13 @@
     if (!btn) return;
     userSetIntensity = true; // 직접 고른 뒤에는 슬라이더가 더 이상 자동으로 바꾸지 않는다
     setIntensity(btn.getAttribute('data-mode'), true);
+    // 버그 수정 — 특정 상황(2번) 칩을 골라둔 상태에서 강도만 바꾸면, 칩은 계속 "선택됨"으로
+    // 보이는데 실제로는 카테고리 랜덤 문구가 대신 떠서 서로 안 맞았음. 상황이 선택돼 있으면
+    // 그 상황을 새 강도로 다시 매칭해서 보여주고, 아무 상황도 안 골랐을 때만 랜덤으로 보여준다.
+    if (activeSituationId) {
+      var activeSituation = SITUATIONS.filter(function (s) { return s.id === activeSituationId; })[0];
+      if (activeSituation) { selectSituation(activeSituation); return; }
+    }
     if (currentCategory) showRandomFrom(currentCategory);
   });
 
@@ -1366,13 +1510,24 @@
     }
 
     function flashSpeakError() {
+      speakBtn.classList.remove('playing');
       speakBtn.classList.add('speak-error');
-      var prevLabel = speakBtn.getAttribute('aria-label');
-      speakBtn.setAttribute('aria-label', '재생 실패, 다시 눌러보세요');
+      speakBtn.setAttribute('aria-label', SPEAK_LABEL_ERROR);
+      if (speakCtaLabel) speakCtaLabel.textContent = SPEAK_LABEL_ERROR;
       setTimeout(function () {
         speakBtn.classList.remove('speak-error');
-        speakBtn.setAttribute('aria-label', prevLabel || '영어로 들어보기');
+        speakBtn.setAttribute('aria-label', SPEAK_LABEL_DEFAULT);
+        if (speakCtaLabel) speakCtaLabel.textContent = SPEAK_LABEL_DEFAULT;
       }, 1500);
+    }
+
+    // Phase 10 · 재생 버튼을 크고 눈에 띄게 만들면서, 지금 실제로 소리가 나고 있는지
+    // 버튼 자체(펄스 애니메이션 + 라벨 텍스트)로 바로 알 수 있게 재생 상태를 표시한다.
+    function setSpeaking(isPlaying) {
+      speakBtn.classList.toggle('playing', isPlaying);
+      var label = isPlaying ? SPEAK_LABEL_PLAYING : SPEAK_LABEL_DEFAULT;
+      speakBtn.setAttribute('aria-label', label);
+      if (speakCtaLabel) speakCtaLabel.textContent = label;
     }
 
     function doSpeak(text) {
@@ -1383,6 +1538,8 @@
       utter.pitch = 1;
       var voice = pickEnglishVoice();
       if (voice) utter.voice = voice;
+      utter.onstart = function () { setSpeaking(true); };
+      utter.onend = function () { setSpeaking(false); };
       utter.onerror = flashSpeakError;
       pendingUtterance = utter;
       // 크롬 계열 브라우저에서 speechSynthesis 큐가 'paused' 상태로 멈춰
@@ -1408,6 +1565,62 @@
       } catch (e) { flashSpeakError(); }
     });
   }
+
+  // Phase 11 · 고정 메뉴에 안 맞는 상황을 위한 opt-in 자유 입력 (프로토타입)
+  // /api/vent 서버리스 엔드포인트가 배포돼 있을 때만 동작 — 없으면(아티팩트 미리보기,
+  // 아직 배포 전인 경우 등) fetch가 실패해서 아래 catch에서 안내 문구로 우아하게 대체된다.
+  var aiVentToggle = document.getElementById('aiVentToggle');
+  var aiVentPanel = document.getElementById('aiVentPanel');
+  var aiVentInput = document.getElementById('aiVentInput');
+  var aiVentSubmit = document.getElementById('aiVentSubmit');
+  var aiVentStatus = document.getElementById('aiVentStatus');
+  var AI_VENT_CATEGORY = { label: '내가 쓴 상황', isAiGenerated: true };
+
+  if (aiVentToggle) {
+    aiVentToggle.addEventListener('click', function () {
+      var expanded = aiVentToggle.getAttribute('aria-expanded') === 'true';
+      aiVentToggle.setAttribute('aria-expanded', String(!expanded));
+      aiVentPanel.hidden = expanded;
+      if (!expanded) aiVentInput.focus();
+    });
+  }
+
+  function setAiVentStatus(text, isError) {
+    if (!aiVentStatus) return;
+    if (!text) { aiVentStatus.hidden = true; aiVentStatus.textContent = ''; return; }
+    aiVentStatus.hidden = false;
+    aiVentStatus.textContent = text;
+    aiVentStatus.classList.toggle('error', !!isError);
+  }
+
+  function submitAiVent() {
+    var text = (aiVentInput.value || '').trim();
+    if (!text) { setAiVentStatus('먼저 상황을 적어주세요.', true); return; }
+    if (text.length > 300) { setAiVentStatus('300자 이내로 적어주세요.', true); return; }
+    aiVentSubmit.disabled = true;
+    setAiVentStatus('AI가 문구를 만드는 중…', false);
+    var level = intensity;
+    fetch('/api/vent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text, intensity: level })
+    }).then(function (res) {
+      if (!res.ok) throw new Error('backend-unavailable');
+      return res.json();
+    }).then(function (data) {
+      if (!data || typeof data.en !== 'string') throw new Error('bad-response');
+      markActiveSituation(null);
+      setActiveCategory(null);
+      showPhrase(AI_VENT_CATEGORY, { en: data.en, ko: data.ko || '', tip: data.tip || '' }, level);
+      setAiVentStatus('', false);
+    }).catch(function () {
+      setAiVentStatus('이 기능은 실제 배포된 사이트에서만 동작해요(미리보기이거나 아직 설정 전이면 안 써져요).', true);
+    }).finally(function () {
+      aiVentSubmit.disabled = false;
+    });
+  }
+
+  if (aiVentSubmit) aiVentSubmit.addEventListener('click', submitAiVent);
 
   // init — 저장된 순한맛/매운맛 상태와 게이지 초기값을 화면에 반영
   setIntensity(intensity, false);
