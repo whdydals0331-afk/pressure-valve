@@ -12,7 +12,7 @@
 // 2) Vercel 프로젝트 설정 → Environment Variables 에서 ANTHROPIC_API_KEY를
 //    추가하세요 (https://console.anthropic.com 에서 발급받은 API 키 — claude.ai
 //    구독용 로그인과는 별개로, 사용한 만큼 과금되는 API 전용 키입니다).
-// 3) (선택) ANTHROPIC_MODEL 환경변수로 모델을 바꿀 수 있습니다. 안 정하면
+// 3) (선택) ANTHROPIC_MODEL 환경변수로 모델을 바꿀 수 있습니다(기본값: claude-haiku-4-5-20251001). 안 정하면
 //    아래 DEFAULT_MODEL을 씁니다 — 배포 시점에 Anthropic 문서에서 현재
 //    쓸 수 있는 모델 이름인지 한 번 확인해주세요(모델 이름은 시간이 지나며 바뀝니다).
 // 4) 환경변수 추가/변경 후에는 반드시 재배포(redeploy)해야 반영됩니다.
@@ -28,7 +28,7 @@
 // - 캐싱이 없어서 같은 입력을 반복해도 매번 API를 호출합니다.
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
-const DEFAULT_MODEL = process.env.ANTHROPIC_MODEL || 'claude-3-5-haiku-latest';
+const DEFAULT_MODEL = process.env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001';
 const MAX_INPUT_LENGTH = 300;
 
 const SYSTEM_PROMPT = [
@@ -98,7 +98,15 @@ module.exports = async function handler(req, res) {
     });
 
     if (!response.ok) {
-      res.status(502).json({ error: 'upstream-error' });
+      // 원인을 화면에서 바로 확인할 수 있도록 상류(Anthropic) 오류 내용을 그대로 넘긴다.
+      // (API 키 값은 여기 담기지 않는다 — 오류 본문에는 type/message만 들어있다)
+      var errText = '';
+      try { errText = await response.text(); } catch (e) { errText = ''; }
+      res.status(502).json({
+        error: 'upstream-error',
+        status: response.status,
+        detail: errText ? errText.slice(0, 400) : ''
+      });
       return;
     }
 
