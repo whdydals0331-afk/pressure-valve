@@ -402,6 +402,31 @@
     margin-top: 10px;
   }
 
+  .voice-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .voice-label {
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    flex: none;
+  }
+  .voice-select {
+    flex: 1;
+    min-width: 0;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12.5px;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 7px 9px;
+    min-height: 36px;
+  }
+  .voice-select:focus-visible { outline: 2px solid var(--relief); outline-offset: 1px; }
+
   .result-source {
     font-size: 12px;
     color: var(--ink-soft);
@@ -812,6 +837,10 @@
       <span class="speak-cta-icon" aria-hidden="true">🔊</span>
       <span class="speak-cta-label" id="speakCtaLabel">영어로 들어보기</span>
     </button>
+    <div class="voice-row" id="voiceRow" hidden>
+      <label class="voice-label" for="voiceSelect">목소리</label>
+      <select class="voice-select" id="voiceSelect" aria-label="영어 목소리 선택"></select>
+    </div>
     <span class="no-speech-note" id="noSpeechNote" hidden>이 브라우저는 음성 재생을 지원하지 않아요.</span>
     <div class="result-actions">
       <button class="icon-btn" id="copyBtn" type="button" title="문구 복사하기" aria-label="문구 복사하기">📋</button>
@@ -1166,6 +1195,8 @@
   var anotherBtn = document.getElementById('anotherBtn');
   var speakBtn = document.getElementById('speakBtn');
   var speakCtaLabel = document.getElementById('speakCtaLabel');
+  var voiceRow = document.getElementById('voiceRow');
+  var voiceSelect = document.getElementById('voiceSelect');
   var SPEAK_LABEL_DEFAULT = '영어로 들어보기';
   var SPEAK_LABEL_PLAYING = '재생 중…';
   var SPEAK_LABEL_ERROR = '재생 실패, 다시 눌러보세요';
@@ -1624,17 +1655,88 @@
     }
     refreshVoiceCache();
     if ('onvoiceschanged' in window.speechSynthesis) {
-      window.speechSynthesis.onvoiceschanged = refreshVoiceCache;
+      window.speechSynthesis.onvoiceschanged = function () {
+        refreshVoiceCache();
+        renderVoicePicker();
+      };
+    }
+
+    // Phase 13 · 목소리 품질 — 폰마다 깔려있는 TTS 목소리 품질이 천차만별이라
+    // (구형 eSpeak/Compact 계열은 확연히 기계음, 신경망 계열은 훨씬 사람 같다)
+    // 이름·종류로 점수를 매겨 가장 자연스러운 걸 기본으로 고르고,
+    // 사용자가 직접 다른 목소리로 바꿔 들어볼 수도 있게 한다.
+    var VOICE_KEY = 'pressure-valve-voice-v1';
+
+    function englishVoices() {
+      try {
+        var voices = cachedVoices.length ? cachedVoices : (window.speechSynthesis.getVoices() || []);
+        return voices.filter(function (v) { return /^en/i.test(v.lang); });
+      } catch (e) { return []; }
+    }
+
+    function voiceScore(v) {
+      var name = (v.name || '') + ' ' + (v.voiceURI || '');
+      var score = 0;
+      // 신경망·프리미엄 계열일수록 사람 목소리에 가깝다
+      if (/neural|natural|premium|enhanced|wavenet|studio|journey|siri/i.test(name)) score += 60;
+      if (/google/i.test(name)) score += 25;
+      // 애플 기본 고품질 목소리들
+      if (/samantha|ava|allison|serena|karen|daniel|moira/i.test(name)) score += 20;
+      // 확연히 기계음인 구형 엔진들
+      if (/espeak|e-speak|compact|pico|eloquence|robot/i.test(name)) score -= 80;
+      // 안드로이드에서 네트워크 목소리가 대체로 더 자연스럽다
+      if (v.localService === false) score += 15;
+      if (/en-US/i.test(v.lang)) score += 10;
+      else if (/en-GB|en-AU/i.test(v.lang)) score += 5;
+      if (v.default) score += 3;
+      return score;
+    }
+
+    function sortedEnglishVoices() {
+      return englishVoices().slice().sort(function (a, b) { return voiceScore(b) - voiceScore(a); });
     }
 
     function pickEnglishVoice() {
       try {
-        var voices = cachedVoices.length ? cachedVoices : (window.speechSynthesis.getVoices() || []);
-        var enVoices = voices.filter(function (v) { return /^en/i.test(v.lang); });
-        var us = enVoices.filter(function (v) { return /en-US/i.test(v.lang); });
-        return us[0] || enVoices[0] || null;
+        var list = sortedEnglishVoices();
+        if (!list.length) return null;
+        var savedURI = null;
+        try { savedURI = localStorage.getItem(VOICE_KEY); } catch (e) { savedURI = null; }
+        if (savedURI) {
+          var saved = list.filter(function (v) { return v.voiceURI === savedURI; })[0];
+          if (saved) return saved;
+        }
+        return list[0];
       } catch (e) { return null; }
     }
+
+    // 목소리 선택 드롭다운 — 고를 게 2개 이상 있을 때만 보여준다
+    function renderVoicePicker() {
+      if (!voiceRow || !voiceSelect) return;
+      var list = sortedEnglishVoices();
+      if (list.length < 2) { voiceRow.hidden = true; return; }
+      var current = pickEnglishVoice();
+      voiceSelect.innerHTML = '';
+      list.forEach(function (v) {
+        var opt = document.createElement('option');
+        opt.value = v.voiceURI;
+        opt.textContent = v.name + (/en-US/i.test(v.lang) ? '' : ' (' + v.lang + ')');
+        if (current && v.voiceURI === current.voiceURI) opt.selected = true;
+        voiceSelect.appendChild(opt);
+      });
+      voiceRow.hidden = false;
+    }
+
+    voiceSelect.addEventListener('change', function () {
+      try { localStorage.setItem(VOICE_KEY, voiceSelect.value); } catch (e) { /* ignore */ }
+      // 고른 목소리를 바로 들려줘서 비교하기 쉽게
+      if (currentPhrase) {
+        try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+        setTimeout(function () {
+          try { doSpeak(currentPhrase.en); } catch (e) { flashSpeakError(); }
+        }, 60);
+      }
+    });
 
     function flashSpeakError() {
       speakBtn.classList.remove('playing');
@@ -1663,8 +1765,12 @@
       utter.rate = 0.95;
       utter.volume = 1;
       utter.pitch = 1;
-      var voice = pickEnglishVoice();
-      if (voice) utter.voice = voice;
+      // 목소리 지정이 실패해도(기기 목록이 바뀌었거나 지원 안 하는 경우) 재생 자체는
+      // 기본 목소리로 계속 되도록 따로 감싼다
+      try {
+        var voice = pickEnglishVoice();
+        if (voice) utter.voice = voice;
+      } catch (e) { /* 기본 목소리로 진행 */ }
       utter.onstart = function () { setSpeaking(true); };
       utter.onend = function () { setSpeaking(false); };
       utter.onerror = flashSpeakError;
@@ -1691,6 +1797,8 @@
         }
       } catch (e) { flashSpeakError(); }
     });
+
+    renderVoicePicker();
   }
 
   // Phase 11 · 고정 메뉴에 안 맞는 상황을 위한 opt-in 자유 입력 (프로토타입)
@@ -1797,7 +1905,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '1.3.0';
+  var APP_VERSION = '1.4.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
 
   var versionTag = document.getElementById('versionTag');
