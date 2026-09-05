@@ -75,6 +75,9 @@
   }
 
   * { box-sizing: border-box; }
+  /* hidden 속성이 항상 이기도록 — display를 지정한 요소(.favs-list, .no-speech-note,
+     .update-bar 등)는 hidden을 걸어도 CSS의 display가 이겨서 계속 보이는 버그가 있었다 */
+  [hidden] { display: none !important; }
   html, body { margin: 0; padding: 0; overflow-x: hidden; }
   body {
     background: var(--ground);
@@ -138,12 +141,16 @@
     margin-bottom: 6px;
   }
   .intensity-toggle {
-    display: inline-flex;
+    display: flex;
+    width: 100%;
     background: var(--surface-2);
     border: 1px solid var(--line);
     border-radius: 999px;
     padding: 3px;
   }
+  /* 세 버튼이 가로를 균등하게 나눠 갖도록 — 왼쪽으로 쏠려 보이던 문제 해결 겸
+     터치 영역도 넓어진다 */
+  .intensity-toggle button { flex: 1; }
   .intensity-toggle button {
     font-family: 'Noto Sans KR', sans-serif;
     font-weight: 700;
@@ -178,10 +185,13 @@
   .gauge-row {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 20px;
   }
   .gauge-svg { flex: none; width: 130px; height: 78px; }
-  .gauge-readout { flex: 1; min-width: 0; }
+  /* 예전엔 readout이 flex:1이라 남는 폭을 다 먹고 글자는 왼쪽에 붙어,
+     오른쪽에 큰 여백이 생겨 카드가 왼쪽으로 쏠려 보였다 */
+  .gauge-readout { flex: none; min-width: 0; }
   .gauge-label {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10.5px;
@@ -617,6 +627,95 @@
     margin-top: 10px;
   }
 
+  /* UPDATE · Phase 12 — 새 버전 알림 & 업데이트 완료 확인 */
+  .update-bar {
+    position: fixed;
+    left: 50%;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 90;
+    width: calc(100% - 32px);
+    max-width: 520px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--ink);
+    color: var(--surface);
+    border-radius: 12px;
+    padding: 13px 14px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.28);
+    font-family: 'Noto Sans KR', sans-serif;
+    animation: updateRise .28s ease;
+  }
+  @keyframes updateRise { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  @media (prefers-reduced-motion: reduce) { .update-bar { animation: none; } }
+  .update-bar-text { flex: 1; font-size: 13px; font-weight: 500; line-height: 1.45; }
+  .update-bar-text b { font-weight: 800; }
+  .update-bar-btn {
+    flex: none;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    background: var(--ember);
+    color: #fff8f2;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 15px;
+    cursor: pointer;
+    min-height: 40px;
+  }
+  .update-bar-btn:hover { background: var(--ember-deep); }
+  .update-bar-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .update-bar-btn[disabled] { opacity: .6; cursor: default; }
+  .update-bar-close {
+    flex: none;
+    background: none;
+    border: none;
+    color: inherit;
+    opacity: .65;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 8px;
+    min-width: 36px;
+    min-height: 36px;
+  }
+  .update-bar-close:hover { opacity: 1; }
+
+  .update-done {
+    position: fixed;
+    left: 50%;
+    top: calc(14px + env(safe-area-inset-top));
+    transform: translateX(-50%);
+    z-index: 95;
+    width: calc(100% - 32px);
+    max-width: 520px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--relief);
+    color: #fff;
+    border-radius: 12px;
+    padding: 13px 15px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.24);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    animation: updateDrop .3s ease;
+  }
+  @keyframes updateDrop { from { opacity: 0; transform: translate(-50%, -12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  @media (prefers-reduced-motion: reduce) { .update-done { animation: none; } }
+  .update-done-icon { font-size: 17px; }
+
+  .version-tag {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    opacity: .85;
+  }
+
   footer {
     margin-top: 28px;
     padding-top: 16px;
@@ -716,8 +815,20 @@
     <div class="favs-list" id="favsList" hidden></div>
   </div>
 
+  <div class="update-done" id="updateDone" hidden>
+    <span class="update-done-icon" aria-hidden="true">✅</span>
+    <span id="updateDoneText">업데이트 완료</span>
+  </div>
+
+  <div class="update-bar" id="updateBar" hidden role="status">
+    <span class="update-bar-text" id="updateBarText"><b>새 버전이 나왔어요.</b></span>
+    <button class="update-bar-btn" id="updateBarBtn" type="button">지금 업데이트</button>
+    <button class="update-bar-close" id="updateBarClose" type="button" aria-label="나중에">✕</button>
+  </div>
+
   <footer>
     영어로 욕해 · Stress Gauge · 매일 조금씩 새어나가야 터지지 않아요.
+    <span class="version-tag" id="versionTag"></span>
   </footer>
 </div>
 
@@ -1632,6 +1743,7 @@
       markActiveSituation(null);
       setActiveCategory(null);
       showPhrase(AI_VENT_CATEGORY, { en: data.en, ko: data.ko || '', tip: data.tip || '' }, level);
+      aiVentInput.value = ''; // 성공했을 때만 비운다 — 실패하면 다시 누를 수 있게 남겨둠
       setAiVentStatus('', false);
     }).catch(function (err) {
       var code = (err && err.message) ? err.message : 'no-backend';
@@ -1646,6 +1758,98 @@
   }
 
   if (aiVentSubmit) aiVentSubmit.addEventListener('click', submitAiVent);
+
+
+  // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
+  // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
+  var APP_VERSION = '1.2.0';
+  var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
+
+  var versionTag = document.getElementById('versionTag');
+  var updateBar = document.getElementById('updateBar');
+  var updateBarText = document.getElementById('updateBarText');
+  var updateBarBtn = document.getElementById('updateBarBtn');
+  var updateBarClose = document.getElementById('updateBarClose');
+  var updateDone = document.getElementById('updateDone');
+  var updateDoneText = document.getElementById('updateDoneText');
+
+  if (versionTag) versionTag.textContent = 'v' + APP_VERSION;
+
+  // 업데이트를 누르고 새로고침된 직후라면 완료 표시를 띄운다
+  (function showUpdateDoneIfJustUpdated() {
+    var pending = null;
+    try { pending = sessionStorage.getItem(UPDATE_FLAG_KEY); } catch (e) { pending = null; }
+    if (!pending) return;
+    try { sessionStorage.removeItem(UPDATE_FLAG_KEY); } catch (e) { /* ignore */ }
+    if (!updateDone) return;
+    updateDoneText.textContent = pending === APP_VERSION
+      ? ('업데이트 완료 — 최신 버전 v' + APP_VERSION + '이에요')
+      : ('업데이트 완료 — 지금 버전 v' + APP_VERSION);
+    updateDone.hidden = false;
+    setTimeout(function () { updateDone.hidden = true; }, 4500);
+  })();
+
+  var dismissedVersion = null;
+
+  function showUpdateBar(newVersion) {
+    if (!updateBar || dismissedVersion === newVersion) return;
+    if (!updateBar.hidden) return;
+    updateBarText.innerHTML = '<b>새 버전이 나왔어요.</b> v' + APP_VERSION + ' → v' + newVersion;
+    updateBar.hidden = false;
+    updateBar.setAttribute('data-next-version', newVersion);
+  }
+
+  function applyUpdate() {
+    var next = updateBar.getAttribute('data-next-version') || '';
+    updateBarBtn.disabled = true;
+    updateBarBtn.textContent = '업데이트 중…';
+    try { sessionStorage.setItem(UPDATE_FLAG_KEY, next); } catch (e) { /* ignore */ }
+
+    // 캐시와 서비스 워커를 정리한 뒤 새로 받아온다 — 예전 화면이 남는 일이 없도록
+    var jobs = [];
+    if (window.caches && caches.keys) {
+      jobs.push(caches.keys().then(function (keys) {
+        return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+      }).catch(function () { /* ignore */ }));
+    }
+    if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+      jobs.push(navigator.serviceWorker.getRegistrations().then(function (regs) {
+        return Promise.all(regs.map(function (r) {
+          if (r.waiting) { try { r.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch (e) { /* ignore */ } }
+          return r.update().catch(function () { /* ignore */ });
+        }));
+      }).catch(function () { /* ignore */ }));
+    }
+
+    var reload = function () { window.location.reload(); };
+    Promise.all(jobs).then(reload).catch(reload);
+    setTimeout(reload, 2500); // 혹시 정리가 늦어져도 반드시 새로고침
+  }
+
+  if (updateBarBtn) updateBarBtn.addEventListener('click', applyUpdate);
+  if (updateBarClose) {
+    updateBarClose.addEventListener('click', function () {
+      dismissedVersion = updateBar.getAttribute('data-next-version') || null;
+      updateBar.hidden = true;
+    });
+  }
+
+  function checkForUpdate() {
+    if (!window.fetch) return;
+    fetch('/version.json?ts=' + Date.now(), { cache: 'no-store' })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        if (!data || typeof data.version !== 'string') return;
+        if (data.version !== APP_VERSION) showUpdateBar(data.version);
+      })
+      .catch(function () { /* 오프라인이거나 배포 전 — 조용히 넘어간다 */ });
+  }
+
+  checkForUpdate();
+  setInterval(checkForUpdate, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') checkForUpdate();
+  });
 
   // init — 저장된 순한맛/매운맛 상태와 게이지 초기값을 화면에 반영
   setIntensity(intensity, false);
