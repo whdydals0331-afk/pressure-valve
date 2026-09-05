@@ -402,6 +402,15 @@
     margin-top: 10px;
   }
 
+  .result-source {
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: var(--surface-2);
+    border-radius: 8px;
+    padding: 8px 11px;
+    margin: 0 0 14px;
+  }
+
   /* AI VENT · Phase 11 — 고정 메뉴에 안 맞을 때 쓰는 opt-in 자유 입력 (프로토타입) */
   .ai-vent { margin: 4px 0 22px; }
   .ai-vent-toggle {
@@ -798,6 +807,7 @@
     <p class="result-en" id="resultEn" lang="en">"I am so done with today."</p>
     <p class="result-ko" id="resultKo">오늘 진짜 지쳤다, 끝났다는 뜻이에요.</p>
     <p class="result-tip" id="resultTip">퇴근길에 혼잣말처럼 던지기 좋은 톤이에요.</p>
+    <p class="result-source" id="resultSource" hidden></p>
     <button class="speak-cta" id="speakBtn" type="button" aria-label="영어로 들어보기">
       <span class="speak-cta-icon" aria-hidden="true">🔊</span>
       <span class="speak-cta-label" id="speakCtaLabel">영어로 들어보기</span>
@@ -1166,6 +1176,7 @@
   var resultEn = document.getElementById('resultEn');
   var resultKo = document.getElementById('resultKo');
   var resultTip = document.getElementById('resultTip');
+  var resultSource = document.getElementById('resultSource');
   var gaugeValue = document.getElementById('gaugeValue');
   var gaugeNote = document.getElementById('gaugeNote');
   var gaugeFill = document.getElementById('gaugeFill');
@@ -1413,6 +1424,11 @@
     resultEl.classList.add('show');
     // Phase 11 · AI 자유 입력 문구엔 "다른 표현"을 뽑아올 고정 카테고리 배열이 없어서 숨긴다
     anotherBtn.hidden = !!category.isAiGenerated;
+    // 고정 메뉴에서 고른 문구라면 "내가 쓴 말" 줄은 지운다
+    if (resultSource && !category.isAiGenerated) {
+      resultSource.hidden = true;
+      resultSource.textContent = '';
+    }
     updateStarButton();
     if (isNewPhrase) {
       renderGauge(stressLevel - 15); // 새로운 표현을 하나 꺼내볼 때마다 게이지가 조금씩 빠짐
@@ -1740,9 +1756,28 @@
       return res.json();
     }).then(function (data) {
       if (!data || typeof data.en !== 'string') throw new Error('bad-model-output');
+      // AI가 판단한 카테고리를 1번에 표시하고 2번 상황 목록도 채워준다 —
+      // 예전엔 1번·2번을 건너뛰고 결과만 떠서 화면이 비어 보였다.
+      var matched = null;
+      if (data.category) {
+        matched = CATEGORIES.filter(function (cc) { return cc.id === data.category; })[0] || null;
+      }
+      if (matched) {
+        setActiveCategory(matched.id);
+        renderSituationsFor(matched.id);
+      } else {
+        setActiveCategory(null);
+      }
       markActiveSituation(null);
-      setActiveCategory(null);
-      showPhrase(AI_VENT_CATEGORY, { en: data.en, ko: data.ko || '', tip: data.tip || '' }, level);
+      var aiCategory = {
+        label: matched ? ('✍️ ' + matched.label) : '✍️ 내가 쓴 상황',
+        isAiGenerated: true
+      };
+      showPhrase(aiCategory, { en: data.en, ko: data.ko || '', tip: data.tip || '' }, level);
+      if (resultSource) {
+        resultSource.textContent = '내가 쓴 말 — “' + text + '”';
+        resultSource.hidden = false;
+      }
       aiVentInput.value = ''; // 성공했을 때만 비운다 — 실패하면 다시 누를 수 있게 남겨둠
       setAiVentStatus('', false);
     }).catch(function (err) {
@@ -1762,7 +1797,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '1.2.0';
+  var APP_VERSION = '1.3.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
 
   var versionTag = document.getElementById('versionTag');
@@ -1776,15 +1811,22 @@
   if (versionTag) versionTag.textContent = 'v' + APP_VERSION;
 
   // 업데이트를 누르고 새로고침된 직후라면 완료 표시를 띄운다
+  // 업데이트를 눌렀는데도 버전이 그대로면(배포가 아직 안 끝났거나 파일이 일부만 올라간 경우)
+  // 배너가 무한히 다시 뜨는 걸 막기 위해, 그 버전은 이번 세션 동안 다시 알리지 않는다.
+  var failedVersion = null;
+
   (function showUpdateDoneIfJustUpdated() {
     var pending = null;
     try { pending = sessionStorage.getItem(UPDATE_FLAG_KEY); } catch (e) { pending = null; }
     if (!pending) return;
     try { sessionStorage.removeItem(UPDATE_FLAG_KEY); } catch (e) { /* ignore */ }
     if (!updateDone) return;
-    updateDoneText.textContent = pending === APP_VERSION
-      ? ('업데이트 완료 — 최신 버전 v' + APP_VERSION + '이에요')
-      : ('업데이트 완료 — 지금 버전 v' + APP_VERSION);
+    if (pending === APP_VERSION) {
+      updateDoneText.textContent = '업데이트 완료 — 최신 버전 v' + APP_VERSION + '이에요';
+    } else {
+      failedVersion = pending;
+      updateDoneText.textContent = '아직 v' + APP_VERSION + '이에요 — 서버 반영을 기다리는 중일 수 있어요';
+    }
     updateDone.hidden = false;
     setTimeout(function () { updateDone.hidden = true; }, 4500);
   })();
@@ -1792,7 +1834,7 @@
   var dismissedVersion = null;
 
   function showUpdateBar(newVersion) {
-    if (!updateBar || dismissedVersion === newVersion) return;
+    if (!updateBar || dismissedVersion === newVersion || failedVersion === newVersion) return;
     if (!updateBar.hidden) return;
     updateBarText.innerHTML = '<b>새 버전이 나왔어요.</b> v' + APP_VERSION + ' → v' + newVersion;
     updateBar.hidden = false;
@@ -1851,9 +1893,23 @@
     if (document.visibilityState === 'visible') checkForUpdate();
   });
 
-  // init — 저장된 순한맛/매운맛 상태와 게이지 초기값을 화면에 반영
-  setIntensity(intensity, false);
-  renderGauge(stressLevel);
+  // init — 게이지 수치와 강도 라벨이 처음부터 어긋나 보이지 않게 맞춘다.
+  // 예전엔 게이지는 늘 50%(중간맛 구간)로 시작하는데 강도는 저장된 값(주로 순한맛)이라
+  // "50%인데 순한맛"처럼 서로 안 맞는 상태로 열렸다.
+  // - 사용자가 강도를 직접 고른 적이 있으면(저장된 값이 있으면) 그 선택을 존중하고,
+  //   게이지 쪽을 그 강도 구간에 맞춰 시작한다.
+  // - 고른 적이 없으면 게이지(50%)에 맞는 강도를 자동으로 따라가게 한다.
+  var hasSavedIntensity = false;
+  try { hasSavedIntensity = !!localStorage.getItem(SPICY_KEY); } catch (e) { hasSavedIntensity = false; }
+
+  if (hasSavedIntensity) {
+    userSetIntensity = true;
+    setIntensity(intensity, false);
+    renderGauge(intensity === 'spicy' ? 84 : intensity === 'medium' ? 50 : 17);
+  } else {
+    renderGauge(stressLevel);
+    applyIntensitySuggestion(stressLevel);
+  }
 
   renderValves();
   renderFavorites();

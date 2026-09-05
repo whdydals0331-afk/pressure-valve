@@ -37,7 +37,13 @@ const SYSTEM_PROMPT = [
   '',
   '규칙:',
   '1. 반드시 아래 JSON 형식으로만 답한다. 다른 말은 절대 덧붙이지 않는다.',
-  '   {"en": "영어 문장", "ko": "그 문장이 무슨 뜻/뉘앙스인지 한국어 설명", "tip": "언제 어떻게 쓰면 좋은지 한국어 팁"}',
+  '   {"category": "카테고리 id", "en": "영어 문장", "ko": "그 문장이 무슨 뜻/뉘앙스인지 한국어 설명", "tip": "언제 어떻게 쓰면 좋은지 한국어 팁"}',
+  '   category는 아래 다섯 중 그 상황에 가장 가까운 것 하나의 id를 쓴다:',
+  '   - work: 직장·업무 (상사, 마감, 회의, 야근, 업무량)',
+  '   - people: 사람·관계 (친구, 가족, 연인, 동료와의 갈등)',
+  '   - small: 소소한 빡침 (교통, 날씨, 기계 고장, 사소한 짜증)',
+  '   - selfblame: 자책·실수 (내 실수, 후회, 자기비판)',
+  '   - exhausted: 그냥 다 지침 (번아웃, 무기력, 다 귀찮음)',
   '2. 강도(intensity)는 요청받은 값을 그대로 따른다:',
   '   - mild: 비속어 전혀 없이, 답답함/짜증만 담백하게 표현',
   '   - medium: damn/hell/crap/screw 같은 약한 비속어 정도만 사용',
@@ -128,7 +134,12 @@ module.exports = async function handler(req, res) {
       return;
     }
 
+    var ALLOWED_CATEGORIES = ['work', 'people', 'small', 'selfblame', 'exhausted'];
+    var category = (typeof parsed.category === 'string' && ALLOWED_CATEGORIES.indexOf(parsed.category) !== -1)
+      ? parsed.category : '';
+
     res.status(200).json({
+      category: category,
       en: parsed.en.trim(),
       ko: typeof parsed.ko === 'string' ? parsed.ko.trim() : '',
       tip: typeof parsed.tip === 'string' ? parsed.tip.trim() : ''
