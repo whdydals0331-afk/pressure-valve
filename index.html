@@ -402,36 +402,45 @@
     margin-top: 10px;
   }
 
-  /* v1.7.0 — 드롭다운(네이티브 선택창이 화면을 덮음) 대신 바로 누르는 칩으로 */
-  .voice-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
+  /* v1.8.0 — 소리 설정은 항목별로 칸을 나눠 한 덩어리 박스에 담는다.
+     예전엔 라벨이 칩 옆에 붙고 칩이 여러 줄로 흘러넘쳐 정신없었다. */
+  .voice-panel {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background: var(--surface-2);
   }
-  .voice-label {
-    font-size: 11.5px;
+  .voice-group {
+    padding: 10px 12px 11px;
+  }
+  .voice-group + .voice-group {
+    border-top: 1px solid var(--line);
+  }
+  .voice-group-label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
     color: var(--ink-soft);
-    flex: none;
-    width: 34px;
+    margin-bottom: 8px;
   }
   .voice-chips {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
-    flex: 1;
-    min-width: 0;
   }
   .voice-chip {
     font-family: 'Noto Sans KR', sans-serif;
     font-weight: 600;
-    font-size: 12.5px;
-    background: var(--surface-2);
+    font-size: 12px;
+    background: var(--surface);
     color: var(--ink);
     border: 1px solid var(--line);
     border-radius: 999px;
-    padding: 7px 13px;
+    padding: 6px 12px;
     min-height: 36px;
     cursor: pointer;
   }
@@ -878,13 +887,15 @@
       <span class="speak-cta-icon" aria-hidden="true">🔊</span>
       <span class="speak-cta-label" id="speakCtaLabel">영어로 들어보기</span>
     </button>
-    <div class="voice-row" id="toneRow">
-      <span class="voice-label" id="toneLabel">톤</span>
-      <div class="voice-chips" id="toneChips" role="group" aria-labelledby="toneLabel"></div>
-    </div>
-    <div class="voice-row" id="voiceRow" hidden>
-      <span class="voice-label" id="voiceLabel">발음</span>
-      <div class="voice-chips" id="voiceChips" role="group" aria-labelledby="voiceLabel"></div>
+    <div class="voice-panel" id="voicePanel">
+      <div class="voice-group" id="toneRow">
+        <span class="voice-group-label" id="toneLabel">톤</span>
+        <div class="voice-chips" id="toneChips" role="group" aria-labelledby="toneLabel"></div>
+      </div>
+      <div class="voice-group" id="voiceRow" hidden>
+        <span class="voice-group-label" id="voiceLabel">발음</span>
+        <div class="voice-chips" id="voiceChips" role="group" aria-labelledby="voiceLabel"></div>
+      </div>
     </div>
     <span class="no-speech-note" id="noSpeechNote" hidden>이 브라우저는 음성 재생을 지원하지 않아요.</span>
     <div class="result-actions">
@@ -1245,6 +1256,7 @@
   var speakCtaLabel = document.getElementById('speakCtaLabel');
   var voiceRow = document.getElementById('voiceRow');
   var voiceChips = document.getElementById('voiceChips');
+  var voicePanel = document.getElementById('voicePanel');
   var toneRow = document.getElementById('toneRow');
   var toneChips = document.getElementById('toneChips');
   var toneLabel = document.getElementById('toneLabel');
@@ -1698,7 +1710,7 @@
   if (!speechOk) {
     speakBtn.hidden = true;
     noSpeechNote.hidden = false;
-    if (toneRow) toneRow.hidden = true;
+    if (voicePanel) voicePanel.hidden = true;
   } else {
     // 세션 스코프에 유지되는 참조 — 일부 구형 WebKit(iOS Safari)에서 발화 도중
     // utterance가 지역 스코프를 벗어나면 조기 GC되어 소리가 안 나는 경우가 있어 방지
@@ -2050,7 +2062,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '1.7.0';
+  var APP_VERSION = '1.8.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
