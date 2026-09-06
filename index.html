@@ -837,6 +837,10 @@
       <span class="speak-cta-icon" aria-hidden="true">🔊</span>
       <span class="speak-cta-label" id="speakCtaLabel">영어로 들어보기</span>
     </button>
+    <div class="voice-row" id="toneRow">
+      <label class="voice-label" for="toneSelect">톤</label>
+      <select class="voice-select" id="toneSelect" aria-label="목소리 톤 선택"></select>
+    </div>
     <div class="voice-row" id="voiceRow" hidden>
       <label class="voice-label" for="voiceSelect">목소리</label>
       <select class="voice-select" id="voiceSelect" aria-label="영어 목소리 선택"></select>
@@ -1197,6 +1201,8 @@
   var speakCtaLabel = document.getElementById('speakCtaLabel');
   var voiceRow = document.getElementById('voiceRow');
   var voiceSelect = document.getElementById('voiceSelect');
+  var toneRow = document.getElementById('toneRow');
+  var toneSelect = document.getElementById('toneSelect');
   var SPEAK_LABEL_DEFAULT = '영어로 들어보기';
   var SPEAK_LABEL_PLAYING = '재생 중…';
   var SPEAK_LABEL_ERROR = '재생 실패, 다시 눌러보세요';
@@ -1647,6 +1653,7 @@
   if (!speechOk) {
     speakBtn.hidden = true;
     noSpeechNote.hidden = false;
+    if (toneRow) toneRow.hidden = true;
   } else {
     // 세션 스코프에 유지되는 참조 — 일부 구형 WebKit(iOS Safari)에서 발화 도중
     // utterance가 지역 스코프를 벗어나면 조기 GC되어 소리가 안 나는 경우가 있어 방지
@@ -1675,6 +1682,50 @@
     // 이름·종류로 점수를 매겨 가장 자연스러운 걸 기본으로 고르고,
     // 사용자가 직접 다른 목소리로 바꿔 들어볼 수도 있게 한다.
     var VOICE_KEY = 'pressure-valve-voice-v1';
+    var TONE_KEY = 'pressure-valve-tone-v1';
+
+    // 목소리 이름이 "영어 영국 (en_GB)"처럼 기기마다 제각각이라 알아보기 쉽게 정리한다
+    var LANG_LABELS = {
+      'en-US': '미국 영어', 'en-GB': '영국 영어', 'en-AU': '호주 영어',
+      'en-CA': '캐나다 영어', 'en-IE': '아일랜드 영어', 'en-IN': '인도 영어',
+      'en-NG': '나이지리아 영어', 'en-NZ': '뉴질랜드 영어', 'en-ZA': '남아공 영어'
+    };
+    function friendlyVoiceName(v) {
+      var lang = (v.lang || '').replace('_', '-');
+      var base = LANG_LABELS[lang] || LANG_LABELS[lang.slice(0, 5)] || ('영어 (' + lang + ')');
+      // 기기가 목소리 이름에 사람 이름이나 변형을 담아둔 경우엔 그것도 같이 보여준다
+      var name = (v.name || '').trim();
+      var extra = /^[a-zA-Z]/.test(name) && !/^english/i.test(name) ? ' · ' + name : '';
+      return base + extra;
+    }
+
+    // 성별 정보는 브라우저가 주지 않는다(이름·언어뿐). 대신 음높이·속도로 톤을 바꿔
+    // "낮고 굵게 / 기본 / 밝고 높게"를 고를 수 있게 한다.
+    var TONE_PRESETS = {
+      low:    { label: '낮고 굵게', pitch: 0.75, rate: 0.9 },
+      normal: { label: '기본',      pitch: 1,    rate: 0.95 },
+      bright: { label: '밝고 높게', pitch: 1.3,  rate: 1.02 }
+    };
+    var TONE_ORDER = ['low', 'normal', 'bright'];
+
+    function currentTone() {
+      var saved = null;
+      try { saved = localStorage.getItem(TONE_KEY); } catch (e) { saved = null; }
+      return TONE_PRESETS[saved] ? saved : 'normal';
+    }
+
+    function renderTonePicker() {
+      if (!toneSelect) return;
+      var cur = currentTone();
+      toneSelect.innerHTML = '';
+      TONE_ORDER.forEach(function (key) {
+        var opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = TONE_PRESETS[key].label;
+        if (key === cur) opt.selected = true;
+        toneSelect.appendChild(opt);
+      });
+    }
 
     function englishVoices() {
       try {
@@ -1729,11 +1780,23 @@
       list.forEach(function (v) {
         var opt = document.createElement('option');
         opt.value = v.voiceURI;
-        opt.textContent = v.name + (/en-US/i.test(v.lang) ? '' : ' (' + v.lang + ')');
+        opt.textContent = friendlyVoiceName(v);
         if (current && v.voiceURI === current.voiceURI) opt.selected = true;
         voiceSelect.appendChild(opt);
       });
       voiceRow.hidden = false;
+    }
+
+    if (toneSelect) {
+      toneSelect.addEventListener('change', function () {
+        try { localStorage.setItem(TONE_KEY, toneSelect.value); } catch (e) { /* ignore */ }
+        if (currentPhrase) {
+          try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+          setTimeout(function () {
+            try { doSpeak(currentPhrase.en); } catch (e) { flashSpeakError(); }
+          }, 60);
+        }
+      });
     }
 
     voiceSelect.addEventListener('change', function () {
@@ -1771,9 +1834,10 @@
     function doSpeak(text) {
       var utter = new SpeechSynthesisUtterance(text);
       utter.lang = 'en-US';
-      utter.rate = 0.95;
+      var tone = TONE_PRESETS[currentTone()];
+      utter.rate = tone.rate;
       utter.volume = 1;
-      utter.pitch = 1;
+      utter.pitch = tone.pitch;
       // 목소리 지정이 실패해도(기기 목록이 바뀌었거나 지원 안 하는 경우) 재생 자체는
       // 기본 목소리로 계속 되도록 따로 감싼다
       try {
@@ -1808,6 +1872,7 @@
     });
 
     renderVoicePicker();
+    renderTonePicker();
   }
 
   // Phase 11 · 고정 메뉴에 안 맞는 상황을 위한 opt-in 자유 입력 (프로토타입)
@@ -1914,7 +1979,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '1.5.0';
+  var APP_VERSION = '1.6.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
 
   var versionTag = document.getElementById('versionTag');
