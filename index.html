@@ -402,30 +402,71 @@
     margin-top: 10px;
   }
 
+  /* v1.7.0 — 드롭다운(네이티브 선택창이 화면을 덮음) 대신 바로 누르는 칩으로 */
   .voice-row {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
   }
   .voice-label {
     font-size: 11.5px;
     color: var(--ink-soft);
     flex: none;
+    width: 34px;
   }
-  .voice-select {
+  .voice-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
     flex: 1;
     min-width: 0;
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 12.5px;
-    color: var(--ink);
-    background: var(--surface-2);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 7px 9px;
-    min-height: 36px;
   }
-  .voice-select:focus-visible { outline: 2px solid var(--relief); outline-offset: 1px; }
+  .voice-chip {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    background: var(--surface-2);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 7px 13px;
+    min-height: 36px;
+    cursor: pointer;
+  }
+  .voice-chip:hover { border-color: var(--relief); }
+  .voice-chip:focus-visible { outline: 2px solid var(--relief); outline-offset: 2px; }
+  .voice-chip.active {
+    background: var(--relief-tint);
+    border-color: var(--relief);
+    color: var(--relief);
+    font-weight: 700;
+  }
+
+  /* 업데이트 진행 표시 */
+  .update-progress {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.22);
+    overflow: hidden;
+    margin-top: 9px;
+  }
+  .update-progress span {
+    display: block;
+    height: 100%;
+    width: 40%;
+    border-radius: 999px;
+    background: var(--ember);
+    animation: updateSlide 1s ease-in-out infinite;
+  }
+  @keyframes updateSlide {
+    0% { margin-left: -40%; }
+    100% { margin-left: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .update-progress span { animation: none; width: 100%; margin-left: 0; }
+  }
 
   .result-source {
     font-size: 12px;
@@ -838,12 +879,12 @@
       <span class="speak-cta-label" id="speakCtaLabel">영어로 들어보기</span>
     </button>
     <div class="voice-row" id="toneRow">
-      <label class="voice-label" for="toneSelect">톤</label>
-      <select class="voice-select" id="toneSelect" aria-label="목소리 톤 선택"></select>
+      <span class="voice-label" id="toneLabel">톤</span>
+      <div class="voice-chips" id="toneChips" role="group" aria-labelledby="toneLabel"></div>
     </div>
     <div class="voice-row" id="voiceRow" hidden>
-      <label class="voice-label" for="voiceSelect">목소리</label>
-      <select class="voice-select" id="voiceSelect" aria-label="영어 목소리 선택"></select>
+      <span class="voice-label" id="voiceLabel">발음</span>
+      <div class="voice-chips" id="voiceChips" role="group" aria-labelledby="voiceLabel"></div>
     </div>
     <span class="no-speech-note" id="noSpeechNote" hidden>이 브라우저는 음성 재생을 지원하지 않아요.</span>
     <div class="result-actions">
@@ -864,7 +905,10 @@
   </div>
 
   <div class="update-bar" id="updateBar" hidden role="status">
-    <span class="update-bar-text" id="updateBarText"><b>새 버전이 나왔어요.</b></span>
+    <div style="flex:1; min-width:0">
+      <span class="update-bar-text" id="updateBarText"><b>새 버전이 나왔어요.</b></span>
+      <div class="update-progress" id="updateProgress" hidden><span></span></div>
+    </div>
     <button class="update-bar-btn" id="updateBarBtn" type="button">지금 업데이트</button>
     <button class="update-bar-close" id="updateBarClose" type="button" aria-label="나중에">✕</button>
   </div>
@@ -1200,9 +1244,10 @@
   var speakBtn = document.getElementById('speakBtn');
   var speakCtaLabel = document.getElementById('speakCtaLabel');
   var voiceRow = document.getElementById('voiceRow');
-  var voiceSelect = document.getElementById('voiceSelect');
+  var voiceChips = document.getElementById('voiceChips');
   var toneRow = document.getElementById('toneRow');
-  var toneSelect = document.getElementById('toneSelect');
+  var toneChips = document.getElementById('toneChips');
+  var toneLabel = document.getElementById('toneLabel');
   var SPEAK_LABEL_DEFAULT = '영어로 들어보기';
   var SPEAK_LABEL_PLAYING = '재생 중…';
   var SPEAK_LABEL_ERROR = '재생 실패, 다시 눌러보세요';
@@ -1684,49 +1729,6 @@
     var VOICE_KEY = 'pressure-valve-voice-v1';
     var TONE_KEY = 'pressure-valve-tone-v1';
 
-    // 목소리 이름이 "영어 영국 (en_GB)"처럼 기기마다 제각각이라 알아보기 쉽게 정리한다
-    var LANG_LABELS = {
-      'en-US': '미국 영어', 'en-GB': '영국 영어', 'en-AU': '호주 영어',
-      'en-CA': '캐나다 영어', 'en-IE': '아일랜드 영어', 'en-IN': '인도 영어',
-      'en-NG': '나이지리아 영어', 'en-NZ': '뉴질랜드 영어', 'en-ZA': '남아공 영어'
-    };
-    function friendlyVoiceName(v) {
-      var lang = (v.lang || '').replace('_', '-');
-      var base = LANG_LABELS[lang] || LANG_LABELS[lang.slice(0, 5)] || ('영어 (' + lang + ')');
-      // 기기가 목소리 이름에 사람 이름이나 변형을 담아둔 경우엔 그것도 같이 보여준다
-      var name = (v.name || '').trim();
-      var extra = /^[a-zA-Z]/.test(name) && !/^english/i.test(name) ? ' · ' + name : '';
-      return base + extra;
-    }
-
-    // 성별 정보는 브라우저가 주지 않는다(이름·언어뿐). 대신 음높이·속도로 톤을 바꿔
-    // "낮고 굵게 / 기본 / 밝고 높게"를 고를 수 있게 한다.
-    var TONE_PRESETS = {
-      low:    { label: '낮고 굵게', pitch: 0.75, rate: 0.9 },
-      normal: { label: '기본',      pitch: 1,    rate: 0.95 },
-      bright: { label: '밝고 높게', pitch: 1.3,  rate: 1.02 }
-    };
-    var TONE_ORDER = ['low', 'normal', 'bright'];
-
-    function currentTone() {
-      var saved = null;
-      try { saved = localStorage.getItem(TONE_KEY); } catch (e) { saved = null; }
-      return TONE_PRESETS[saved] ? saved : 'normal';
-    }
-
-    function renderTonePicker() {
-      if (!toneSelect) return;
-      var cur = currentTone();
-      toneSelect.innerHTML = '';
-      TONE_ORDER.forEach(function (key) {
-        var opt = document.createElement('option');
-        opt.value = key;
-        opt.textContent = TONE_PRESETS[key].label;
-        if (key === cur) opt.selected = true;
-        toneSelect.appendChild(opt);
-      });
-    }
-
     function englishVoices() {
       try {
         var voices = cachedVoices.length ? cachedVoices : (window.speechSynthesis.getVoices() || []);
@@ -1734,17 +1736,15 @@
       } catch (e) { return []; }
     }
 
+    // 기기마다 목소리 품질 편차가 커서(구형 eSpeak 계열은 확연한 기계음), 이름·종류로
+    // 점수를 매겨 가장 자연스러운 것이 기본으로 잡히게 한다.
     function voiceScore(v) {
       var name = (v.name || '') + ' ' + (v.voiceURI || '');
       var score = 0;
-      // 신경망·프리미엄 계열일수록 사람 목소리에 가깝다
       if (/neural|natural|premium|enhanced|wavenet|studio|journey|siri/i.test(name)) score += 60;
       if (/google/i.test(name)) score += 25;
-      // 애플 기본 고품질 목소리들
       if (/samantha|ava|allison|serena|karen|daniel|moira/i.test(name)) score += 20;
-      // 확연히 기계음인 구형 엔진들
       if (/espeak|e-speak|compact|pico|eloquence|robot/i.test(name)) score -= 80;
-      // 안드로이드에서 네트워크 목소리가 대체로 더 자연스럽다
       if (v.localService === false) score += 15;
       if (/en-US/i.test(v.lang)) score += 10;
       else if (/en-GB|en-AU/i.test(v.lang)) score += 5;
@@ -1754,6 +1754,98 @@
 
     function sortedEnglishVoices() {
       return englishVoices().slice().sort(function (a, b) { return voiceScore(b) - voiceScore(a); });
+    }
+
+    // 목소리 이름이 "영어 영국 (en_GB)"처럼 기기마다 제각각이라 짧게 정리한다
+    var LANG_LABELS = {
+      'en-US': '미국', 'en-GB': '영국', 'en-AU': '호주', 'en-CA': '캐나다',
+      'en-IE': '아일랜드', 'en-IN': '인도', 'en-NG': '나이지리아',
+      'en-NZ': '뉴질랜드', 'en-ZA': '남아공'
+    };
+    function friendlyVoiceName(v) {
+      var lang = (v.lang || '').replace('_', '-');
+      return LANG_LABELS[lang] || LANG_LABELS[lang.slice(0, 5)] || lang || '기본';
+    }
+
+    // 기기가 성별이 구분된 목소리를 갖고 있으면(구글 TTS의 male_1/female_2 같은 변형)
+    // 그걸 그대로 "남성 / 여성"으로 보여준다. 없으면 아래 톤 방식으로 대체한다.
+    function voiceGender(v) {
+      var s = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+      if (/female|woman|여성/.test(s)) return 'female';
+      if (/\bmale\b|#male|_male|man\b|남성/.test(s)) return 'male';
+      return '';
+    }
+    function hasGenderedVoices() {
+      var g = englishVoices().map(voiceGender);
+      return g.indexOf('male') !== -1 && g.indexOf('female') !== -1;
+    }
+
+    // 성별 구분이 없는 기기를 위한 톤(음높이) 대체 — 낮으면 남성적, 높으면 여성적으로 들린다
+    var TONE_PRESETS = {
+      low:    { label: '남성적', pitch: 0.72, rate: 0.92 },
+      normal: { label: '기본',   pitch: 1,    rate: 0.95 },
+      bright: { label: '여성적', pitch: 1.35, rate: 1.0 }
+    };
+    var TONE_ORDER = ['low', 'normal', 'bright'];
+
+    function currentTone() {
+      var saved = null;
+      try { saved = localStorage.getItem(TONE_KEY); } catch (e) { saved = null; }
+      return TONE_PRESETS[saved] ? saved : 'normal';
+    }
+
+    function makeChip(label, isActive, onTap) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'voice-chip' + (isActive ? ' active' : '');
+      b.textContent = label;
+      b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      b.addEventListener('click', onTap);
+      return b;
+    }
+
+    // 방금 고른 설정으로 바로 다시 읽어줘서 비교가 쉽도록
+    function replaySample() {
+      if (!currentPhrase) return;
+      try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+      setTimeout(function () {
+        try { doSpeak(currentPhrase.en); } catch (e) { flashSpeakError(); }
+      }, 60);
+    }
+
+    function renderTonePicker() {
+      if (!toneChips) return;
+      toneChips.innerHTML = '';
+
+      if (hasGenderedVoices()) {
+        // 진짜 남성/여성 목소리가 있는 기기 — 톤 대신 실제 목소리를 고르게 한다
+        if (toneLabel) toneLabel.textContent = '목소리';
+        var current = pickEnglishVoice();
+        [['male', '남성'], ['female', '여성']].forEach(function (pair) {
+          var pick = englishVoices().filter(function (v) { return voiceGender(v) === pair[0]; })[0];
+          if (!pick) return;
+          var active = !!(current && current.voiceURI === pick.voiceURI);
+          toneChips.appendChild(makeChip(pair[1], active, function () {
+            try { localStorage.setItem(VOICE_KEY, pick.voiceURI); } catch (e) { /* ignore */ }
+            try { localStorage.setItem(TONE_KEY, 'normal'); } catch (e) { /* ignore */ }
+            renderTonePicker();
+            renderVoicePicker();
+            replaySample();
+          }));
+        });
+        return;
+      }
+
+      // 성별 구분이 없는 기기 — 음높이로 남성적/여성적 느낌을 만든다
+      if (toneLabel) toneLabel.textContent = '톤';
+      var cur = currentTone();
+      TONE_ORDER.forEach(function (key) {
+        toneChips.appendChild(makeChip(TONE_PRESETS[key].label, key === cur, function () {
+          try { localStorage.setItem(TONE_KEY, key); } catch (e) { /* ignore */ }
+          renderTonePicker();
+          replaySample();
+        }));
+      });
     }
 
     function pickEnglishVoice() {
@@ -1770,45 +1862,24 @@
       } catch (e) { return null; }
     }
 
-    // 목소리 선택 드롭다운 — 고를 게 2개 이상 있을 때만 보여준다
+    // 발음(미국·영국·호주 등) 선택 — 역시 칩으로, 고를 게 2개 이상일 때만 보여준다
     function renderVoicePicker() {
-      if (!voiceRow || !voiceSelect) return;
+      if (!voiceRow || !voiceChips) return;
       var list = sortedEnglishVoices();
       if (list.length < 2) { voiceRow.hidden = true; return; }
       var current = pickEnglishVoice();
-      voiceSelect.innerHTML = '';
+      voiceChips.innerHTML = '';
       list.forEach(function (v) {
-        var opt = document.createElement('option');
-        opt.value = v.voiceURI;
-        opt.textContent = friendlyVoiceName(v);
-        if (current && v.voiceURI === current.voiceURI) opt.selected = true;
-        voiceSelect.appendChild(opt);
+        var active = !!(current && current.voiceURI === v.voiceURI);
+        voiceChips.appendChild(makeChip(friendlyVoiceName(v), active, function () {
+          try { localStorage.setItem(VOICE_KEY, v.voiceURI); } catch (e) { /* ignore */ }
+          renderVoicePicker();
+          renderTonePicker();
+          replaySample();
+        }));
       });
       voiceRow.hidden = false;
     }
-
-    if (toneSelect) {
-      toneSelect.addEventListener('change', function () {
-        try { localStorage.setItem(TONE_KEY, toneSelect.value); } catch (e) { /* ignore */ }
-        if (currentPhrase) {
-          try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
-          setTimeout(function () {
-            try { doSpeak(currentPhrase.en); } catch (e) { flashSpeakError(); }
-          }, 60);
-        }
-      });
-    }
-
-    voiceSelect.addEventListener('change', function () {
-      try { localStorage.setItem(VOICE_KEY, voiceSelect.value); } catch (e) { /* ignore */ }
-      // 고른 목소리를 바로 들려줘서 비교하기 쉽게
-      if (currentPhrase) {
-        try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
-        setTimeout(function () {
-          try { doSpeak(currentPhrase.en); } catch (e) { flashSpeakError(); }
-        }, 60);
-      }
-    });
 
     function flashSpeakError() {
       speakBtn.classList.remove('playing');
@@ -1979,14 +2050,16 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '1.6.0';
+  var APP_VERSION = '1.7.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
+  var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
   var versionTag = document.getElementById('versionTag');
   var updateBar = document.getElementById('updateBar');
   var updateBarText = document.getElementById('updateBarText');
   var updateBarBtn = document.getElementById('updateBarBtn');
   var updateBarClose = document.getElementById('updateBarClose');
+  var updateProgress = document.getElementById('updateProgress');
   var updateDone = document.getElementById('updateDone');
   var updateDoneText = document.getElementById('updateDoneText');
 
@@ -1997,20 +2070,36 @@
   // 배너가 무한히 다시 뜨는 걸 막기 위해, 그 버전은 이번 세션 동안 다시 알리지 않는다.
   var failedVersion = null;
 
-  (function showUpdateDoneIfJustUpdated() {
+  function showUpdateDone(text) {
+    if (!updateDone) return;
+    updateDoneText.textContent = text;
+    updateDone.hidden = false;
+    setTimeout(function () { updateDone.hidden = true; }, 5000);
+  }
+
+  (function confirmUpdateOnLoad() {
+    // (1) "지금 업데이트"를 눌러서 새로고침된 직후
     var pending = null;
     try { pending = sessionStorage.getItem(UPDATE_FLAG_KEY); } catch (e) { pending = null; }
-    if (!pending) return;
-    try { sessionStorage.removeItem(UPDATE_FLAG_KEY); } catch (e) { /* ignore */ }
-    if (!updateDone) return;
-    if (pending === APP_VERSION) {
-      updateDoneText.textContent = '업데이트 완료 — 최신 버전 v' + APP_VERSION + '이에요';
-    } else {
-      failedVersion = pending;
-      updateDoneText.textContent = '아직 v' + APP_VERSION + '이에요 — 서버 반영을 기다리는 중일 수 있어요';
+    if (pending) {
+      try { sessionStorage.removeItem(UPDATE_FLAG_KEY); } catch (e) { /* ignore */ }
+      if (pending === APP_VERSION) {
+        showUpdateDone('업데이트 완료 — 최신 버전 v' + APP_VERSION + '이에요');
+      } else {
+        failedVersion = pending;
+        showUpdateDone('아직 v' + APP_VERSION + '이에요 — 서버 반영을 기다리는 중일 수 있어요');
+      }
     }
-    updateDone.hidden = false;
-    setTimeout(function () { updateDone.hidden = true; }, 4500);
+
+    // (2) 배너를 거치지 않고 조용히 새 버전으로 바뀐 경우에도 알려준다.
+    // 앱은 열 때마다 최신 HTML을 받아오기 때문에, 실제로는 배너를 볼 새 없이
+    // 이미 업데이트돼 있는 경우가 대부분이다. 그때도 "바뀌었다"를 확실히 보여준다.
+    var lastSeen = null;
+    try { lastSeen = localStorage.getItem(LAST_SEEN_KEY); } catch (e) { lastSeen = null; }
+    if (!pending && lastSeen && lastSeen !== APP_VERSION) {
+      showUpdateDone('업데이트됐어요 — v' + lastSeen + ' → v' + APP_VERSION);
+    }
+    try { localStorage.setItem(LAST_SEEN_KEY, APP_VERSION); } catch (e) { /* ignore */ }
   })();
 
   var dismissedVersion = null;
@@ -2026,7 +2115,10 @@
   function applyUpdate() {
     var next = updateBar.getAttribute('data-next-version') || '';
     updateBarBtn.disabled = true;
-    updateBarBtn.textContent = '업데이트 중…';
+    updateBarBtn.textContent = '받는 중…';
+    updateBarText.innerHTML = '<b>업데이트 중이에요…</b> v' + APP_VERSION + ' → v' + next;
+    if (updateProgress) updateProgress.hidden = false; // 진행 막대로 지금 뭔가 되고 있음을 보여준다
+    if (updateBarClose) updateBarClose.hidden = true;
     try { sessionStorage.setItem(UPDATE_FLAG_KEY, next); } catch (e) { /* ignore */ }
 
     // 캐시와 서비스 워커를 정리한 뒤 새로 받아온다 — 예전 화면이 남는 일이 없도록
