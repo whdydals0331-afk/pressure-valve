@@ -1414,7 +1414,9 @@
   // 순한맛/중간맛/매운맛 3단계 자동 추천 구간
   var INTENSITY_BAND_MEDIUM_FROM = 34; // 100/3 -- 순한맛 0~33% / 중간맛 34~66% / 매운맛 67~100%, 3등분
   var INTENSITY_BAND_SPICY_FROM = 67;
-  var userSetIntensity = false; // 사용자가 강도를 직접 누르면 true — 이후 슬라이더가 더 이상 자동으로 안 바꿈
+  // v1.5.0 — 게이지와 강도는 항상 양방향으로 붙어 있다.
+  // 예전엔 강도를 직접 누르면 잠겨서 슬라이더를 90%로 올려도 순한맛 그대로였고,
+  // 그게 "순한맛인데 90%" 같은 어긋난 화면의 원인이었다. 잠금 개념 자체를 없앴다.
   var stressLevel = 50;
   function renderGauge(pct) {
     pct = Math.max(0, Math.min(100, Math.round(pct)));
@@ -1431,8 +1433,16 @@
     return 'mild';
   }
   function applyIntensitySuggestion(pct) {
-    if (userSetIntensity) return;
-    setIntensity(suggestIntensityFor(pct), false);
+    var next = suggestIntensityFor(pct);
+    if (next === intensity) return; // 같은 구간 안에서 움직일 땐 굳이 다시 그리지 않는다
+    setIntensity(next, false);
+  }
+
+  // 강도 버튼을 눌렀을 때 게이지가 가야 할 대표 위치 (각 구간의 가운데쯤)
+  function gaugeValueForIntensity(level) {
+    if (level === 'spicy') return 84;
+    if (level === 'medium') return 50;
+    return 17;
   }
 
   function intensityIcon(level) {
@@ -1603,20 +1613,19 @@
       : intensity === 'medium'
       ? '중간맛 — damn, hell, crap처럼 살짝 센 표현이 섞여요. 순한맛보단 강하고 매운맛보단 약해요.'
       : '순한맛 — 육두문자 없이, 그래도 시원한 표현들이에요.';
-    // Phase 9 · 슬라이더 힌트 — 게이지를 움직이면 강도가 자동으로 같이 바뀐다는 걸
-    // 사용자가 처음 봐도 알 수 있게, 지금 자동/수동 상태를 그때그때 알려준다.
+    // 게이지와 강도는 항상 붙어 움직인다 — 어느 쪽을 만져도 나머지가 따라온다
     if (gaugeSliderHint) {
-      gaugeSliderHint.textContent = userSetIntensity
-        ? '지금은 강도를 직접 골라둔 상태라, 슬라이더를 움직여도 강도는 안 바뀌어요.'
-        : '슬라이더를 움직이면 강도(순한맛·중간맛·매운맛)도 자동으로 같이 바뀌어요.';
+      gaugeSliderHint.textContent = '게이지와 강도는 같이 움직여요. 슬라이더를 올리면 맛이 세지고, 맛을 고르면 게이지도 따라가요.';
     }
   }
 
   intensityToggle.addEventListener('click', function (e) {
     var btn = e.target.closest('button[data-mode]');
     if (!btn) return;
-    userSetIntensity = true; // 직접 고른 뒤에는 슬라이더가 더 이상 자동으로 바꾸지 않는다
-    setIntensity(btn.getAttribute('data-mode'), true);
+    var mode = btn.getAttribute('data-mode');
+    setIntensity(mode, true);
+    // 양방향 동기화 — 맛을 고르면 게이지도 그 구간으로 옮겨간다
+    renderGauge(gaugeValueForIntensity(mode));
     // 버그 수정 — 특정 상황(2번) 칩을 골라둔 상태에서 강도만 바꾸면, 칩은 계속 "선택됨"으로
     // 보이는데 실제로는 카테고리 랜덤 문구가 대신 떠서 서로 안 맞았음. 상황이 선택돼 있으면
     // 그 상황을 새 강도로 다시 매칭해서 보여주고, 아무 상황도 안 골랐을 때만 랜덤으로 보여준다.
@@ -1630,7 +1639,7 @@
   if (stressSlider) {
     stressSlider.addEventListener('input', function () {
       renderGauge(parseInt(stressSlider.value, 10));
-      applyIntensitySuggestion(stressLevel);
+      applyIntensitySuggestion(stressLevel); // 구간이 바뀌면 맛도 따라 바뀐다
     });
   }
 
@@ -1905,7 +1914,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '1.4.0';
+  var APP_VERSION = '1.5.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
 
   var versionTag = document.getElementById('versionTag');
@@ -2004,19 +2013,17 @@
   // init — 게이지 수치와 강도 라벨이 처음부터 어긋나 보이지 않게 맞춘다.
   // 예전엔 게이지는 늘 50%(중간맛 구간)로 시작하는데 강도는 저장된 값(주로 순한맛)이라
   // "50%인데 순한맛"처럼 서로 안 맞는 상태로 열렸다.
-  // - 사용자가 강도를 직접 고른 적이 있으면(저장된 값이 있으면) 그 선택을 존중하고,
-  //   게이지 쪽을 그 강도 구간에 맞춰 시작한다.
-  // - 고른 적이 없으면 게이지(50%)에 맞는 강도를 자동으로 따라가게 한다.
+  // - 지난번에 고른 맛이 있으면 그 맛과 그 구간의 게이지로 시작하고,
+  // - 없으면 게이지 50%와 거기에 맞는 맛(중간맛)으로 시작한다.
   var hasSavedIntensity = false;
   try { hasSavedIntensity = !!localStorage.getItem(SPICY_KEY); } catch (e) { hasSavedIntensity = false; }
 
   if (hasSavedIntensity) {
-    userSetIntensity = true;
     setIntensity(intensity, false);
-    renderGauge(intensity === 'spicy' ? 84 : intensity === 'medium' ? 50 : 17);
+    renderGauge(gaugeValueForIntensity(intensity));
   } else {
     renderGauge(stressLevel);
-    applyIntensitySuggestion(stressLevel);
+    setIntensity(suggestIntensityFor(stressLevel), false);
   }
 
   renderValves();
