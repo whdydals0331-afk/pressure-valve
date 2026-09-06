@@ -1835,18 +1835,22 @@
       return g.indexOf('male') !== -1 && g.indexOf('female') !== -1;
     }
 
-    // 성별 구분이 없는 기기를 위한 톤(음높이) 대체 — 낮으면 남성적, 높으면 여성적으로 들린다
+    // 성별 구분 목소리가 없는 기기용 — 음높이로 남성/여성 느낌을 만든다.
+    // 여성은 기기 기본 음높이 그대로(가장 듣기 편함), 남성은 확실히 낮춘다.
     var TONE_PRESETS = {
-      low:    { label: '남성적', pitch: 0.72, rate: 0.92 },
-      normal: { label: '기본',   pitch: 1,    rate: 0.95 },
-      bright: { label: '여성적', pitch: 1.35, rate: 1.0 }
+      male:   { label: '남성', pitch: 0.55, rate: 0.9 },
+      female: { label: '여성', pitch: 1,    rate: 0.95 }
     };
-    var TONE_ORDER = ['low', 'normal', 'bright'];
+    var TONE_ORDER = ['male', 'female'];
+
+    // 예전 저장값(low/normal/bright)을 새 두 가지로 옮겨준다
+    var TONE_MIGRATION = { low: 'male', normal: 'female', bright: 'female' };
 
     function currentTone() {
       var saved = null;
       try { saved = localStorage.getItem(TONE_KEY); } catch (e) { saved = null; }
-      return TONE_PRESETS[saved] ? saved : 'normal';
+      if (saved && TONE_MIGRATION[saved]) saved = TONE_MIGRATION[saved];
+      return TONE_PRESETS[saved] ? saved : 'female';
     }
 
     function makeChip(label, isActive, onTap) {
@@ -1859,14 +1863,11 @@
       return b;
     }
 
-    // 방금 고른 설정으로 바로 다시 읽어줘서 비교가 쉽도록
-    function replaySample() {
-      if (!currentPhrase) return;
-      try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
-      setTimeout(function () {
-        try { doSpeak(currentPhrase.en); } catch (e) { flashSpeakError(); }
-      }, 60);
-    }
+    // 설정을 바꿔도 소리를 자동으로 내지 않는다.
+    // 예전엔 바로 들려주려고 자동 재생했는데, 갑자기 소리가 나는 게 놀랍고
+    // 버튼을 누르지도 않았는데 재생되는 것처럼 보여서 뺐다.
+    // 재생은 오직 "영어로 들어보기" 버튼을 눌렀을 때만 일어난다.
+    function replaySample() { /* 자동 재생하지 않음 */ }
 
     function renderTonePicker() {
       if (!toneChips) return;
@@ -1891,8 +1892,8 @@
         return;
       }
 
-      // 성별 구분이 없는 기기 — 음높이로 남성적/여성적 느낌을 만든다
-      if (toneLabel) toneLabel.textContent = '톤';
+      // 성별 구분이 없는 기기 — 음높이로 남성/여성 느낌을 만든다(라벨은 동일하게 "목소리")
+      if (toneLabel) toneLabel.textContent = '목소리';
       var cur = currentTone();
       TONE_ORDER.forEach(function (key) {
         toneChips.appendChild(makeChip(TONE_PRESETS[key].label, key === cur, function () {
@@ -2106,7 +2107,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '1.9.0';
+  var APP_VERSION = '2.0.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
