@@ -1744,7 +1744,15 @@
     function englishVoices() {
       try {
         var voices = cachedVoices.length ? cachedVoices : (window.speechSynthesis.getVoices() || []);
-        return voices.filter(function (v) { return /^en/i.test(v.lang); });
+        var seen = {};
+        // 같은 목소리를 두 번 넘겨주는 기기가 있어 voiceURI 기준으로 중복을 걸러낸다
+        return voices.filter(function (v) {
+          if (!/^en/i.test(v.lang)) return false;
+          var key = v.voiceURI || (v.name + '|' + v.lang);
+          if (seen[key]) return false;
+          seen[key] = true;
+          return true;
+        });
       } catch (e) { return []; }
     }
 
@@ -1774,10 +1782,45 @@
       'en-IE': '아일랜드', 'en-IN': '인도', 'en-NG': '나이지리아',
       'en-NZ': '뉴질랜드', 'en-ZA': '남아공'
     };
-    function friendlyVoiceName(v) {
+    function baseVoiceLabel(v) {
       var lang = (v.lang || '').replace('_', '-');
       return LANG_LABELS[lang] || LANG_LABELS[lang.slice(0, 5)] || lang || '기본';
     }
+
+    // 같은 나라 목소리가 여러 개인 기기가 많다(미국 영어만 3개인 경우 등).
+    // 그때 전부 "미국"으로만 뜨면 구분이 안 되므로, 성별이나 변형 코드로 꼬리표를 붙인다.
+    function voiceVariantHint(v) {
+      var g = voiceGender(v);
+      if (g === 'male') return '남성';
+      if (g === 'female') return '여성';
+      var s = (v.name || '') + ' ' + (v.voiceURI || '');
+      // 알아보기 쉬운 순서로 — 서버 목소리인지 먼저, 그다음 기기 내부 변형 코드
+      if (/network|online|서버/i.test(s) || v.localService === false) return '온라인';
+      var m = s.match(/-x-([a-z]{2,4})[#\-]/i);      // 구글 TTS 변형 코드: en-us-x-sfg#...
+      if (m) return m[1].toLowerCase();
+      var n = (v.name || '').replace(/english|영어/ig, '').replace(/[()_#-]/g, ' ').trim();
+      if (n && n.length <= 12) return n;
+      return '';
+    }
+
+    // 목록에서 중복 라벨이 생기면 꼬리표(없으면 번호)를 붙여 유일하게 만든다
+    function labelVoices(list) {
+      var counts = {};
+      list.forEach(function (v) {
+        var b = baseVoiceLabel(v);
+        counts[b] = (counts[b] || 0) + 1;
+      });
+      var seen = {};
+      return list.map(function (v) {
+        var b = baseVoiceLabel(v);
+        if (counts[b] <= 1) return b;
+        seen[b] = (seen[b] || 0) + 1;
+        var hint = voiceVariantHint(v);
+        return b + ' ' + (hint || seen[b]);
+      });
+    }
+
+    function friendlyVoiceName(v) { return baseVoiceLabel(v); }
 
     // 기기가 성별이 구분된 목소리를 갖고 있으면(구글 TTS의 male_1/female_2 같은 변형)
     // 그걸 그대로 "남성 / 여성"으로 보여준다. 없으면 아래 톤 방식으로 대체한다.
@@ -1880,10 +1923,11 @@
       var list = sortedEnglishVoices();
       if (list.length < 2) { voiceRow.hidden = true; return; }
       var current = pickEnglishVoice();
+      var labels = labelVoices(list);
       voiceChips.innerHTML = '';
-      list.forEach(function (v) {
+      list.forEach(function (v, i) {
         var active = !!(current && current.voiceURI === v.voiceURI);
-        voiceChips.appendChild(makeChip(friendlyVoiceName(v), active, function () {
+        voiceChips.appendChild(makeChip(labels[i], active, function () {
           try { localStorage.setItem(VOICE_KEY, v.voiceURI); } catch (e) { /* ignore */ }
           renderVoicePicker();
           renderTonePicker();
@@ -2062,7 +2106,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '1.8.0';
+  var APP_VERSION = '1.9.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 

@@ -9,7 +9,7 @@
 // 이제 온라인이면 항상 최신 HTML을 받고, 오프라인일 때만 캐시로 대체한다.
 // 아이콘·매니페스트 같은 정적 파일은 기존처럼 캐시 우선으로 빠르게 띄운다.
 
-const CACHE_NAME = 'pressure-valve-v2';
+const CACHE_NAME = 'pressure-valve-v3';
 const CORE_ASSETS = [
   '/',
   '/index.html',
@@ -24,6 +24,11 @@ self.addEventListener('install', function (event) {
       .then(function (cache) { return cache.addAll(CORE_ASSETS); })
       .then(function () { return self.skipWaiting(); })
   );
+});
+
+// 페이지에서 "지금 업데이트"를 누르면 대기 중인 새 워커를 즉시 활성화한다
+self.addEventListener('message', function (event) {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', function (event) {
@@ -55,6 +60,9 @@ self.addEventListener('fetch', function (event) {
 
   // AI 자유 입력 백엔드는 절대 캐싱하지 않는다 (항상 실시간 응답이어야 함)
   if (url.pathname.indexOf('/api/') === 0) return;
+
+  // 버전 확인 파일도 캐싱하지 않는다 — 캐시되면 새 버전을 영영 못 알아챈다
+  if (url.pathname === '/version.json') return;
 
   if (isHtmlRequest(req, url)) {
     // 페이지: 네트워크 우선 — 배포 직후에도 바로 최신 화면이 뜬다
