@@ -2244,6 +2244,7 @@
         resultSource.hidden = false;
       }
       aiVentInput.value = ''; // 성공했을 때만 비운다 — 실패하면 다시 누를 수 있게 남겨둠
+      try { sessionStorage.removeItem('pressure-valve-ai-draft'); } catch (e) { /* ignore */ }
       setAiVentStatus('', false);
     }).catch(function (err) {
       var code = (err && err.message) ? err.message : 'no-backend';
@@ -2257,12 +2258,27 @@
     });
   }
 
+  // 작성 중이던 텍스트 자동 임시 저장 및 새로고침 시 복원
+  var DRAFT_KEY = 'pressure-valve-ai-draft';
+  if (aiVentInput) {
+    try {
+      var savedDraft = sessionStorage.getItem(DRAFT_KEY);
+      if (savedDraft) aiVentInput.value = savedDraft;
+    } catch (e) { /* ignore */ }
+
+    aiVentInput.addEventListener('input', function () {
+      try {
+        sessionStorage.setItem(DRAFT_KEY, aiVentInput.value);
+      } catch (e) { /* ignore */ }
+    });
+  }
+
   if (aiVentSubmit) aiVentSubmit.addEventListener('click', submitAiVent);
 
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.3.0';
+  var APP_VERSION = '2.3.1';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
