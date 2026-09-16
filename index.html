@@ -1121,30 +1121,97 @@
 
   // 상황을 직접 고르면 키워드 매칭 없이 그 상황 전용 표현이 정확히 나온다 (100% 매치 보장)
   var SITUATIONS = [
-    { id: "s-taskdump", catId: "work", label: "상사가 갑자기 일 던짐",
-      mild: { en: "This deadline is killing me.", ko: "이 마감 때문에 죽겠다는 과장된 표현이에요.", tip: "실제로 힘들다는 뜻이지 진짜 위협이 아니라, 캐주얼하게 씁니다." },
-      medium: { en: "Damn, another thing just got dumped on me.", ko: "젠장, 또 일이 던져졌다는 뜻이에요.", tip: "갑자기 일이 떨어졌을 때 가볍게 욕 섞어서 말할 때." },
-      spicy: { en: "This deadline is bullshit.", ko: "이 마감 진짜 개소리(말도 안 됨)라는 뜻이에요.", tip: "마감 자체를 평가하며 욕하는 방식, 원어민들이 마감에 화날 때 자주 쓰는 패턴이에요." } },
-    { id: "s-lateleave", catId: "work", label: "퇴근 직전에 일 생김",
-      mild: { en: "I am so done with today.", ko: "오늘 진짜 지쳤다, 끝났다는 뜻이에요.", tip: "퇴근길에 혼잣말처럼 던지기 좋은 톤이에요." },
-      medium: { en: "Damn it, right before I leave?", ko: "젠장, 퇴근 직전에?라는 뜻이에요.", tip: "타이밍이 최악일 때 가볍게 욕을 섞어서." },
-      spicy: { en: "I'm so fucking done with this.", ko: "나 이거 진짜 존나 지쳤다는 뜻이에요.", tip: "강도가 센 표현이라 아주 편한 사이에서만." } },
-    { id: "s-meeting", catId: "work", label: "회의·보고 스트레스",
-      mild: { en: "Can we please just stop for today?", ko: "오늘은 제발 여기까지 하자는 뜻이에요.", tip: "회의나 야근을 끊고 싶을 때." },
-      medium: { en: "This meeting is dragging on forever, damn it.", ko: "이 회의 진짜 안 끝난다는 뜻이에요.", tip: "지루하게 늘어지는 회의에 대한 중간 강도 표현이에요." },
-      spicy: { en: "What the fuck is going on today?", ko: "오늘 진짜 대체 뭔 일이냐는 뜻이에요(강한 버전).", tip: "hell보다 훨씬 강한 fuck으로 바꾼 표현, 아주 편한 사이·혼잣말용." } },
-    { id: "s-overload", catId: "work", label: "일이 한꺼번에 몰림",
-      mild: { en: "Why does everything happen at once?", ko: "왜 이렇게 한꺼번에 몰리는 거야, 라는 한탄이에요.", tip: "일이 겹칠 때 자연스럽게 나오는 말." },
-      medium: { en: "Everything's piling up and it's driving me crazy.", ko: "다 한꺼번에 쌓여서 미치겠다는 뜻이에요.", tip: "여러 일이 겹쳐서 답답할 때 쓰는 표현이에요." },
-      spicy: { en: "This job is kicking my ass.", ko: "이 일이 나를 완전히 조지고 있다는 관용구예요.", tip: "업무 강도가 너무 셀 때, 편한 대화에서." } },
-    { id: "s-unfair", catId: "work", label: "부당한 지시·갑질",
-      mild: { en: "That request wasn't fair.", ko: "그 요구는 부당했다는 뜻이에요.", tip: "부당한 지시를 담담하게 짚을 때." },
-      medium: { en: "That request was total crap.", ko: "그 요구는 완전 헛소리였다는 뜻이에요.", tip: "crap은 bullshit보다 순한 대체 표현이에요." },
-      spicy: { en: "That was such bullshit.", ko: "그거 완전 개소리였다는 뜻이에요.", tip: "부당한 갑질에 대한 강한 반응." } },
-    { id: "s-unrecognized", catId: "work", label: "성과 안 알아줌",
-      mild: { en: "Nobody noticed how hard I worked.", ko: "내가 얼마나 열심히 했는지 아무도 몰라줬다는 뜻이에요.", tip: "노력을 인정받지 못했을 때." },
-      medium: { en: "I worked my tail off and nobody noticed, damn it.", ko: "죽어라 일했는데 아무도 몰라줬다는 뜻이에요, 젠장.", tip: "노력을 인정 못 받았을 때 답답함을 담아서." },
-      spicy: { en: "I busted my ass and no one gives a damn.", ko: "죽어라 했는데 아무도 신경 안 쓴다는 뜻이에요.", tip: "노력이 무시당한 것에 대한 분노." } },
+    // ── [1. 월요병 & 출근] ──
+    { id: "s-mondayblues", catId: "work", sub: "월요병 & 출근", label: "월요일 아침 출근길",
+      mild: { en: "I can't believe it's Monday again.", ko: "또 월요일이라니 진짜 믿기 싫다는 탄식이에요.", tip: "출근길 만원 지하철에서 혼자 삼키는 한숨." },
+      medium: { en: "Monday mornings are a damn nightmare.", ko: "월요일 아침은 진짜 젠장 악몽 같다는 뜻이에요.", tip: "일주일 시작부터 진이 빠질 때." },
+      spicy: { en: "Fuck Monday, seriously. I can't do this shit.", ko: "월요일 진짜 엿먹어라, 이 짓거리 못 해먹겠다는 뜻이에요.", tip: "주말 순삭 후 출근길 극대노." } },
+    { id: "s-sundaydread", catId: "work", sub: "월요병 & 출근", label: "일요일 밤 출근 공포",
+      mild: { en: "Tomorrow is Monday and I'm already stressed.", ko: "내일 월요일인데 벌써 숨 막힌다는 뜻이에요.", tip: "일요일 저녁부터 가슴이 답답할 때." },
+      medium: { en: "Sunday night dread is hitting me damn hard.", ko: "일요일 밤 출근 불안이 젠장 너무 세게 온다는 뜻이에요.", tip: "개비스콘 마려운 일요일 밤." },
+      spicy: { en: "I don't get paid enough for this Sunday dread bullshit.", ko: "일요일 밤부터 이딴 개같은 스트레스 받을 만큼 돈 안 받는다는 뜻이에요.", tip: "출근 전날 밤 혼잣말로 씹어 뱉기 좋은 표현." } },
+
+    // ── [2. 상사 갑질 & 가스라이팅] ──
+    { id: "s-micromanage", catId: "work", sub: "상사 갑질 & 가스라이팅", label: "숨 막히는 마이크로매니징",
+      mild: { en: "Stop checking over my shoulder every five minutes.", ko: "5분마다 등 뒤에서 감시 좀 그만하라는 뜻이에요.", tip: "일거수일투족 감시당할 때." },
+      medium: { en: "Stop breathing down my damn neck.", ko: "내 뒤에서 젠장 숨소리 내면서 감시질 좀 그만하라는 관용구예요.", tip: "breathe down one's neck은 숨 막히게 감시한다는 대표적 표현." },
+      spicy: { en: "Get off my fucking back, I know how to do my job.", ko: "내 등 뒤에서 좀 꺼져, 내 일 내가 알아서 하니까라는 뜻이에요.", tip: "감시하는 상사 면전에 대고 지르고 싶은 속마음." } },
+    { id: "s-gaslighting", catId: "work", sub: "상사 갑질 & 가스라이팅", label: "상사의 가스라이팅·내 탓 돌리기",
+      mild: { en: "You never said that in the first place.", ko: "애초에 그렇게 말씀 안 하셨잖아요라는 정중한 반박이에요.", tip: "말 바꾸는 상사에게 팩트로 짚을 때." },
+      medium: { en: "Don't try to pin your damn mistake on me.", ko: "당신 젠장 실수를 나한테 뒤집어씌우지 말라는 뜻이에요.", tip: "자기 잘못 부하에게 덤터기 씌울 때." },
+      spicy: { en: "Are you out of your goddamn mind? You literally approved this.", ko: "너 진짜 돌았냐? 네가 승인해줬잖아라는 극대노 표현이에요.", tip: "자기가 결재해놓고 딴소리할 때." } },
+    { id: "s-taskdump", catId: "work", sub: "상사 갑질 & 가스라이팅", label: "상사가 갑자기 일 던짐",
+      mild: { en: "This deadline makes no sense.", ko: "이 마감 기한은 진짜 말이 안 된다는 뜻이에요.", tip: "터무니없는 일정에 답답할 때." },
+      medium: { en: "Damn it, another pile of garbage just dumped on my desk.", ko: "젠장, 또 쓰레기 같은 일거리 내 책상에 쏟아졌다는 뜻이에요.", tip: "갑자기 일거리 폭탄 맞았을 때." },
+      spicy: { en: "I don't get paid enough for this bullshit.", ko: "내가 이 개지랄 보려고 월급 받는 줄 아냐는 완벽한 실전 직장인 표현이에요.", tip: "더 이상 못 참겠는 부당한 업무량에." } },
+    { id: "s-creditsteal", catId: "work", sub: "상사 갑질 & 가스라이팅", label: "내 성과 가로채는 상사",
+      mild: { en: "That was entirely my idea.", ko: "그거 완전히 내 아이디어였다는 억울함의 토로예요.", tip: "회의 때 내 아이디어 홀라당 뺏겼을 때." },
+      medium: { en: "Taking credit for my work is pretty damn low.", ko: "내 성과 쏙 가로채는 거 진짜 젠장 치사하다는 뜻이에요.", tip: "숟가락 얹는 상사·동료를 비꼴 때." },
+      spicy: { en: "You stole my fucking work and acted like you did it.", ko: "내 작업물 훔쳐가서 지가 한 척하네 개새끼가라는 분노예요.", tip: "성과 도둑맞았을 때의 피눈물 나는 분노." } },
+    { id: "s-dumbdecision", catId: "work", sub: "상사 갑질 & 가스라이팅", label: "상사의 무능과 헛발질",
+      mild: { en: "We're going in circles because of bad leadership.", ko: "리더십 부재 때문에 제자리걸음만 맴돈다는 뜻이에요.", tip: "방향 없이 헤매는 프로젝트에." },
+      medium: { en: "This whole decision is completely backwards, damn it.", ko: "이 결정 자체가 젠장 완전히 거꾸로 가고 있다는 뜻이에요.", tip: "삽질하는 결정을 보며 속 터질 때." },
+      spicy: { en: "Who the fuck approved this absolute garbage idea?", ko: "도대체 어떤 새끼가 이 좆같은 아이디어를 승인한 거야?라는 뜻이에요.", tip: "말도 안 되는 삽질 프로젝트를 볼 때." } },
+    { id: "s-yelling", catId: "work", sub: "상사 갑질 & 가스라이팅", label: "감정 쓰레기통 취급할 때",
+      mild: { en: "I'm not here to take your bad mood.", ko: "나 당신 기분 맞춰주러 출근한 거 아니라는 뜻이에요.", tip: "히스테리 부리는 사람 앞에서." },
+      medium: { en: "Don't take your damn frustration out on me.", ko: "당신 짜증을 왜 젠장 나한테 푸냐는 뜻이에요.", tip: "화풀이 대상이 되었을 때." },
+      spicy: { en: "Shut the hell up already, I'm not your punching bag.", ko: "아가리 좀 닥쳐, 내가 네 샌드백인 줄 아냐는 통쾌한 일갈이에요.", tip: "가이드라인 추천 문구, 히스테리 상사 퇴치용." } },
+
+    // ── [3. 야근 & 갈려나감] ──
+    { id: "s-lateleave", catId: "work", sub: "야근 & 갈려나감", label: "퇴근 10분 전 기습 업무",
+      mild: { en: "I was literally packing my bag.", ko: "나 진짜 가방 싸고 있었는데라는 허탈한 탄식이에요.", tip: "정시 퇴근 직전에 잡혔을 때." },
+      medium: { en: "Dropping this right before I leave is so damn dirty.", ko: "퇴근 직전에 이거 던지는 건 젠장 너무 야비하다는 뜻이에요.", tip: "악질적인 타이밍에 대한 분노." },
+      spicy: { en: "Right before I fucking leave? Are you serious?", ko: "나 퇴근하기 직전에 이 지랄이라고? 장난까냐?라는 뜻이에요.", tip: "외투 입고 컴퓨터 끌 때 잡혔을 때." } },
+    { id: "s-weekendwork", catId: "work", sub: "야근 & 갈려나감", label: "주말 출근·휴일 업무 연락",
+      mild: { en: "It's my day off, please respect that.", ko: "내 휴일입니다, 제발 존중해 달라는 정중한 방어예요.", tip: "주말 슬랙/카톡 테러에." },
+      medium: { en: "Contacting me on the weekend is crossed a damn line.", ko: "주말에 업무 연락하는 건 젠장 선 넘었다는 뜻이에요.", tip: "주말에 울리는 업무 알림." },
+      spicy: { en: "It's my fucking weekend. Leave me the hell alone.", ko: "내 주말이야 씨발. 나 좀 내버려 둬라는 분노 폭발이에요.", tip: "휴일 알림 끄고 뱉는 한마디." } },
+    { id: "s-allnighter", catId: "work", sub: "야근 & 갈려나감", label: "끝없는 철야·무한 야근",
+      mild: { en: "I can't even remember the last time I slept.", ko: "마지막으로 제대로 잔 게 언제인지 기억도 안 난다는 뜻이에요.", tip: "철야로 유체이탈 상태일 때." },
+      medium: { en: "I'm running on zero damn sleep.", ko: "잠 한숨도 못 자서 젠장 제정신이 아니라는 뜻이에요.", tip: "카페인으로 버티는 영혼 없는 상태." },
+      spicy: { en: "I've been staring at this screen for 14 fucking hours.", ko: "이 모니터를 14시간째 쳐다보고 있네 씨발이라는 찐야근 독백이에요.", tip: "밤 11시 사무실 불 꺼진 복도에서." } },
+    { id: "s-unpaidovertime", catId: "work", sub: "야근 & 갈려나감", label: "공짜 야근·포괄임금제의 늪",
+      mild: { en: "Working extra hours for free isn't okay.", ko: "공짜로 초과 근무하는 거 진짜 안 괜찮다는 뜻이에요.", tip: "포괄임금제에 대한 현타." },
+      medium: { en: "Giving away my life for free is getting damn old.", ko: "내 인생 공짜로 갖다 바치는 것도 젠장 지긋지긋하다는 뜻이에요.", tip: "열정페이에 진절머리 날 때." },
+      spicy: { en: "Unpaid overtime? Fuck this company, honestly.", ko: "공짜 야근? 솔직히 이 회사 엿이나 처먹으라는 뜻이에요.", tip: "무보수 야근 택시 안에서 뱉는 말." } },
+
+    // ── [4. 회의 & 동료 & 사내정치] ──
+    { id: "s-meeting", catId: "work", sub: "회의 & 동료 & 사내정치", label: "영혼 없는 마라톤 회의",
+      mild: { en: "This meeting could have been a three-line email.", ko: "이 회의는 메일 세 줄이면 끝났을 텐데라는 전 세계 직장인 공통 한탄이에요.", tip: "쓸데없이 모여서 잡담할 때." },
+      medium: { en: "We've been talking about nothing for two damn hours.", ko: "두 시간 동안 젠장 알맹이도 없는 얘기만 하고 있다는 뜻이에요.", tip: "끝나지 않는 회의실에 갇혔을 때." },
+      spicy: { en: "What a colossal waste of fucking time.", ko: "진짜 희대의 좆같은 시간 낭비다라는 뜻이에요.", tip: "회의 끝나고 자리 돌아오며 중얼거릴 때." } },
+    { id: "s-coworkermess", catId: "work", sub: "회의 & 동료 & 사내정치", label: "무능한 동료 똥 치우기",
+      mild: { en: "Why am I fixing someone else's mistake?", ko: "왜 내가 남의 실수를 수습하고 있지라는 한탄이에요.", tip: "동료가 싼 똥이 내 앞으로 왔을 때." },
+      medium: { en: "Cleaning up their damn mess is so exhausting.", ko: "쟤네 젠장 뒤치다꺼리하는 거 진짜 진 빠진다는 뜻이에요.", tip: "남의 뒤치다꺼리에 지칠 때." },
+      spicy: { en: "I'm sick of cleaning up after these incompetent assholes.", ko: "이 무능한 새끼들 똥 치우는 거 진짜 토 나온다는 분노예요.", tip: "내 일도 바쁜데 남의 실수까지 덮어쓸 때." } },
+    { id: "s-passiveaggressive", catId: "work", sub: "회의 & 동료 & 사내정치", label: "사내 정치와 돌려까기",
+      mild: { en: "I can't stand the passive-aggressive emails.", ko: "은근슬쩍 돌려까는 메신저/메일 진짜 역겹다는 뜻이에요.", tip: "앞에선 웃고 메일로는 찌를 때." },
+      medium: { en: "That fake polite tone is so damn annoying.", ko: "그 가식적인 정중한 척 말투 젠장 역겹다는 뜻이에요.", tip: "가식 떠는 사내 메신저." },
+      spicy: { en: "Drop the fake corporate bullshit and say it to my face.", ko: "가식적인 회사원 코스프레 치우고 내 면전에 대고 말해라는 뜻이에요.", tip: "사내 정치질에 진저리날 때." } },
+
+    // ── [5. 마감 & 버그 & 진상] ──
+    { id: "s-bugdeploy", catId: "work", sub: "마감 & 버그 & 진상", label: "배포 직전 터진 치명적 오류",
+      mild: { en: "Everything was working fine five minutes ago.", ko: "5분 전까지만 해도 다 잘 돌아갔는데라는 실무자 멘붕이에요.", tip: "갑자기 이유 없이 터졌을 때." },
+      medium: { en: "The server crashed right before launch, damn it.", ko: "출시 직전에 젠장 서버가 뻗었다는 뜻이에요.", tip: "마감 코앞에서 터진 대형 사고." },
+      spicy: { en: "Everything just broke and I want to fucking scream.", ko: "다 터져나갔네 진짜 씨발 소리지르고 싶다라는 처절한 절규예요.", tip: "코드 날아가거나 시스템 뻗었을 때." } },
+    { id: "s-clientspasm", catId: "work", sub: "마감 & 버그 & 진상", label: "진상 고객·무리한 요구",
+      mild: { en: "That expectation is completely unrealistic.", ko: "그 요구치는 완전히 비현실적이라는 뜻이에요.", tip: "불가능한 걸 요구할 때." },
+      medium: { en: "This client has zero damn clue how things work.", ko: "이 클라이언트는 일이 어떻게 돌아가는지 젠장 1도 모른다는 뜻이에요.", tip: "말귀 못 알아듣는 진상 상대할 때." },
+      spicy: { en: "Are you out of your goddamn mind with this deadline?", ko: "이 마감으로 해달라고? 너 진짜 대가리 돌았냐?라는 분노예요.", tip: "가이드라인 규칙 완벽 반영, 터무니없는 갑질 고객용." } },
+
+    // ── [6. 보상 & 번아웃 & 사표] ──
+    { id: "s-salary", catId: "work", sub: "보상 & 번아웃 & 사표", label: "통장에 찍힌 쥐꼬리 월급",
+      mild: { en: "My paycheck disappeared in two seconds.", ko: "내 월급 2초 만에 스쳐 지나갔다는 허탈함이에요.", tip: "카드값 빠져나가고 남은 잔고 볼 때." },
+      medium: { en: "I bust my ass all month for this damn pocket change?", ko: "한 달 내내 뼈 갈았는데 고작 이 푼돈 젠장?이라는 현타예요.", tip: "고생에 비해 너무 초라한 월급 명세서." },
+      spicy: { en: "I work like a dog and get paid absolute peanuts, fuck.", ko: "개처럼 일하고 쥐꼬리만큼 받네, 씨발이라는 적나라한 팩트예요.", tip: "야근 수당도 없는 통장 보며 맥주 마실 때." } },
+    { id: "s-burnoutcry", catId: "work", sub: "보상 & 번아웃 & 사표", label: "화장실에서 삼키는 울분",
+      mild: { en: "I just need ten minutes of complete silence.", ko: "나 딱 10분만 아무 소리도 안 듣고 싶다는 뜻이에요.", tip: "화장실 칸막이 안에서 눈 감을 때." },
+      medium: { en: "I'm about to lose my damn mind in this office.", ko: "이 사무실에서 젠장 미쳐버리기 일보 직전이라는 뜻이에요.", tip: "숨이 턱 끝까지 차오를 때." },
+      spicy: { en: "I'm one minor inconvenience away from burning this place down.", ko: "여기서 사소한 거 하나만 더 터지면 이 회사 다 불질러버린다라는 살벌한 분노예요.", tip: "한계점에 도달한 직장인의 속마음." } },
+    { id: "s-quitdream", catId: "work", sub: "보상 & 번아웃 & 사표", label: "매일 가슴에 품는 사표",
+      mild: { en: "I'm actively looking for an exit.", ko: "나 진지하게 탈출구(이직) 찾는 중이라는 뜻이에요.", tip: "조용히 이직 사이트 켤 때." },
+      medium: { en: "Walking out that damn door sounds really good right now.", ko: "지금 저 젠장 문 박차고 나가는 게 제일 끌린다는 뜻이에요.", tip: "가방 싸서 그냥 집에 가고 싶을 때." },
+      spicy: { en: "One more bullshit meeting and I'm fucking quitting.", ko: "개소리 회의 한 번만 더 하면 나 진짜 사표 던진다 씨발이라는 뜻이에요.", tip: "가이드라인 bullshit 결합, 사직 충동 100%." } },
     { id: "s-datingcold", catId: "people", sub: "친구·애인", label: "썸·연애가 애매해짐",
       mild: { en: "I hate mixed signals.", ko: "애매한 신호(썸)가 너무 싫다는 뜻이에요.", tip: "썸 타는 상대가 애매하게 굴 때." },
       medium: { en: "I'm so damn tired of the mixed signals.", ko: "그 애매한 신호 진짜 지친다는 뜻이에요.", tip: "썸 타는 상대의 애매함에 지쳤을 때." },
@@ -1943,13 +2010,10 @@
       return g.indexOf('male') !== -1 && g.indexOf('female') !== -1;
     }
 
-    // v2.2.0 — 음높이 조작을 완전히 제거했다.
-    // 여성 목소리의 음높이를 낮춰 남성을 흉내내면 포먼트(울림통 특성)까지 함께
-    // 내려가서 사람이 아니라 괴물·외계인 소리가 된다(0.55에서 F0 중앙값 129Hz로
-    // 남성 음역에 들어갔는데도 소리는 사람이 아니었다). 값을 조정해도 "덜 이상한"
-    // 수준일 뿐이라, 기기에 실제로 들어있는 목소리를 가공 없이 그대로 쓴다.
-    var NATURAL_PITCH = 1;
-    var NATURAL_RATE = 0.95;
+    // v2.3.0 — 낮고 건조하며 한숨 섞인 톤(Muttered, Exasperated) 반영
+    // 왜곡 없는 자연스러운 범위에서 낮게 깔리고 지쳐 툭 내뱉는 템포로 튜닝
+    var NATURAL_PITCH = 0.88;
+    var NATURAL_RATE = 0.90;
 
     function makeChip(label, isActive, onTap) {
       var b = document.createElement('button');
@@ -2198,7 +2262,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.2.0';
+  var APP_VERSION = '2.3.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
