@@ -1780,10 +1780,16 @@
     return 17;
   }
 
+  function intensityName(level) {
+    if (level === 'spicy') return '매운맛';
+    if (level === 'medium') return '중간맛';
+    return '순한맛';
+  }
+
   function intensityIcon(level) {
-    if (level === 'spicy') return '🌶️🌶️ ';
-    if (level === 'medium') return '🌶️ ';
-    return '';
+    if (level === 'spicy') return '🌶️🌶️🌶️ ';
+    if (level === 'medium') return '🌶️🌶️ ';
+    return '🌶️ ';
   }
 
   function showPhrase(category, phrase, level) {
@@ -1792,7 +1798,7 @@
     var isNewPhrase = phrase !== currentPhrase;
     currentPhrase = phrase;
     currentCategory = category;
-    resultTag.textContent = intensityIcon(level) + category.label;
+    resultTag.textContent = intensityIcon(level) + intensityName(level) + ' · ' + category.label;
     resultTag.classList.toggle('spicy', level !== 'mild');
     resultEn.textContent = '“' + phrase.en + '”';
     resultKo.textContent = phrase.ko;
@@ -2523,7 +2529,8 @@
     if (text.length > 300) { setAiVentStatus('300자 이내로 적어주세요.', true); return; }
     aiVentSubmit.disabled = true;
     setAiVentStatus('찰진 표현을 조합하는 중…', false);
-    var level = intensity;
+    var activeVentChip = document.querySelector('.ai-vent-intensity-chip.active');
+    var level = (activeVentChip && activeVentChip.getAttribute('data-intensity')) || intensity || 'mild';
     fetch('/api/vent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2599,7 +2606,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.5.1';
+  var APP_VERSION = '2.5.2';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
