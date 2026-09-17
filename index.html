@@ -395,6 +395,14 @@
     color: #fff8f2;
   }
   button.pill.primary:hover { background: var(--ember-deep); border-color: var(--ember-deep); }
+  button.pill.clip-btn {
+    border-color: var(--relief);
+    color: var(--relief);
+  }
+  button.pill.clip-btn:hover {
+    background: var(--relief-tint);
+    border-color: var(--relief);
+  }
 
   .privacy-note {
     font-size: 11.5px;
@@ -926,6 +934,7 @@
       <button class="icon-btn" id="starBtn" type="button" title="즐겨찾기" aria-label="즐겨찾기">☆</button>
       <button class="pill" id="anotherBtn" type="button">다른 표현</button>
       <button class="pill" id="moreBtn" type="button">✨ 다른 표현 더 보기</button>
+      <button class="pill clip-btn" id="movieClipBtn" type="button" title="실제 영화·영상 클립으로 찰진 억양 듣기">🎬 실제 영화 클립</button>
     </div>
     <p class="more-status" id="moreStatus" hidden></p>
   </section>
@@ -1795,6 +1804,18 @@
     updateStarButton();
   });
 
+  // 🎬 실제 영화·영상 클립으로 리얼한 발음/억양 듣기 (기본 문장 & AI 생성 문장 100% 지원)
+  var movieClipBtn = document.getElementById('movieClipBtn');
+  if (movieClipBtn) {
+    movieClipBtn.addEventListener('click', function () {
+      if (!currentPhrase || !currentPhrase.en) return;
+      // 문장에서 특수기호·따옴표 제거하고 핵심 문장으로 실제 유튜브/영화 클립 검색
+      var clean = currentPhrase.en.replace(/[.,/#!$%^&*;:{}=\-_`~()?"'’]/g, ' ').replace(/\s+/g, ' ').trim();
+      var url = 'https://youglish.com/pronounce/' + encodeURIComponent(clean) + '/english';
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
+  }
+
   // Phase 2 · T7 — 클립보드 복사 (navigator.clipboard 우선, 미지원 시 execCommand fallback)
   function fallbackCopy(text, cb) {
     try {
@@ -2117,7 +2138,6 @@
 
     function doSpeak(text) {
       var utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'en-US';
       utter.rate = NATURAL_RATE;
       utter.volume = 1;
       utter.pitch = NATURAL_PITCH;   // 가공하지 않는다
@@ -2125,8 +2145,13 @@
       // 기본 목소리로 계속 되도록 따로 감싼다
       try {
         var voice = pickEnglishVoice();
-        if (voice) utter.voice = voice;
-      } catch (e) { /* 기본 목소리로 진행 */ }
+        if (voice) {
+          utter.voice = voice;
+          utter.lang = voice.lang || 'en-US'; // 선택한 억양(영국, 호주, 인도 등)의 언어 코드를 정확히 부여
+        } else {
+          utter.lang = 'en-US';
+        }
+      } catch (e) { utter.lang = 'en-US'; }
       utter.onstart = function () { setSpeaking(true); };
       utter.onend = function () { setSpeaking(false); };
       utter.onerror = flashSpeakError;
@@ -2278,7 +2303,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.3.1';
+  var APP_VERSION = '2.4.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
