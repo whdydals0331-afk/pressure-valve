@@ -675,6 +675,44 @@
     margin: 10px 0 0;
   }
   .ai-vent-status.error { color: var(--ember-deep); }
+  .ai-vent-intensity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 2px 0 12px;
+    flex-wrap: wrap;
+  }
+  .ai-vent-intensity-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .ai-vent-intensity-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .ai-vent-intensity-chip {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+  }
+  .ai-vent-intensity-chip:hover {
+    border-color: var(--ember);
+    color: var(--ink);
+  }
+  .ai-vent-intensity-chip.active {
+    background: var(--ember);
+    border-color: var(--ember);
+    color: #fff;
+    font-weight: 600;
+  }
 
   /* RESULT CARD */
   .result {
@@ -997,6 +1035,14 @@
     </button>
     <div class="ai-vent-panel" id="aiVentPanel" hidden>
       <p class="ai-vent-note">정해진 상황에 안 맞아도 괜찮아요 — 있는 그대로 적어주시면 딱 맞는 찰진 영어 표현을 찾아드려요.</p>
+      <div class="ai-vent-intensity">
+        <span class="ai-vent-intensity-label">표현 수위 (맛)</span>
+        <div class="ai-vent-intensity-chips" role="radiogroup" aria-label="표현 수위 선택">
+          <button type="button" class="ai-vent-intensity-chip" data-intensity="mild" aria-checked="false">🌶️ 순한맛</button>
+          <button type="button" class="ai-vent-intensity-chip" data-intensity="medium" aria-checked="false">🌶️🌶️ 중간맛</button>
+          <button type="button" class="ai-vent-intensity-chip" data-intensity="spicy" aria-checked="false">🌶️🌶️🌶️ 매운맛</button>
+        </div>
+      </div>
       <textarea class="ai-vent-input" id="aiVentInput" maxlength="300" rows="3" placeholder="예: 팀장이 또 나만 시키고 생색은 지가 다 냄"></textarea>
       <button type="button" class="pill primary" id="aiVentSubmit">찰진 영어 표현 찾기</button>
       <p class="ai-vent-status" id="aiVentStatus" hidden></p>
@@ -2083,6 +2129,13 @@
     Array.prototype.forEach.call(intensityToggle.children, function (b) {
       b.classList.toggle('active', b.getAttribute('data-mode') === intensity);
     });
+    // 맞춤 생성(직접 써보기) 패널의 맛 선택 칩도 양방향 동기화
+    var ventChips = document.querySelectorAll('.ai-vent-intensity-chip');
+    Array.prototype.forEach.call(ventChips, function (b) {
+      var isAct = b.getAttribute('data-intensity') === intensity;
+      b.classList.toggle('active', isAct);
+      b.setAttribute('aria-checked', isAct ? 'true' : 'false');
+    });
     intensityNote.textContent = intensity === 'spicy'
       ? '매운맛 — fuck, shit 등 필터링 없는 실전 비속어예요.'
       : intensity === 'medium'
@@ -2092,6 +2145,20 @@
     if (gaugeSliderHint) {
       gaugeSliderHint.textContent = '게이지와 강도는 같이 움직여요. 슬라이더를 올리면 맛이 세지고, 맛을 고르면 게이지도 따라가요.';
     }
+  }
+
+  // 맞춤 생성(직접 써보기) 패널 내 맛 선택 칩 클릭 시 전역 강도 및 게이지 동기화
+  var ventChipsContainer = document.querySelector('.ai-vent-intensity-chips');
+  if (ventChipsContainer) {
+    ventChipsContainer.addEventListener('click', function (e) {
+      var btn = e.target.closest('.ai-vent-intensity-chip');
+      if (!btn) return;
+      var mode = btn.getAttribute('data-intensity');
+      if (mode) {
+        setIntensity(mode, true);
+        renderGauge(gaugeValueForIntensity(mode));
+      }
+    });
   }
 
   intensityToggle.addEventListener('click', function (e) {
@@ -2184,19 +2251,32 @@
       return score;
     }
 
-    function sortedEnglishVoices() {
-      return englishVoices().slice().sort(function (a, b) { return voiceScore(b) - voiceScore(a); });
-    }
-
     // 목소리 이름이 "영어 영국 (en_GB)"처럼 기기마다 제각각이라 짧게 정리한다
     var LANG_LABELS = {
-      'en-US': '미국', 'en-GB': '영국', 'en-AU': '호주', 'en-CA': '캐나다',
-      'en-IE': '아일랜드', 'en-IN': '인도', 'en-NG': '나이지리아',
-      'en-NZ': '뉴질랜드', 'en-ZA': '남아공'
+      'en-us': '미국', 'en-gb': '영국', 'en-au': '호주', 'en-ca': '캐나다',
+      'en-ie': '아일랜드', 'en-in': '인도', 'en-ng': '나이지리아',
+      'en-nz': '뉴질랜드', 'en-za': '남아공'
     };
     function baseVoiceLabel(v) {
-      var lang = (v.lang || '').replace('_', '-');
-      return LANG_LABELS[lang] || LANG_LABELS[lang.slice(0, 5)] || lang || '기본';
+      var lang = (v.lang || '').replace('_', '-').toLowerCase().trim();
+      return LANG_LABELS[lang] || LANG_LABELS[lang.slice(0, 5)] || (v.lang || '기본');
+    }
+
+    // 발음 선택 순서 고정: 미국 ➔ 영국 ➔ 호주 ➔ 인도 ➔ 나이지리아
+    var PREFERRED_ACCENTS = ['미국', '영국', '호주', '인도', '나이지리아'];
+    function accentRank(v) {
+      var label = baseVoiceLabel(v);
+      var idx = PREFERRED_ACCENTS.indexOf(label);
+      return idx !== -1 ? idx : 999;
+    }
+
+    function sortedEnglishVoices() {
+      return englishVoices().slice().sort(function (a, b) {
+        var rankA = accentRank(a);
+        var rankB = accentRank(b);
+        if (rankA !== rankB) return rankA - rankB;
+        return voiceScore(b) - voiceScore(a);
+      });
     }
 
     // 같은 나라 목소리가 여러 개인 기기가 많다(미국 영어만 3개인 경우 등).
@@ -2519,7 +2599,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.5.0';
+  var APP_VERSION = '2.5.1';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
