@@ -408,6 +408,97 @@
     border-color: var(--relief);
   }
 
+  /* 🎬 실제 원어민 말투 영상 모달 */
+  .clip-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    animation: fadeIn 0.15s ease-out;
+  }
+  .clip-modal-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .clip-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .clip-modal-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .clip-modal-close {
+    background: none;
+    border: none;
+    font-size: 15px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    line-height: 1;
+  }
+  .clip-modal-sub {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin: 0;
+    padding: 8px 16px;
+    background: var(--ground);
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .clip-modal-body {
+    position: relative;
+    min-height: 240px;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #youglish-widget-container {
+    width: 100%;
+    min-height: 240px;
+  }
+  .clip-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 12px;
+    background: #000;
+    z-index: 1;
+  }
+  .clip-modal-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    gap: 8px;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+  }
+
   .privacy-note {
     font-size: 11.5px;
     color: var(--ink-soft);
@@ -902,12 +993,12 @@
 
   <section class="ai-vent" id="aiVent">
     <button type="button" class="ai-vent-toggle" id="aiVentToggle" aria-expanded="false" aria-controls="aiVentPanel">
-      ✍️ 내 말로 직접 써보기 <span class="ai-badge">AI · 프로토타입</span>
+      ✍️ 내 말로 직접 써보기 <span class="ai-badge">맞춤 생성</span>
     </button>
     <div class="ai-vent-panel" id="aiVentPanel" hidden>
-      <p class="ai-vent-note">정해진 상황에 안 맞아도 괜찮아요 — 있는 그대로 적으면 AI가 맞춰서 문구를 만들어줘요. 이 기능을 쓸 때만 입력한 내용이 외부 AI 서버로 전송돼요.</p>
+      <p class="ai-vent-note">정해진 상황에 안 맞아도 괜찮아요 — 있는 그대로 적어주시면 딱 맞는 찰진 영어 표현을 찾아드려요.</p>
       <textarea class="ai-vent-input" id="aiVentInput" maxlength="300" rows="3" placeholder="예: 팀장이 또 나만 시키고 생색은 지가 다 냄"></textarea>
-      <button type="button" class="pill primary" id="aiVentSubmit">문구 만들기</button>
+      <button type="button" class="pill primary" id="aiVentSubmit">찰진 영어 표현 찾기</button>
       <p class="ai-vent-status" id="aiVentStatus" hidden></p>
     </div>
   </section>
@@ -938,10 +1029,32 @@
       <button class="icon-btn" id="starBtn" type="button" title="즐겨찾기" aria-label="즐겨찾기">☆</button>
       <button class="pill" id="anotherBtn" type="button">다른 표현</button>
       <button class="pill" id="moreBtn" type="button">✨ 다른 표현 더 보기</button>
-      <button class="pill clip-btn" id="movieClipBtn" type="button" title="실제 영화·영상 클립으로 찰진 억양 듣기">🎬 실제 영화 클립</button>
+      <button class="pill clip-btn" id="movieClipBtn" type="button" title="실제 사람들이 얘기하는 말투 영상으로 듣기">🎬 실제 원어민 말투 영상</button>
     </div>
     <p class="more-status" id="moreStatus" hidden></p>
   </section>
+
+  <!-- 🎬 실제 원어민 말투 영상 모달 (그 문장 끝나면 자동 정지) -->
+  <div class="clip-modal-backdrop" id="clipModal" hidden>
+    <div class="clip-modal-card" role="dialog" aria-modal="true" aria-labelledby="clipModalTitle">
+      <div class="clip-modal-header">
+        <span class="clip-modal-title" id="clipModalTitle">🎬 실제 원어민 말투 영상</span>
+        <button type="button" class="clip-modal-close" id="clipModalClose" aria-label="닫기">✕</button>
+      </div>
+      <p class="clip-modal-sub" id="clipModalPhrase"></p>
+      <div class="clip-modal-body">
+        <div id="youglish-widget-container"></div>
+        <div class="clip-loading" id="clipLoading">
+          <span>실제 발화 장면을 불러오는 중…</span>
+        </div>
+      </div>
+      <div class="clip-modal-actions">
+        <button type="button" class="pill" id="clipReplayBtn">🔁 이 문장 다시 듣기</button>
+        <button type="button" class="pill" id="clipNextBtn">➡️ 다음 사람 말투</button>
+        <button type="button" class="pill clip-close-pill" id="clipModalCloseBtn">닫기</button>
+      </div>
+    </div>
+  </div>
 
   <div class="favs-panel">
     <button class="pill" id="favsToggleBtn" type="button">⭐ 즐겨찾기 보기</button>
@@ -1773,7 +1886,7 @@
       markActiveSituation(null);
       showPhrase(askedCategory, { en: data.en, ko: data.ko || '', tip: data.tip || '' }, askedLevel);
       if (resultSource) {
-        resultSource.textContent = '✨ AI가 방금 만든 표현이에요';
+        resultSource.textContent = '✨ 맞춤 생성된 실전 표현이에요';
         resultSource.hidden = false;
       }
       setMoreStatus('', false);
@@ -1808,15 +1921,114 @@
     updateStarButton();
   });
 
-  // 🎬 실제 영화·영상 클립으로 리얼한 발음/억양 듣기 (기본 문장 & AI 생성 문장 100% 지원)
+  // 🎬 실제 원어민 말투 영상 모달 제어 (해당 문장 발화 완료 시 자동 일시정지)
+  var clipModal = document.getElementById('clipModal');
+  var clipModalClose = document.getElementById('clipModalClose');
+  var clipModalCloseBtn = document.getElementById('clipModalCloseBtn');
+  var clipModalPhrase = document.getElementById('clipModalPhrase');
+  var clipLoading = document.getElementById('clipLoading');
+  var clipReplayBtn = document.getElementById('clipReplayBtn');
+  var clipNextBtn = document.getElementById('clipNextBtn');
   var movieClipBtn = document.getElementById('movieClipBtn');
+
+  var ygWidget = null;
+  var ygApiLoaded = false;
+  var currentClipQuery = '';
+
+  function loadYouglishScript(cb) {
+    if (window.YG && window.YG.Widget) { cb(); return; }
+    if (ygApiLoaded) {
+      var check = setInterval(function () {
+        if (window.YG && window.YG.Widget) { clearInterval(check); cb(); }
+      }, 100);
+      return;
+    }
+    ygApiLoaded = true;
+    var s = document.createElement('script');
+    s.src = 'https://youglish.com/public/emb/widget.js';
+    s.async = true;
+    s.onload = function () { cb(); };
+    s.onerror = function () {
+      if (clipLoading) {
+        clipLoading.innerHTML = '영상을 불러오지 못했습니다. <a href="https://youglish.com/pronounce/' + encodeURIComponent(currentClipQuery) + '/english" target="_blank" rel="noopener" style="color:#ef6a3a;text-decoration:underline;">새 창에서 보기</a>';
+      }
+    };
+    document.head.appendChild(s);
+  }
+
+  function initYouglishWidget(query) {
+    currentClipQuery = query;
+    if (clipLoading) {
+      clipLoading.hidden = false;
+      clipLoading.textContent = '실제 발화 장면을 불러오는 중…';
+    }
+    if (clipModalPhrase) clipModalPhrase.textContent = '“' + query + '”';
+
+    loadYouglishScript(function () {
+      if (!ygWidget) {
+        try {
+          ygWidget = new YG.Widget("youglish-widget-container", {
+            width: '100%',
+            components: 9,
+            auto_start: 1,
+            events: {
+              'onFetchDone': function (e) {
+                if (e && e.totalResult === 0 && clipLoading) {
+                  clipLoading.innerHTML = '일치하는 영상이 없어요. <a href="https://youglish.com/pronounce/' + encodeURIComponent(query) + '/english" target="_blank" rel="noopener" style="color:#ef6a3a;text-decoration:underline;">유튜브 전체 검색으로 보기</a>';
+                }
+              },
+              'onVideoChange': function () {
+                if (clipLoading) clipLoading.hidden = true;
+              },
+              'onCaptionConsumed': function () {
+                // ⭐ 사용자가 요청한 핵심: 그 문장을 다 말하면 자동으로 딱 멈춘다!
+                if (ygWidget && ygWidget.pause) {
+                  try { ygWidget.pause(); } catch (e) { /* ignore */ }
+                }
+              }
+            }
+          });
+        } catch (err) {
+          if (clipLoading) clipLoading.textContent = '플레이어 초기화 중 오류가 발생했습니다.';
+        }
+      }
+      if (ygWidget && ygWidget.fetch) {
+        ygWidget.fetch(query, "english");
+      }
+    });
+  }
+
+  function closeClipModal() {
+    if (clipModal) clipModal.hidden = true;
+    if (ygWidget && ygWidget.pause) {
+      try { ygWidget.pause(); } catch (e) { /* ignore */ }
+    }
+  }
+
   if (movieClipBtn) {
     movieClipBtn.addEventListener('click', function () {
       if (!currentPhrase || !currentPhrase.en) return;
-      // 문장에서 특수기호·따옴표 제거하고 핵심 문장으로 실제 유튜브/영화 클립 검색
       var clean = currentPhrase.en.replace(/[.,/#!$%^&*;:{}=\-_`~()?"'’]/g, ' ').replace(/\s+/g, ' ').trim();
-      var url = 'https://youglish.com/pronounce/' + encodeURIComponent(clean) + '/english';
-      window.open(url, '_blank', 'noopener,noreferrer');
+      if (clipModal) clipModal.hidden = false;
+      initYouglishWidget(clean);
+    });
+  }
+
+  if (clipModalClose) clipModalClose.addEventListener('click', closeClipModal);
+  if (clipModalCloseBtn) clipModalCloseBtn.addEventListener('click', closeClipModal);
+  if (clipReplayBtn) {
+    clipReplayBtn.addEventListener('click', function () {
+      if (ygWidget && ygWidget.replay) {
+        try { ygWidget.replay(); } catch (e) { /* ignore */ }
+      }
+    });
+  }
+  if (clipNextBtn) {
+    clipNextBtn.addEventListener('click', function () {
+      if (ygWidget && ygWidget.next) {
+        if (clipLoading) clipLoading.hidden = false;
+        try { ygWidget.next(); } catch (e) { /* ignore */ }
+      }
     });
   }
 
@@ -2217,9 +2429,9 @@
   // 실패했을 때 "그냥 안 돼요"가 아니라 어디서 막혔는지 보이도록 원인별 안내를 둔다.
   var AI_ERROR_TEXT = {
     'no-backend': '이 기능은 실제 배포된 사이트에서만 동작해요(미리보기에서는 안 써져요).',
-    'not-configured': '서버에 API 키가 설정되지 않았어요. Vercel 환경변수(ANTHROPIC_API_KEY)를 확인해주세요.',
-    'upstream-error': 'AI 서버가 요청을 거절했어요.',
-    'bad-model-output': 'AI 응답을 이해하지 못했어요. 한 번 더 눌러보세요.',
+    'not-configured': '서버 설정이 완료되지 않았어요. 잠시 후 다시 이용해주세요.',
+    'upstream-error': '표현을 불러오는 데 실패했어요.',
+    'bad-model-output': '문구를 조합하지 못했어요. 한 번 더 눌러보세요.',
     'server-error': '서버에서 오류가 났어요. 잠시 후 다시 시도해주세요.',
     'empty-text': '먼저 상황을 적어주세요.',
     'text-too-long': '300자 이내로 적어주세요.'
@@ -2230,7 +2442,7 @@
     if (!text) { setAiVentStatus('먼저 상황을 적어주세요.', true); return; }
     if (text.length > 300) { setAiVentStatus('300자 이내로 적어주세요.', true); return; }
     aiVentSubmit.disabled = true;
-    setAiVentStatus('AI가 문구를 만드는 중…', false);
+    setAiVentStatus('찰진 표현을 조합하는 중…', false);
     var level = intensity;
     fetch('/api/vent', {
       method: 'POST',
@@ -2307,7 +2519,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.4.1';
+  var APP_VERSION = '2.5.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
