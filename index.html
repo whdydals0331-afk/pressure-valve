@@ -170,7 +170,11 @@
   .intensity-note {
     font-size: 12px;
     color: var(--ink-soft);
-    margin: 0 0 22px;
+    line-height: 1.5;
+    min-height: 36px;
+    margin: 4px 0 18px;
+    display: flex;
+    align-items: center;
   }
 
   /* GAUGE */
@@ -860,7 +864,7 @@
       <button type="button" data-mode="spicy">매운맛</button>
     </div>
   </div>
-  <p class="intensity-note" id="intensityNote">순한맛 — 육두문자 없이, 그래도 시원한 표현들이에요.</p>
+  <p class="intensity-note" id="intensityNote">순한맛 — 비속어 없이 답답함을 담백하게 내뱉어요.</p>
 
   <section class="gauge-panel" aria-label="스트레스 게이지">
     <div class="gauge-row">
@@ -1868,10 +1872,10 @@
       b.classList.toggle('active', b.getAttribute('data-mode') === intensity);
     });
     intensityNote.textContent = intensity === 'spicy'
-      ? '매운맛 — 진짜 육두문자 포함이에요. 편한 사이·혼잣말용으로만 살살 쓰기.'
+      ? '매운맛 — fuck, shit 등 필터링 없는 실전 비속어예요.'
       : intensity === 'medium'
-      ? '중간맛 — damn, hell, crap처럼 살짝 센 표현이 섞여요. 순한맛보단 강하고 매운맛보단 약해요.'
-      : '순한맛 — 육두문자 없이, 그래도 시원한 표현들이에요.';
+      ? '중간맛 — damn, hell, crap 등 가벼운 욕이 섞여요.'
+      : '순한맛 — 비속어 없이 답답함을 담백하게 내뱉어요.';
     // 게이지와 강도는 항상 붙어 움직인다 — 어느 쪽을 만져도 나머지가 따라온다
     if (gaugeSliderHint) {
       gaugeSliderHint.textContent = '게이지와 강도는 같이 움직여요. 슬라이더를 올리면 맛이 세지고, 맛을 고르면 게이지도 따라가요.';
@@ -2303,7 +2307,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.4.0';
+  var APP_VERSION = '2.4.1';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
