@@ -612,6 +612,198 @@
     margin: 0 0 14px;
   }
 
+  /* APP HEADER & INFO BUTTON */
+  .app-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .app-header-main { flex: 1; min-width: 0; }
+  .app-header-main h1 { margin: 2px 0 6px; }
+  .app-header-main .eyebrow { margin-bottom: 2px; }
+  .app-header-main .lede { margin-bottom: 0; }
+  .info-btn {
+    flex: none;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 7px 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all .15s ease;
+    margin-top: 4px;
+  }
+  .info-btn:hover { border-color: var(--ember); color: var(--ember); background: var(--ember-tint); }
+  .info-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+  /* 2-STEP MODE TABS (상황별 골라보기 vs 내 말로 직접 쓰기) */
+  .mode-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 5px;
+    margin: 12px 0 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  }
+  .mode-tab {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: -0.2px;
+    padding: 12px 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all .18s ease;
+  }
+  .mode-tab-icon { font-size: 15px; }
+  .mode-tab:hover { color: var(--ink); }
+  .mode-tab.active {
+    background: var(--surface-2);
+    color: var(--ember);
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  }
+  .mode-tab:focus-visible { outline: 2px solid var(--ember); outline-offset: 1px; }
+
+  .mode-panel { width: 100%; }
+  .mode-panel[hidden] { display: none !important; }
+
+  /* CUSTOM VENT CARD (내 말로 직접 쓰기 전용 시원한 카드) */
+  .custom-vent-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 18px 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 22px;
+  }
+  .custom-vent-title {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--ink);
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+  }
+  .custom-vent-note {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0 0 16px;
+  }
+  .custom-vent-submit {
+    width: 100%;
+    padding: 13px 18px;
+    font-size: 14.5px;
+    font-weight: 800;
+    border-radius: 10px;
+    margin-top: 6px;
+  }
+
+  /* ABOUT MODAL (앱 이용 안내 팝업) */
+  .about-modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    backdrop-filter: blur(4px);
+  }
+  .about-modal-backdrop[hidden] { display: none !important; }
+  .about-modal-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 16px 40px rgba(0,0,0,.45);
+    overflow: hidden;
+    animation: modalPop .22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes modalPop { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .about-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .about-modal-title {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .about-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    line-height: 1;
+  }
+  .about-modal-close:hover { color: var(--ink); background: var(--surface-2); }
+  .about-modal-body {
+    padding: 18px 20px;
+    overflow-y: auto;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .about-section { margin-bottom: 18px; }
+  .about-section:last-child { margin-bottom: 0; }
+  .about-section h4 {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--ink);
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .about-section p { margin: 0; }
+  .about-section ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+  }
+  .about-section li { margin-bottom: 4px; }
+  .about-section li b { color: var(--ink); }
+  .about-modal-footer {
+    padding: 12px 18px 16px;
+    border-top: 1px solid var(--line);
+  }
+  .about-modal-ok {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
   /* AI VENT · Phase 11 — 고정 메뉴에 안 맞을 때 쓰는 opt-in 자유 입력 (프로토타입) */
   .ai-vent { margin: 4px 0 22px; }
   .ai-vent-toggle {
@@ -982,59 +1174,77 @@
 <body>
 
 <div class="wrap">
-  <p class="eyebrow">Vent In English</p>
-  <h1>영어로 욕해 · Stress Gauge</h1>
-  <p class="lede">오늘 쌓인 거, 영어로 짧게 내뱉고 시원하게 풀어버리기.</p>
-
-  <div class="intensity-row">
-    <div class="intensity-toggle" id="intensityToggle" role="group" aria-label="표현 강도">
-      <button type="button" class="active" data-mode="mild">순한맛</button>
-      <button type="button" data-mode="medium">중간맛</button>
-      <button type="button" data-mode="spicy">매운맛</button>
+  <header class="app-header-row">
+    <div class="app-header-main">
+      <p class="eyebrow">Vent In English</p>
+      <h1>영어로 욕해 · Stress Gauge</h1>
+      <p class="lede">오늘 쌓인 거, 영어로 짧게 내뱉고 시원하게 풀어버리기.</p>
     </div>
-  </div>
-  <p class="intensity-note" id="intensityNote">순한맛 — 비속어 없이 답답함을 담백하게 내뱉어요.</p>
+    <button type="button" class="info-btn" id="aboutBtn" aria-label="이용 팁 및 소개">ℹ️ 이용 안내</button>
+  </header>
 
-  <section class="gauge-panel" aria-label="스트레스 게이지">
-    <div class="gauge-row">
-      <svg class="gauge-svg" id="gaugeSvg" viewBox="0 0 130 78" aria-hidden="true">
-        <path d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke-width="12" stroke-linecap="round" style="stroke: var(--gauge-track)"></path>
-        <path id="gaugeFill" d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke-width="12" stroke-linecap="round" style="stroke: var(--danger-fill); stroke-dasharray: 173; stroke-dashoffset: 86.5"></path>
-        <line id="needle" x1="65" y1="70" x2="65" y2="24" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" style="transform-origin: 65px 70px; transform: rotate(0deg); transition: transform .5s cubic-bezier(.3,1.4,.4,1)"></line>
-        <circle cx="65" cy="70" r="5" fill="var(--ink)"></circle>
-      </svg>
-      <div class="gauge-readout">
-        <p class="gauge-label">Stress Level</p>
-        <p class="gauge-value" id="gaugeValue">50<span>%</span></p>
-        <p class="gauge-note" id="gaugeNote">빡침 시작</p>
+  <!-- 2단 탭 스위처 -->
+  <nav class="mode-tabs" role="tablist" aria-label="모드 선택">
+    <button type="button" class="mode-tab active" id="tabSituations" role="tab" aria-selected="true" aria-controls="panelSituations">
+      <span class="mode-tab-icon">⚡</span> 상황별 골라보기
+    </button>
+    <button type="button" class="mode-tab" id="tabCustomVent" role="tab" aria-selected="false" aria-controls="panelCustomVent">
+      <span class="mode-tab-icon">✍️</span> 내 말로 직접 쓰기
+    </button>
+  </nav>
+
+  <!-- [모드 1] 상황별 골라보기 패널 -->
+  <div class="mode-panel active" id="panelSituations" role="tabpanel" aria-labelledby="tabSituations">
+    <div class="intensity-row">
+      <div class="intensity-toggle" id="intensityToggle" role="group" aria-label="표현 강도">
+        <button type="button" class="active" data-mode="mild">순한맛</button>
+        <button type="button" data-mode="medium">중간맛</button>
+        <button type="button" data-mode="spicy">매운맛</button>
       </div>
     </div>
-    <div class="gauge-slider-row">
-      <label for="stressSlider" class="gauge-slider-label">지금 스트레스, 얼마나 쌓였어요?</label>
-      <input type="range" id="stressSlider" min="0" max="100" step="1" value="50" aria-label="스트레스 정도, 0에서 100퍼센트">
-      <p class="gauge-slider-hint" id="gaugeSliderHint"></p>
-    </div>
-  </section>
+    <p class="intensity-note" id="intensityNote">순한맛 — 비속어 없이 답답함을 담백하게 내뱉어요.</p>
 
-  <h2 class="section-title">1 · 뭐 때문에 쌓였어요?</h2>
-  <div class="valves" id="valveGrid" role="group" aria-label="스트레스 카테고리"></div>
+    <section class="gauge-panel" aria-label="스트레스 게이지">
+      <div class="gauge-row">
+        <svg class="gauge-svg" id="gaugeSvg" viewBox="0 0 130 78" aria-hidden="true">
+          <path d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke-width="12" stroke-linecap="round" style="stroke: var(--gauge-track)"></path>
+          <path id="gaugeFill" d="M 10 70 A 55 55 0 0 1 120 70" fill="none" stroke-width="12" stroke-linecap="round" style="stroke: var(--danger-fill); stroke-dasharray: 173; stroke-dashoffset: 86.5"></path>
+          <line id="needle" x1="65" y1="70" x2="65" y2="24" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" style="transform-origin: 65px 70px; transform: rotate(0deg); transition: transform .5s cubic-bezier(.3,1.4,.4,1)"></line>
+          <circle cx="65" cy="70" r="5" fill="var(--ink)"></circle>
+        </svg>
+        <div class="gauge-readout">
+          <p class="gauge-label">Stress Level</p>
+          <p class="gauge-value" id="gaugeValue">50<span>%</span></p>
+          <p class="gauge-note" id="gaugeNote">빡침 시작</p>
+        </div>
+      </div>
+      <div class="gauge-slider-row">
+        <label for="stressSlider" class="gauge-slider-label">지금 스트레스, 얼마나 쌓였어요?</label>
+        <input type="range" id="stressSlider" min="0" max="100" step="1" value="50" aria-label="스트레스 정도, 0에서 100퍼센트">
+        <p class="gauge-slider-hint" id="gaugeSliderHint"></p>
+      </div>
+    </section>
 
-  <h2 class="section-title">2 · 정확히 무슨 일이었어요? (선택)</h2>
-  <div class="situations" id="situationWrap">
-    <p class="situation-placeholder" id="situationPlaceholder">위에서 카테고리를 먼저 하나 골라보세요. 거기에 딱 맞는 상황이 여기 떠요.</p>
-    <div id="situationActive" hidden>
-      <p class="situation-context" id="situationContext"></p>
-      <div id="situationChips"></div>
+    <h2 class="section-title">1 · 뭐 때문에 쌓였어요?</h2>
+    <div class="valves" id="valveGrid" role="group" aria-label="스트레스 카테고리"></div>
+
+    <h2 class="section-title">2 · 정확히 무슨 일이었어요? (선택)</h2>
+    <div class="situations" id="situationWrap">
+      <p class="situation-placeholder" id="situationPlaceholder">위에서 카테고리를 먼저 하나 골라보세요. 거기에 딱 맞는 상황이 여기 떠요.</p>
+      <div id="situationActive" hidden>
+        <p class="situation-context" id="situationContext"></p>
+        <div id="situationChips"></div>
+      </div>
+      <p class="privacy-note">여기서 고르면 그 상황에 딱 맞춰 미리 준비된 표현이 바로 나와요. 이 페이지는 서버로 아무것도 전송하지 않아요.</p>
     </div>
-    <p class="privacy-note">여기서 고르면 그 상황에 딱 맞춰 미리 준비된 표현이 바로 나와요. 이 페이지는 서버로 아무것도 전송하지 않아요.</p>
   </div>
 
-  <section class="ai-vent" id="aiVent">
-    <button type="button" class="ai-vent-toggle" id="aiVentToggle" aria-expanded="false" aria-controls="aiVentPanel">
-      ✍️ 내 말로 직접 써보기 <span class="ai-badge">맞춤 생성</span>
-    </button>
-    <div class="ai-vent-panel" id="aiVentPanel" hidden>
-      <p class="ai-vent-note">정해진 상황에 안 맞아도 괜찮아요 — 있는 그대로 적어주시면 딱 맞는 찰진 영어 표현을 찾아드려요.</p>
+  <!-- [모드 2] 내 말로 직접 쓰기 패널 -->
+  <div class="mode-panel" id="panelCustomVent" role="tabpanel" aria-labelledby="tabCustomVent" hidden>
+    <div class="custom-vent-card">
+      <h2 class="custom-vent-title">✍️ 내 상황 있는 그대로 털어놓기</h2>
+      <p class="custom-vent-note">정해진 메뉴에 없는 나만의 빡친 사연을 적어주세요 — 있는 그대로 적어주시면 딱 맞는 찰진 영어 표현을 찾아드려요.</p>
+      
       <div class="ai-vent-intensity">
         <span class="ai-vent-intensity-label">표현 수위 (맛)</span>
         <div class="ai-vent-intensity-chips" role="radiogroup" aria-label="표현 수위 선택">
@@ -1043,11 +1253,11 @@
           <button type="button" class="ai-vent-intensity-chip" data-intensity="spicy" aria-checked="false">🌶️🌶️🌶️ 매운맛</button>
         </div>
       </div>
-      <textarea class="ai-vent-input" id="aiVentInput" maxlength="300" rows="3" placeholder="예: 팀장이 또 나만 시키고 생색은 지가 다 냄"></textarea>
-      <button type="button" class="pill primary" id="aiVentSubmit">찰진 영어 표현 찾기</button>
+      <textarea class="ai-vent-input" id="aiVentInput" maxlength="300" rows="3" placeholder="예: 팀장이 또 나만 시키고 생색은 지가 다 냄 / 약속 시간 30분 늦고 사과도 안 함"></textarea>
+      <button type="button" class="pill primary custom-vent-submit" id="aiVentSubmit">🔥 찰진 영어 표현 찾기</button>
       <p class="ai-vent-status" id="aiVentStatus" hidden></p>
     </div>
-  </section>
+  </div>
 
   <section class="result" id="result" aria-live="polite">
     <span class="result-tag" id="resultTag">Work &amp; Deadlines</span>
@@ -1079,6 +1289,41 @@
     </div>
     <p class="more-status" id="moreStatus" hidden></p>
   </section>
+
+  <!-- 💡 앱 이용 안내 및 소개 모달 -->
+  <div class="about-modal-backdrop" id="aboutModal" hidden>
+    <div class="about-modal-card" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle">
+      <div class="about-modal-header">
+        <span class="about-modal-title" id="aboutModalTitle">💡 영어로 욕해 · 사용 팁 & 소개</span>
+        <button type="button" class="about-modal-close" id="aboutModalClose" aria-label="닫기">✕</button>
+      </div>
+      <div class="about-modal-body">
+        <div class="about-section">
+          <h4>🎯 어떤 앱인가요?</h4>
+          <p>직장, 상사, 야근, 인간관계에서 쌓인 분노와 답답함을 억누르지 않고, 실제 원어민들이 일상에서 내뱉는 찰진 영어 표현으로 시원하게 털어버리는 감정 해소 밸브입니다.</p>
+        </div>
+        <div class="about-section">
+          <h4>⚡ 모드 1 · 상황별 골라보기</h4>
+          <p>직장·업무, 인간관계, 소소한 빡침 등 38가지 실전 상황 칩을 탭하면, 상황에 꼭 맞는 구어체 영어 표현을 바로 꺼내볼 수 있어요.</p>
+        </div>
+        <div class="about-section">
+          <h4>✍️ 모드 2 · 내 말로 직접 쓰기</h4>
+          <p>정해진 메뉴에 없는 나만의 억울하고 열받은 상황을 있는 그대로 적어주시면, 문맥과 뉘앙스를 분석해 가장 자연스러운 찰진 영어 표현을 찾아드려요.</p>
+        </div>
+        <div class="about-section">
+          <h4>🌶️ 3단계 맛 가이드</h4>
+          <ul>
+            <li><b>🌶️ 순한맛:</b> 비속어 전혀 없이 담백하고 단호하게 분노 표출</li>
+            <li><b>🌶️🌶️ 중간맛:</b> damn, hell 등 가벼운 일상 비속어로 톡 쏘는 표현</li>
+            <li><b>🌶️🌶️🌶️ 매운맛:</b> fuck, shit, asshole 등 필터링 없는 진짜 실전 욕설</li>
+          </ul>
+        </div>
+      </div>
+      <div class="about-modal-footer">
+        <button type="button" class="pill primary about-modal-ok" id="aboutModalOk">알겠습니다</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 🎬 실제 원어민 말투 영상 모달 (그 문장 끝나면 자동 정지) -->
   <div class="clip-modal-backdrop" id="clipModal" hidden>
@@ -2485,24 +2730,71 @@
     renderTonePicker();
   }
 
-  // Phase 11 · 고정 메뉴에 안 맞는 상황을 위한 opt-in 자유 입력 (프로토타입)
-  // /api/vent 서버리스 엔드포인트가 배포돼 있을 때만 동작 — 없으면(아티팩트 미리보기,
-  // 아직 배포 전인 경우 등) fetch가 실패해서 아래 catch에서 안내 문구로 우아하게 대체된다.
-  var aiVentToggle = document.getElementById('aiVentToggle');
-  var aiVentPanel = document.getElementById('aiVentPanel');
+  // ── 2단 모드 탭 스위처 (상황별 골라보기 vs 내 말로 직접 쓰기) ──
+  var MODE_KEY = 'pressure-valve-mode-v1';
+  var tabSituations = document.getElementById('tabSituations');
+  var tabCustomVent = document.getElementById('tabCustomVent');
+  var panelSituations = document.getElementById('panelSituations');
+  var panelCustomVent = document.getElementById('panelCustomVent');
+
+  function setMode(mode) {
+    var isSituations = mode === 'situations';
+    if (tabSituations) {
+      tabSituations.classList.toggle('active', isSituations);
+      tabSituations.setAttribute('aria-selected', isSituations ? 'true' : 'false');
+    }
+    if (tabCustomVent) {
+      tabCustomVent.classList.toggle('active', !isSituations);
+      tabCustomVent.setAttribute('aria-selected', !isSituations ? 'true' : 'false');
+    }
+    if (panelSituations) panelSituations.hidden = !isSituations;
+    if (panelCustomVent) panelCustomVent.hidden = isSituations;
+
+    try { localStorage.setItem(MODE_KEY, mode); } catch (e) { /* ignore */ }
+
+    if (!isSituations && aiVentInput) {
+      setTimeout(function () { aiVentInput.focus(); }, 80);
+    }
+  }
+
+  if (tabSituations) {
+    tabSituations.addEventListener('click', function () { setMode('situations'); });
+  }
+  if (tabCustomVent) {
+    tabCustomVent.addEventListener('click', function () { setMode('custom'); });
+  }
+
+  // 이전에 사용하던 모드 복원 (기본값: situations)
+  var savedMode = 'situations';
+  try { savedMode = localStorage.getItem(MODE_KEY) || 'situations'; } catch (e) { savedMode = 'situations'; }
+  setMode(savedMode);
+
+  // ── 이용 안내 및 소개 모달 ──
+  var aboutBtn = document.getElementById('aboutBtn');
+  var aboutModal = document.getElementById('aboutModal');
+  var aboutModalClose = document.getElementById('aboutModalClose');
+  var aboutModalOk = document.getElementById('aboutModalOk');
+
+  function openAboutModal() {
+    if (aboutModal) aboutModal.hidden = false;
+  }
+  function closeAboutModal() {
+    if (aboutModal) aboutModal.hidden = true;
+  }
+
+  if (aboutBtn) aboutBtn.addEventListener('click', openAboutModal);
+  if (aboutModalClose) aboutModalClose.addEventListener('click', closeAboutModal);
+  if (aboutModalOk) aboutModalOk.addEventListener('click', closeAboutModal);
+  if (aboutModal) {
+    aboutModal.addEventListener('click', function (e) {
+      if (e.target === aboutModal) closeAboutModal();
+    });
+  }
+
   var aiVentInput = document.getElementById('aiVentInput');
   var aiVentSubmit = document.getElementById('aiVentSubmit');
   var aiVentStatus = document.getElementById('aiVentStatus');
   var AI_VENT_CATEGORY = { label: '내가 쓴 상황', isAiGenerated: true };
-
-  if (aiVentToggle) {
-    aiVentToggle.addEventListener('click', function () {
-      var expanded = aiVentToggle.getAttribute('aria-expanded') === 'true';
-      aiVentToggle.setAttribute('aria-expanded', String(!expanded));
-      aiVentPanel.hidden = expanded;
-      if (!expanded) aiVentInput.focus();
-    });
-  }
 
   function setAiVentStatus(text, isError) {
     if (!aiVentStatus) return;
@@ -2606,7 +2898,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.5.2';
+  var APP_VERSION = '2.6.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
