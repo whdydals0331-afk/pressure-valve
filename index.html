@@ -399,105 +399,8 @@
     color: #fff8f2;
   }
   button.pill.primary:hover { background: var(--ember-deep); border-color: var(--ember-deep); }
-  button.pill.clip-btn {
-    border-color: var(--relief);
-    color: var(--relief);
-  }
-  button.pill.clip-btn:hover {
-    background: var(--relief-tint);
-    border-color: var(--relief);
-  }
 
-  /* 🎬 실제 원어민 말투 영상 모달 */
-  .clip-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(4px);
-    z-index: 999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    animation: fadeIn 0.15s ease-out;
-  }
-  .clip-modal-card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    width: 100%;
-    max-width: 480px;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-  .clip-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--line);
-    background: var(--surface-2);
-  }
-  .clip-modal-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--ink);
-  }
-  .clip-modal-close {
-    background: none;
-    border: none;
-    font-size: 15px;
-    color: var(--ink-soft);
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    line-height: 1;
-  }
-  .clip-modal-sub {
-    font-size: 12px;
-    color: var(--ink-soft);
-    margin: 0;
-    padding: 8px 16px;
-    background: var(--ground);
-    border-bottom: 1px solid var(--line);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .clip-modal-body {
-    position: relative;
-    min-height: 240px;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  #youglish-widget-container {
-    width: 100%;
-    min-height: 240px;
-  }
-  .clip-loading {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 12px;
-    background: #000;
-    z-index: 1;
-  }
-  .clip-modal-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    gap: 8px;
-    background: var(--surface);
-    border-top: 1px solid var(--line);
-  }
+
 
   .privacy-note {
     font-size: 11.5px;
@@ -952,14 +855,30 @@
   .result-ko {
     font-size: 15px;
     color: var(--ink);
-    margin: 0 0 4px;
+    margin: 0 0 8px;
+  }
+  .result-ko::before {
+    content: '💬 뜻 · ';
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--relief);
+    letter-spacing: 0.02em;
   }
   .result-tip {
     font-size: 13px;
     color: var(--ink-soft);
     margin: 0 0 16px;
-    padding-left: 12px;
-    border-left: 2px solid var(--line);
+    padding: 8px 12px;
+    border-left: 2px solid var(--relief);
+    background: var(--relief-tint);
+    border-radius: 0 6px 6px 0;
+  }
+  .result-tip::before {
+    content: '💡 이럴 때 써요 · ';
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--relief);
+    letter-spacing: 0.02em;
   }
   .speak-cta {
     display: flex;
@@ -1262,8 +1181,8 @@
   <section class="result" id="result" aria-live="polite">
     <span class="result-tag" id="resultTag">Work &amp; Deadlines</span>
     <p class="result-en" id="resultEn" lang="en">"I am so done with today."</p>
-    <p class="result-ko" id="resultKo">오늘 진짜 지쳤다, 끝났다는 뜻이에요.</p>
-    <p class="result-tip" id="resultTip">퇴근길에 혼잣말처럼 던지기 좋은 톤이에요.</p>
+    <p class="result-ko" id="resultKo">오늘 진짜 지쳤다, 다 끝났다.</p>
+    <p class="result-tip" id="resultTip">퇴근길에 혼잣말로 씹어뱉기 좋은 톤이에요.</p>
     <p class="result-source" id="resultSource" hidden></p>
     <button class="speak-cta" id="speakBtn" type="button" aria-label="영어로 들어보기">
       <span class="speak-cta-icon" aria-hidden="true">🔊</span>
@@ -1285,7 +1204,6 @@
       <button class="icon-btn" id="starBtn" type="button" title="즐겨찾기" aria-label="즐겨찾기">☆</button>
       <button class="pill" id="anotherBtn" type="button">다른 표현</button>
       <button class="pill" id="moreBtn" type="button">✨ 다른 표현 더 보기</button>
-      <button class="pill clip-btn" id="movieClipBtn" type="button" title="실제 사람들이 얘기하는 말투 영상으로 듣기">🎬 실제 원어민 말투 영상</button>
     </div>
     <p class="more-status" id="moreStatus" hidden></p>
   </section>
@@ -1300,7 +1218,7 @@
       <div class="about-modal-body">
         <div class="about-section">
           <h4>🎯 어떤 앱인가요?</h4>
-          <p>직장, 상사, 야근, 인간관계에서 쌓인 분노와 답답함을 억누르지 않고, 실제 원어민들이 일상에서 내뱉는 찰진 영어 표현으로 시원하게 털어버리는 감정 해소 밸브입니다.</p>
+          <p>직장, 상사, 야근, 인간관계에서 쌓인 분노와 답답함을 억누르지 않고, 미드나 영화 속 일상에서 내뱉는 찰진 진짜 영어 표현으로 시원하게 털어버리는 감정 해소 밸브입니다.</p>
         </div>
         <div class="about-section">
           <h4>⚡ 모드 1 · 상황별 골라보기</h4>
@@ -1325,27 +1243,8 @@
     </div>
   </div>
 
-  <!-- 🎬 실제 원어민 말투 영상 모달 (그 문장 끝나면 자동 정지) -->
-  <div class="clip-modal-backdrop" id="clipModal" hidden>
-    <div class="clip-modal-card" role="dialog" aria-modal="true" aria-labelledby="clipModalTitle">
-      <div class="clip-modal-header">
-        <span class="clip-modal-title" id="clipModalTitle">🎬 실제 원어민 말투 영상</span>
-        <button type="button" class="clip-modal-close" id="clipModalClose" aria-label="닫기">✕</button>
-      </div>
-      <p class="clip-modal-sub" id="clipModalPhrase"></p>
-      <div class="clip-modal-body">
-        <div id="youglish-widget-container"></div>
-        <div class="clip-loading" id="clipLoading">
-          <span>실제 발화 장면을 불러오는 중…</span>
-        </div>
-      </div>
-      <div class="clip-modal-actions">
-        <button type="button" class="pill" id="clipReplayBtn">🔁 이 문장 다시 듣기</button>
-        <button type="button" class="pill" id="clipNextBtn">➡️ 다음 사람 말투</button>
-        <button type="button" class="pill clip-close-pill" id="clipModalCloseBtn">닫기</button>
-      </div>
-    </div>
-  </div>
+
+
 
   <div class="favs-panel">
     <button class="pill" id="favsToggleBtn" type="button">⭐ 즐겨찾기 보기</button>
@@ -1403,7 +1302,7 @@
       spicy: [
         { en: "This is such bullshit.", ko: "이건 진짜 개소리(말도 안 됨)라는 뜻이에요.", tip: "친한 동료끼리 혼잣말이나 메신저용. 상사 앞에서는 절대 금지." },
         { en: "I'm so fucking done with this.", ko: "나 이거 진짜 존나 지쳤다는 뜻이에요.", tip: "강도가 센 표현이라 아주 편한 사이에서만." },
-        { en: "This deadline is bullshit.", ko: "이 마감 진짜 개소리(말도 안 됨)라는 뜻이에요.", tip: "마감 자체를 평가하며 욕하는 방식, 원어민들이 마감에 화날 때 자주 쓰는 패턴이에요." },
+        { en: "This deadline is bullshit.", ko: "이 마감 진짜 개소리(말도 안 됨)라는 뜻이에요.", tip: "마감 자체를 평가하며 욕하는 방식, 마감에 제대로 빡쳤을 때 입에 착 붙는 패턴이에요." },
         { en: "This job is kicking my ass.", ko: "이 일이 나를 완전히 조지고 있다는 관용구예요.", tip: "업무 강도가 너무 셀 때, 편한 대화에서." },
         { en: "I don't give a shit anymore.", ko: "이제 신경 하나도 안 쓴다(될 대로 되라)는 뜻이에요.", tip: "체념 섞인 포기의 뉘앙스." },
         { en: "What the fuck is going on today?", ko: "오늘 진짜 대체 뭔 일이냐는 뜻이에요(강한 버전).", tip: "hell보다 훨씬 강한 fuck으로 바꾼 표현, 아주 편한 사이·혼잣말용." }
@@ -2030,6 +1929,14 @@
     return '🌶️ ';
   }
 
+  function cleanKoTranslation(text) {
+    if (!text) return '';
+    return text
+      .replace(/[,.]?\s*(?:이?라는\s*(?:뜻|의미)(?:에요|입니다|이에요)\.?)$/i, '')
+      .replace(/\s*,\s*라는\s*뜻이에요\.?$/i, '')
+      .trim();
+  }
+
   function showPhrase(category, phrase, level) {
     // 버그 수정 — 같은 상황 칩을 반복 클릭하면 매번 똑같은 고정 문구가 다시 뜨는데도
     // 게이지가 계속 깎였음(새로 "꺼내본" 게 없는데도 감소). 실제로 다른 문구가 떴을 때만 깎이게 함.
@@ -2039,7 +1946,7 @@
     resultTag.textContent = intensityIcon(level) + intensityName(level) + ' · ' + category.label;
     resultTag.classList.toggle('spicy', level !== 'mild');
     resultEn.textContent = '“' + phrase.en + '”';
-    resultKo.textContent = phrase.ko;
+    resultKo.textContent = cleanKoTranslation(phrase.ko);
     resultTip.textContent = phrase.tip;
     resultEl.classList.add('show');
     // Phase 11 · AI 자유 입력 문구엔 "다른 표현"을 뽑아올 고정 카테고리 배열이 없어서 숨긴다
@@ -2211,116 +2118,7 @@
     updateStarButton();
   });
 
-  // 🎬 실제 원어민 말투 영상 모달 제어 (해당 문장 발화 완료 시 자동 일시정지)
-  var clipModal = document.getElementById('clipModal');
-  var clipModalClose = document.getElementById('clipModalClose');
-  var clipModalCloseBtn = document.getElementById('clipModalCloseBtn');
-  var clipModalPhrase = document.getElementById('clipModalPhrase');
-  var clipLoading = document.getElementById('clipLoading');
-  var clipReplayBtn = document.getElementById('clipReplayBtn');
-  var clipNextBtn = document.getElementById('clipNextBtn');
-  var movieClipBtn = document.getElementById('movieClipBtn');
 
-  var ygWidget = null;
-  var ygApiLoaded = false;
-  var currentClipQuery = '';
-
-  function loadYouglishScript(cb) {
-    if (window.YG && window.YG.Widget) { cb(); return; }
-    if (ygApiLoaded) {
-      var check = setInterval(function () {
-        if (window.YG && window.YG.Widget) { clearInterval(check); cb(); }
-      }, 100);
-      return;
-    }
-    ygApiLoaded = true;
-    var s = document.createElement('script');
-    s.src = 'https://youglish.com/public/emb/widget.js';
-    s.async = true;
-    s.onload = function () { cb(); };
-    s.onerror = function () {
-      if (clipLoading) {
-        clipLoading.innerHTML = '영상을 불러오지 못했습니다. <a href="https://youglish.com/pronounce/' + encodeURIComponent(currentClipQuery) + '/english" target="_blank" rel="noopener" style="color:#ef6a3a;text-decoration:underline;">새 창에서 보기</a>';
-      }
-    };
-    document.head.appendChild(s);
-  }
-
-  function initYouglishWidget(query) {
-    currentClipQuery = query;
-    if (clipLoading) {
-      clipLoading.hidden = false;
-      clipLoading.textContent = '실제 발화 장면을 불러오는 중…';
-    }
-    if (clipModalPhrase) clipModalPhrase.textContent = '“' + query + '”';
-
-    loadYouglishScript(function () {
-      if (!ygWidget) {
-        try {
-          ygWidget = new YG.Widget("youglish-widget-container", {
-            width: '100%',
-            components: 9,
-            auto_start: 1,
-            events: {
-              'onFetchDone': function (e) {
-                if (e && e.totalResult === 0 && clipLoading) {
-                  clipLoading.innerHTML = '일치하는 영상이 없어요. <a href="https://youglish.com/pronounce/' + encodeURIComponent(query) + '/english" target="_blank" rel="noopener" style="color:#ef6a3a;text-decoration:underline;">유튜브 전체 검색으로 보기</a>';
-                }
-              },
-              'onVideoChange': function () {
-                if (clipLoading) clipLoading.hidden = true;
-              },
-              'onCaptionConsumed': function () {
-                // ⭐ 사용자가 요청한 핵심: 그 문장을 다 말하면 자동으로 딱 멈춘다!
-                if (ygWidget && ygWidget.pause) {
-                  try { ygWidget.pause(); } catch (e) { /* ignore */ }
-                }
-              }
-            }
-          });
-        } catch (err) {
-          if (clipLoading) clipLoading.textContent = '플레이어 초기화 중 오류가 발생했습니다.';
-        }
-      }
-      if (ygWidget && ygWidget.fetch) {
-        ygWidget.fetch(query, "english");
-      }
-    });
-  }
-
-  function closeClipModal() {
-    if (clipModal) clipModal.hidden = true;
-    if (ygWidget && ygWidget.pause) {
-      try { ygWidget.pause(); } catch (e) { /* ignore */ }
-    }
-  }
-
-  if (movieClipBtn) {
-    movieClipBtn.addEventListener('click', function () {
-      if (!currentPhrase || !currentPhrase.en) return;
-      var clean = currentPhrase.en.replace(/[.,/#!$%^&*;:{}=\-_`~()?"'’]/g, ' ').replace(/\s+/g, ' ').trim();
-      if (clipModal) clipModal.hidden = false;
-      initYouglishWidget(clean);
-    });
-  }
-
-  if (clipModalClose) clipModalClose.addEventListener('click', closeClipModal);
-  if (clipModalCloseBtn) clipModalCloseBtn.addEventListener('click', closeClipModal);
-  if (clipReplayBtn) {
-    clipReplayBtn.addEventListener('click', function () {
-      if (ygWidget && ygWidget.replay) {
-        try { ygWidget.replay(); } catch (e) { /* ignore */ }
-      }
-    });
-  }
-  if (clipNextBtn) {
-    clipNextBtn.addEventListener('click', function () {
-      if (ygWidget && ygWidget.next) {
-        if (clipLoading) clipLoading.hidden = false;
-        try { ygWidget.next(); } catch (e) { /* ignore */ }
-      }
-    });
-  }
 
   // Phase 2 · T7 — 클립보드 복사 (navigator.clipboard 우선, 미지원 시 execCommand fallback)
   function fallbackCopy(text, cb) {
@@ -2891,7 +2689,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.6.1';
+  var APP_VERSION = '2.7.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
