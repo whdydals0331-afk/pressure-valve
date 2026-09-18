@@ -1197,12 +1197,12 @@
   <div class="mode-panel active" id="panelSituations" role="tabpanel" aria-labelledby="tabSituations">
     <div class="intensity-row">
       <div class="intensity-toggle" id="intensityToggle" role="group" aria-label="표현 강도">
-        <button type="button" class="active" data-mode="mild">순한맛</button>
-        <button type="button" data-mode="medium">중간맛</button>
+        <button type="button" data-mode="mild">순한맛</button>
+        <button type="button" class="active" data-mode="medium">중간맛</button>
         <button type="button" data-mode="spicy">매운맛</button>
       </div>
     </div>
-    <p class="intensity-note" id="intensityNote">순한맛 — 비속어 없이 답답함을 담백하게 내뱉어요.</p>
+    <p class="intensity-note" id="intensityNote">중간맛 — damn, hell, crap 등 가벼운 욕이 섞여요.</p>
 
     <section class="gauge-panel" aria-label="스트레스 게이지">
       <div class="gauge-row">
@@ -1249,7 +1249,7 @@
         <span class="ai-vent-intensity-label">표현 수위 (맛)</span>
         <div class="ai-vent-intensity-chips" role="radiogroup" aria-label="표현 수위 선택">
           <button type="button" class="ai-vent-intensity-chip" data-intensity="mild" aria-checked="false">🌶️ 순한맛</button>
-          <button type="button" class="ai-vent-intensity-chip" data-intensity="medium" aria-checked="false">🌶️🌶️ 중간맛</button>
+          <button type="button" class="ai-vent-intensity-chip active" data-intensity="medium" aria-checked="true">🌶️🌶️ 중간맛</button>
           <button type="button" class="ai-vent-intensity-chip" data-intensity="spicy" aria-checked="false">🌶️🌶️🌶️ 매운맛</button>
         </div>
       </div>
@@ -1803,21 +1803,14 @@
   var activeCategoryId = null;
   var currentPhrase = null;
   var currentCategory = null;
-  // Phase 8 · 순한맛/중간맛/매운맛 3단계 — intensity: 'mild' | 'medium' | 'spicy'
-  var intensity = 'mild';
+  // Phase 8 · 순한맛/중간맛/매운맛 3단계 — intensity: 'mild' | 'medium' | 'spicy' (기본: medium)
+  var intensity = 'medium';
 
   // Phase 2 · T6 — 최근 노출 이력(세션 메모리 한정, localStorage 미사용)으로 연속 반복 방지
   var recentEn = [];
   var RECENT_MAX = 3;
 
   var SPICY_KEY = 'pressure-valve-spicy-v1';
-  try {
-    var savedIntensity = localStorage.getItem(SPICY_KEY);
-    // 이전 boolean 포맷('1'/'0')과 새 문자열 포맷을 둘 다 지원
-    if (savedIntensity === '1') intensity = 'spicy';
-    else if (savedIntensity === '0') intensity = 'mild';
-    else if (savedIntensity === 'mild' || savedIntensity === 'medium' || savedIntensity === 'spicy') intensity = savedIntensity;
-  } catch (e) { intensity = 'mild'; }
 
   var FAV_KEY = 'pressure-valve-favorites-v2';
   function loadFavorites() {
@@ -2018,11 +2011,11 @@
     setIntensity(next, false);
   }
 
-  // 강도 버튼을 눌렀을 때 게이지가 가야 할 대표 위치 (각 구간의 가운데쯤)
+  // 강도 버튼을 눌렀을 때 게이지가 가야 할 대표 위치 (직관적인 25% · 50% · 85%)
   function gaugeValueForIntensity(level) {
-    if (level === 'spicy') return 84;
+    if (level === 'spicy') return 85;
     if (level === 'medium') return 50;
-    return 17;
+    return 25;
   }
 
   function intensityName(level) {
@@ -2898,7 +2891,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.6.0';
+  var APP_VERSION = '2.6.1';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
@@ -3015,21 +3008,9 @@
     if (document.visibilityState === 'visible') checkForUpdate();
   });
 
-  // init — 게이지 수치와 강도 라벨이 처음부터 어긋나 보이지 않게 맞춘다.
-  // 예전엔 게이지는 늘 50%(중간맛 구간)로 시작하는데 강도는 저장된 값(주로 순한맛)이라
-  // "50%인데 순한맛"처럼 서로 안 맞는 상태로 열렸다.
-  // - 지난번에 고른 맛이 있으면 그 맛과 그 구간의 게이지로 시작하고,
-  // - 없으면 게이지 50%와 거기에 맞는 맛(중간맛)으로 시작한다.
-  var hasSavedIntensity = false;
-  try { hasSavedIntensity = !!localStorage.getItem(SPICY_KEY); } catch (e) { hasSavedIntensity = false; }
-
-  if (hasSavedIntensity) {
-    setIntensity(intensity, false);
-    renderGauge(gaugeValueForIntensity(intensity));
-  } else {
-    renderGauge(stressLevel);
-    setIntensity(suggestIntensityFor(stressLevel), false);
-  }
+  // init — 처음 열었을 때 부담스러운 84%가 아닌, 기본 50% (중간맛 · 빡침 시작) 기준으로 단정하게 시작한다.
+  renderGauge(50);
+  setIntensity('medium', false);
 
   renderValves();
   renderFavorites();
