@@ -473,9 +473,15 @@
     align-items: center;
     justify-content: center;
   }
-  #youglish-widget-container {
+  .clip-player-host {
     width: 100%;
     min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ygProgress {
+    display: none !important;
   }
   .clip-loading {
     position: absolute;
@@ -1376,7 +1382,9 @@
       </div>
       <p class="clip-modal-sub" id="clipModalPhrase"></p>
       <div class="clip-modal-body">
-        <div id="youglish-widget-container"></div>
+        <div class="clip-player-host" id="clipPlayerHost">
+          <div id="youglish-widget-container"></div>
+        </div>
         <div class="clip-loading" id="clipLoading" hidden>
           <div class="clip-loading-spinner" id="clipSpinner"></div>
           <span id="clipLoadingText">실제 발화 장면을 불러오는 중…</span>
@@ -2288,9 +2296,45 @@
   function extractClipQuery(enText) {
     if (!enText) return '';
     var clean = enText.replace(/["'“”]/g, '').replace(/[,.!?]/g, ' ').replace(/\s+/g, ' ').trim();
+    var lower = clean.toLowerCase();
+
+    // 1순위: 자막 DB에 수백~수천 개씩 존재하는 핵심 슬랭/관용구 우선 타겟팅
+    var PUNCHY_PATTERNS = [
+      /what the fuck/i,
+      /fuck this/i,
+      /fucking done/i,
+      /fucking/i,
+      /fuck/i,
+      /give a shit/i,
+      /bullshit/i,
+      /pissed off/i,
+      /piss me off/i,
+      /what the hell/i,
+      /screw this/i,
+      /dick move/i,
+      /kicking my ass/i,
+      /messed up/i,
+      /up to here/i,
+      /two-faced/i,
+      /behind my back/i,
+      /done with/i,
+      /over it/i,
+      /ridiculous/i,
+      /damn it/i,
+      /damn/i,
+      /sucks/i,
+      /crappy/i
+    ];
+
+    for (var i = 0; i < PUNCHY_PATTERNS.length; i++) {
+      var m = lower.match(PUNCHY_PATTERNS[i]);
+      if (m) return m[0];
+    }
+
+    // 매칭되는 패턴이 없으면 앞 2~3단어만 추출 (긴 문장 검색 시 0건 방지)
     var words = clean.split(' ').filter(Boolean);
-    if (words.length > 4) {
-      return words.slice(0, 4).join(' ');
+    if (words.length > 3) {
+      return words.slice(0, 3).join(' ');
     }
     return clean;
   }
@@ -2322,7 +2366,7 @@
       if (clipLoadingText) clipLoadingText.textContent = msg || '영상 로딩이 지연되고 있어요.';
       if (clipYtFallback) {
         clipYtFallback.hidden = false;
-        clipYtFallback.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(currentClipQuery + ' english');
+        clipYtFallback.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(currentClipQuery + ' scene english');
       }
     }
   }
@@ -2338,8 +2382,14 @@
       if (clipLoadingText) clipLoadingText.textContent = '실제 발화 장면을 불러오는 중…';
       if (clipYtFallback) {
         clipYtFallback.hidden = true;
-        clipYtFallback.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query + ' english');
+        clipYtFallback.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query + ' scene english');
       }
+    }
+
+    // 매 실행마다 DOM 호스트를 깨끗하게 재생성하여 YouGlish outerHTML 교체 충돌 및 크래시 방지
+    var host = document.getElementById('clipPlayerHost');
+    if (host) {
+      host.innerHTML = '<div id="youglish-widget-container"></div>';
     }
 
     // 2.5초 이상 반응 없으면 멈춰있지 않고 바로 유튜브 바로보기 Fallback 활성화
@@ -2349,43 +2399,36 @@
     }, 2500);
 
     loadYouglishScript(function () {
-      if (!ygWidget) {
-        try {
-          ygWidget = new YG.Widget("youglish-widget-container", {
-            width: '100%',
-            components: 9,
-            auto_start: 1,
-            events: {
-              'onFetchDone': function (e) {
-                if (e && e.totalResult === 0) {
-                  showClipFallback('일치하는 영상이 없어요.');
-                }
-              },
-              'onVideoChange': function () {
-                if (clipWatchdogTimer) { clearTimeout(clipWatchdogTimer); clipWatchdogTimer = null; }
-                if (clipLoading) clipLoading.hidden = true;
-              },
-              'onCaptionConsumed': function () {
-                // 문장 끝나면 자동 정지
-                if (ygWidget && ygWidget.pause) {
-                  try { ygWidget.pause(); } catch (e) { /* ignore */ }
-                }
-              },
-              'onError': function () {
-                showClipFallback('영상 로드 중 오류가 발생했습니다.');
+      try {
+        ygWidget = new YG.Widget("youglish-widget-container", {
+          width: '100%',
+          components: 9,
+          query: query,
+          lang: 'english',
+          auto_start: 1,
+          events: {
+            'onVideoChange': function () {
+              if (clipWatchdogTimer) { clearTimeout(clipWatchdogTimer); clipWatchdogTimer = null; }
+              if (clipLoading) clipLoading.hidden = true;
+            },
+            'onCaptionConsumed': function () {
+              // 문장 끝나면 자동 정지
+              if (ygWidget && ygWidget.pause) {
+                try { ygWidget.pause(); } catch (e) { /* ignore */ }
               }
+            },
+            'onFetchDone': function (e) {
+              if (e && e.totalResult === 0) {
+                showClipFallback('일치하는 영상이 없어요.');
+              }
+            },
+            'onError': function () {
+              showClipFallback('영상 로드 중 오류가 발생했습니다.');
             }
-          });
-        } catch (err) {
-          showClipFallback('플레이어 초기화 중 오류가 발생했습니다.');
-        }
-      }
-      if (ygWidget && ygWidget.fetch) {
-        try {
-          ygWidget.fetch(query, "english");
-        } catch (e) {
-          showClipFallback('검색 요청 중 오류가 발생했습니다.');
-        }
+          }
+        });
+      } catch (err) {
+        showClipFallback('플레이어 초기화 중 오류가 발생했습니다.');
       }
     });
   }
@@ -3002,7 +3045,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.7.1';
+  var APP_VERSION = '2.7.2';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
