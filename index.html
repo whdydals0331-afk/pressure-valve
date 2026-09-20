@@ -473,54 +473,12 @@
     align-items: center;
     justify-content: center;
   }
-  .clip-player-host {
+  .clip-yt-frame {
     width: 100%;
-    min-height: 250px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .ygProgress {
-    display: none !important;
-  }
-  .clip-loading {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: #fff;
-    font-size: 13px;
-    background: rgba(0,0,0,0.88);
-    z-index: 2;
-    padding: 20px;
-    text-align: center;
-  }
-  .clip-loading-spinner {
-    width: 24px;
-    height: 24px;
-    border: 3px solid rgba(255,255,255,0.2);
-    border-top-color: var(--relief);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  .clip-fallback-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--ember);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 6px;
-    text-decoration: none;
-    margin-top: 6px;
-  }
-  .clip-fallback-btn:hover {
-    background: var(--ember-deep);
+    height: 260px;
+    border: none;
+    background: #000;
+    display: block;
   }
   .clip-modal-actions {
     display: flex;
@@ -530,6 +488,18 @@
     gap: 8px;
     background: var(--surface);
     border-top: 1px solid var(--line);
+  }
+  .clip-yt-app-btn {
+    text-decoration: none;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--surface-2);
+  }
+  .clip-yt-app-btn:hover {
+    border-color: var(--ember);
+    color: var(--ember);
   }
   .privacy-note {
     font-size: 11.5px;
@@ -1382,18 +1352,11 @@
       </div>
       <p class="clip-modal-sub" id="clipModalPhrase"></p>
       <div class="clip-modal-body">
-        <div class="clip-player-host" id="clipPlayerHost">
-          <div id="youglish-widget-container"></div>
-        </div>
-        <div class="clip-loading" id="clipLoading" hidden>
-          <div class="clip-loading-spinner" id="clipSpinner"></div>
-          <span id="clipLoadingText">실제 발화 장면을 불러오는 중…</span>
-          <a href="#" target="_blank" rel="noopener" class="clip-fallback-btn" id="clipYtFallback" hidden>▶️ 유튜브에서 바로 보기</a>
-        </div>
+        <iframe id="clipYtFrame" class="clip-yt-frame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
       <div class="clip-modal-actions">
-        <button type="button" class="pill" id="clipReplayBtn">🔁 이 문장 다시 듣기</button>
-        <button type="button" class="pill" id="clipNextBtn">➡️ 다음 사람 영상</button>
+        <a href="#" target="_blank" rel="noopener" class="pill clip-yt-app-btn" id="clipYtAppBtn">▶️ 유튜브 앱에서 보기</a>
+        <button type="button" class="pill" id="clipReplayBtn">🔁 새로고침</button>
         <button type="button" class="pill clip-close-pill" id="clipModalCloseBtn">닫기</button>
       </div>
     </div>
@@ -2274,23 +2237,16 @@
     updateStarButton();
   });
 
-  // 🎬 실제 사용 영상 모달 제어 (해당 문장 발화 완료 시 자동 일시정지 & 1초 고속 최적화)
+  // 🎬 실제 사용 영상 모달 제어 (유튜브 공식 고속 플레이어 연동)
   var clipModal = document.getElementById('clipModal');
   var clipModalClose = document.getElementById('clipModalClose');
   var clipModalCloseBtn = document.getElementById('clipModalCloseBtn');
   var clipModalPhrase = document.getElementById('clipModalPhrase');
-  var clipLoading = document.getElementById('clipLoading');
-  var clipSpinner = document.getElementById('clipSpinner');
-  var clipLoadingText = document.getElementById('clipLoadingText');
-  var clipYtFallback = document.getElementById('clipYtFallback');
+  var clipYtFrame = document.getElementById('clipYtFrame');
+  var clipYtAppBtn = document.getElementById('clipYtAppBtn');
   var clipReplayBtn = document.getElementById('clipReplayBtn');
-  var clipNextBtn = document.getElementById('clipNextBtn');
   var movieClipBtn = document.getElementById('movieClipBtn');
-
-  var ygWidget = null;
-  var ygApiLoaded = false;
   var currentClipQuery = '';
-  var clipWatchdogTimer = null;
 
   // 문장에서 1초 컷 고속 검색용 키워드/핵심 구문 추출
   function extractClipQuery(enText) {
@@ -2298,7 +2254,7 @@
     var clean = enText.replace(/["'“”]/g, '').replace(/[,.!?]/g, ' ').replace(/\s+/g, ' ').trim();
     var lower = clean.toLowerCase();
 
-    // 1순위: 자막 DB에 수백~수천 개씩 존재하는 핵심 슬랭/관용구 우선 타겟팅
+    // 1순위: 자막 및 영상 검색 시 수백~수천 건씩 존재하는 핵심 슬랭/관용구 우선 매칭
     var PUNCHY_PATTERNS = [
       /what the fuck/i,
       /fuck this/i,
@@ -2331,7 +2287,7 @@
       if (m) return m[0];
     }
 
-    // 매칭되는 패턴이 없으면 앞 2~3단어만 추출 (긴 문장 검색 시 0건 방지)
+    // 매칭되는 패턴이 없으면 앞 2~3단어만 추출
     var words = clean.split(' ').filter(Boolean);
     if (words.length > 3) {
       return words.slice(0, 3).join(' ');
@@ -2339,113 +2295,31 @@
     return clean;
   }
 
-  function loadYouglishScript(cb) {
-    if (window.YG && window.YG.Widget) { cb(); return; }
-    if (ygApiLoaded) {
-      var check = setInterval(function () {
-        if (window.YG && window.YG.Widget) { clearInterval(check); cb(); }
-      }, 100);
-      return;
-    }
-    ygApiLoaded = true;
-    var s = document.createElement('script');
-    s.src = 'https://youglish.com/public/emb/widget.js';
-    s.async = true;
-    s.onload = function () { cb(); };
-    s.onerror = function () {
-      showClipFallback('위젯 스크립트를 불러오지 못했습니다.');
-    };
-    document.head.appendChild(s);
-  }
-
-  function showClipFallback(msg) {
-    if (clipWatchdogTimer) { clearTimeout(clipWatchdogTimer); clipWatchdogTimer = null; }
-    if (clipLoading) {
-      clipLoading.hidden = false;
-      if (clipSpinner) clipSpinner.hidden = true;
-      if (clipLoadingText) clipLoadingText.textContent = msg || '영상 로딩이 지연되고 있어요.';
-      if (clipYtFallback) {
-        clipYtFallback.hidden = false;
-        clipYtFallback.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(currentClipQuery + ' scene english');
-      }
-    }
-  }
-
-  function initYouglishWidget(fullText) {
+  function openClipModal(fullText) {
+    if (!fullText) return;
     var query = extractClipQuery(fullText);
     currentClipQuery = query;
 
     if (clipModalPhrase) clipModalPhrase.textContent = '“' + fullText + '”';
-    if (clipLoading) {
-      clipLoading.hidden = false;
-      if (clipSpinner) clipSpinner.hidden = false;
-      if (clipLoadingText) clipLoadingText.textContent = '실제 발화 장면을 불러오는 중…';
-      if (clipYtFallback) {
-        clipYtFallback.hidden = true;
-        clipYtFallback.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query + ' scene english');
-      }
-    }
 
-    // 매 실행마다 DOM 호스트를 깨끗하게 재생성하여 YouGlish outerHTML 교체 충돌 및 크래시 방지
-    var host = document.getElementById('clipPlayerHost');
-    if (host) {
-      host.innerHTML = '<div id="youglish-widget-container"></div>';
-    }
+    var searchQuery = query + ' scene english';
+    var embedUrl = 'https://www.youtube.com/embed?listType=search&list=' + encodeURIComponent(searchQuery) + '&autoplay=1';
+    var appUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(searchQuery);
 
-    // 2.5초 이상 반응 없으면 멈춰있지 않고 바로 유튜브 바로보기 Fallback 활성화
-    if (clipWatchdogTimer) clearTimeout(clipWatchdogTimer);
-    clipWatchdogTimer = setTimeout(function () {
-      showClipFallback('외부 영상 응답이 지연되고 있어요.');
-    }, 2500);
-
-    loadYouglishScript(function () {
-      try {
-        ygWidget = new YG.Widget("youglish-widget-container", {
-          width: '100%',
-          components: 9,
-          query: query,
-          lang: 'english',
-          auto_start: 1,
-          events: {
-            'onVideoChange': function () {
-              if (clipWatchdogTimer) { clearTimeout(clipWatchdogTimer); clipWatchdogTimer = null; }
-              if (clipLoading) clipLoading.hidden = true;
-            },
-            'onCaptionConsumed': function () {
-              // 문장 끝나면 자동 정지
-              if (ygWidget && ygWidget.pause) {
-                try { ygWidget.pause(); } catch (e) { /* ignore */ }
-              }
-            },
-            'onFetchDone': function (e) {
-              if (e && e.totalResult === 0) {
-                showClipFallback('일치하는 영상이 없어요.');
-              }
-            },
-            'onError': function () {
-              showClipFallback('영상 로드 중 오류가 발생했습니다.');
-            }
-          }
-        });
-      } catch (err) {
-        showClipFallback('플레이어 초기화 중 오류가 발생했습니다.');
-      }
-    });
+    if (clipYtFrame) clipYtFrame.src = embedUrl;
+    if (clipYtAppBtn) clipYtAppBtn.href = appUrl;
+    if (clipModal) clipModal.hidden = false;
   }
 
   function closeClipModal() {
-    if (clipWatchdogTimer) { clearTimeout(clipWatchdogTimer); clipWatchdogTimer = null; }
     if (clipModal) clipModal.hidden = true;
-    if (ygWidget && ygWidget.pause) {
-      try { ygWidget.pause(); } catch (e) { /* ignore */ }
-    }
+    if (clipYtFrame) clipYtFrame.src = ''; // 모달 닫을 때 재생 중인 영상/음성 즉시 중단
   }
 
   if (movieClipBtn) {
     movieClipBtn.addEventListener('click', function () {
       if (!currentPhrase || !currentPhrase.en) return;
-      if (clipModal) clipModal.hidden = false;
-      initYouglishWidget(currentPhrase.en);
+      openClipModal(currentPhrase.en);
     });
   }
 
@@ -2453,25 +2327,9 @@
   if (clipModalCloseBtn) clipModalCloseBtn.addEventListener('click', closeClipModal);
   if (clipReplayBtn) {
     clipReplayBtn.addEventListener('click', function () {
-      if (ygWidget && ygWidget.replay) {
-        try { ygWidget.replay(); } catch (e) { /* ignore */ }
-      }
-    });
-  }
-  if (clipNextBtn) {
-    clipNextBtn.addEventListener('click', function () {
-      if (ygWidget && ygWidget.next) {
-        if (clipLoading) {
-          clipLoading.hidden = false;
-          if (clipSpinner) clipSpinner.hidden = false;
-          if (clipLoadingText) clipLoadingText.textContent = '다음 영상으로 이동 중…';
-          if (clipYtFallback) clipYtFallback.hidden = true;
-        }
-        if (clipWatchdogTimer) clearTimeout(clipWatchdogTimer);
-        clipWatchdogTimer = setTimeout(function () {
-          if (clipLoading) clipLoading.hidden = true;
-        }, 2000);
-        try { ygWidget.next(); } catch (e) { /* ignore */ }
+      if (clipYtFrame && currentClipQuery) {
+        var searchQuery = currentClipQuery + ' scene english';
+        clipYtFrame.src = 'https://www.youtube.com/embed?listType=search&list=' + encodeURIComponent(searchQuery) + '&autoplay=1';
       }
     });
   }
@@ -3045,7 +2903,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.7.2';
+  var APP_VERSION = '2.8.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
