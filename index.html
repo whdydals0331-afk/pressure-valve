@@ -1182,6 +1182,341 @@
     color: var(--ink-soft);
   }
 
+  /* 🎬 MOVIE SHORT-CLIP VENTING PLAYER (영화·애니 숏클립 트레이닝 뷰어) */
+  .clip-modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(12, 10, 8, 0.88);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    backdrop-filter: blur(8px);
+  }
+  .clip-modal-backdrop[hidden] { display: none !important; }
+  .clip-modal-card {
+    background: #191613;
+    color: #f1ebe0;
+    border: 1px solid #3c342a;
+    border-radius: 16px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: clipModalPop .24s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes clipModalPop {
+    from { opacity: 0; transform: scale(0.94) translateY(12px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .clip-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px 10px;
+  }
+  .clip-header-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .clip-modal-title {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.2px;
+  }
+  .clip-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    background: #d8481f;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.03em;
+  }
+  .clip-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #a89d8f;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+  .clip-modal-close:hover { color: #fff; background: #2a241d; }
+
+  .clip-phrase-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px 10px;
+  }
+  .clip-phrase-text {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #ff8452;
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 80%;
+  }
+  .clip-counter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: #8c8072;
+    background: #252019;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  /* 비디오 뷰포트 */
+  .clip-viewport {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .clip-video-player {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+  }
+  .clip-yg-host {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+  }
+  .clip-yg-host iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none;
+  }
+  /* YouGlish 위젯 내부 불필요한 UI 숨김 */
+  .clip-yg-host .ygProgress { display: none !important; }
+
+  .clip-loading {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(18, 15, 12, 0.92);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    z-index: 10;
+  }
+  .clip-loading[hidden] { display: none !important; }
+  .clip-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(239, 106, 58, 0.2);
+    border-top-color: #ef6a3a;
+    border-radius: 50%;
+    animation: clipSpin 0.7s linear infinite;
+  }
+  @keyframes clipSpin { to { transform: rotate(360deg); } }
+  .clip-loading-text {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #e5ded2;
+    margin: 0;
+  }
+  .clip-play-overlay {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(216, 72, 31, 0.9);
+    color: #fff;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    transition: transform 0.15s ease;
+  }
+  .clip-play-overlay:hover { transform: scale(1.08); }
+
+  /* 영화 자막 오버레이 */
+  .clip-subtitle-overlay {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .clip-sub-ko {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: clamp(14px, 3.8vw, 18px);
+    font-weight: 800;
+    color: #ffe600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.9);
+    margin-bottom: 2px;
+    line-height: 1.25;
+  }
+  .clip-sub-en {
+    font-family: 'Big Shoulders Display', 'Noto Sans KR', sans-serif;
+    font-size: clamp(17px, 4.8vw, 24px);
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 0 10px rgba(0,0,0,0.9);
+    letter-spacing: 0.03em;
+    line-height: 1.15;
+  }
+
+  /* 3단계 학습 탭 */
+  .clip-step-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    padding: 12px 16px 8px;
+    background: #14110e;
+    border-top: 1px solid #2d261e;
+  }
+  .clip-step-tab {
+    background: #231e18;
+    border: 1px solid #362e24;
+    color: #a89d8f;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 7px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+  }
+  .clip-step-tab:hover {
+    border-color: #ef6a3a;
+    color: #fff;
+  }
+  .clip-step-tab.active {
+    background: #3a2217;
+    border-color: #ef6a3a;
+    color: #ff8452;
+  }
+  .clip-step-tab .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    font-size: 10px;
+  }
+  .clip-step-tab.active .step-num {
+    background: #ef6a3a;
+    color: #fff;
+  }
+
+  /* 플레이어 컨트롤 버튼 */
+  .clip-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 16px 10px;
+    background: #14110e;
+  }
+  .clip-ctrl-btn {
+    flex: 1;
+    background: #231e18;
+    border: 1px solid #362e24;
+    color: #e5ded2;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 9px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+  }
+  .clip-ctrl-btn:hover {
+    background: #2d261e;
+    border-color: #ef6a3a;
+    color: #fff;
+  }
+  .clip-loop-btn {
+    border-color: #5fb3a6;
+    color: #5fb3a6;
+    background: #182824;
+  }
+
+  /* 쉐도잉 마이크 바 */
+  .clip-shadowing-bar {
+    padding: 6px 16px 16px;
+    background: #14110e;
+  }
+  .clip-mic-cta {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #d8481f 0%, #a8330f 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(216, 72, 31, 0.35);
+    transition: filter 0.15s ease, transform 0.15s ease;
+  }
+  .clip-mic-cta:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .clip-mic-cta:active { transform: translateY(0); }
+  .clip-mic-cta.recording {
+    background: linear-gradient(135deg, #256b63 0%, #1a4f49 100%);
+    animation: micPulse 1s infinite alternate;
+  }
+  @keyframes micPulse {
+    from { box-shadow: 0 0 8px rgba(95, 179, 166, 0.4); }
+    to { box-shadow: 0 0 22px rgba(95, 179, 166, 0.9); }
+  }
+  .clip-burst-feedback {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #231b14;
+    border: 1px solid #ef6a3a;
+    border-radius: 8px;
+    color: #ff8452;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-align: center;
+    animation: burstDrop 0.3s ease;
+  }
+  @keyframes burstDrop {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   .sr-only {
     position: absolute; width: 1px; height: 1px;
     padding: 0; margin: -1px; overflow: hidden;
@@ -1343,21 +1678,74 @@
     </div>
   </div>
 
-  <!-- 🎬 실제 사용 영상 모달 (해당 문장 발화 완료 시 자동 정지) -->
+  <!-- 🎬 영화·애니 숏클립 트레이닝 뷰어 모달 -->
   <div class="clip-modal-backdrop" id="clipModal" hidden>
     <div class="clip-modal-card" role="dialog" aria-modal="true" aria-labelledby="clipModalTitle">
       <div class="clip-modal-header">
-        <span class="clip-modal-title" id="clipModalTitle">🎬 실제 사용 영상</span>
+        <div class="clip-header-info">
+          <span class="clip-modal-title" id="clipModalTitle">🎬 영화·애니 숏클립</span>
+          <span class="clip-badge" id="clipMovieBadge">Kung Fu Panda</span>
+        </div>
         <button type="button" class="clip-modal-close" id="clipModalClose" aria-label="닫기">✕</button>
       </div>
-      <p class="clip-modal-sub" id="clipModalPhrase"></p>
-      <div class="clip-modal-body">
-        <iframe id="clipYtFrame" class="clip-yt-frame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+      <!-- 상단 표현 타이틀 -->
+      <div class="clip-phrase-bar">
+        <span class="clip-phrase-text" id="clipModalPhrase">“Where did he go?”</span>
+        <span class="clip-counter" id="clipCounter">1 / 8 씬</span>
       </div>
-      <div class="clip-modal-actions">
-        <a href="#" target="_blank" rel="noopener" class="pill clip-yt-app-btn" id="clipYtAppBtn">▶️ 유튜브 앱에서 보기</a>
-        <button type="button" class="pill" id="clipReplayBtn">🔁 새로고침</button>
-        <button type="button" class="pill clip-close-pill" id="clipModalCloseBtn">닫기</button>
+
+      <!-- 비디오 뷰어 영역 -->
+      <div class="clip-viewport" id="clipViewport">
+        <!-- 1. 로컬 비디오 플레이어 (Where did he go? 전용) -->
+        <video id="clipNativeVideo" class="clip-video-player" playsinline webkit-playsinline hidden></video>
+
+        <!-- 2. 실제 전 세계 유튜브 발화 장면 검색 위젯 호스트 (YouGlish) -->
+        <div id="clipYgHost" class="clip-yg-host"></div>
+
+        <!-- 로딩 인디케이터 -->
+        <div class="clip-loading" id="clipLoading" hidden>
+          <div class="clip-spinner"></div>
+          <p class="clip-loading-text" id="clipLoadingText">실제 대사 발화 장면을 불러오는 중…</p>
+        </div>
+
+        <!-- 영화 자막 오버레이 -->
+        <div class="clip-subtitle-overlay" id="clipSubOverlay">
+          <div class="clip-sub-ko" id="clipSubKo">걔 어디 갔어?</div>
+          <div class="clip-sub-en" id="clipSubEn">Where did he go?</div>
+        </div>
+
+        <!-- 일시정지 오버레이 플레이 버튼 -->
+        <button type="button" class="clip-play-overlay" id="clipPlayOverlay" aria-label="재생" hidden>▶</button>
+      </div>
+
+      <!-- 3단계 학습 모드 탭 -->
+      <div class="clip-step-tabs" role="tablist" aria-label="학습 모드">
+        <button type="button" class="clip-step-tab" data-step="1" id="stepTab1">
+          <span class="step-num">1</span> 무자막 귀트기
+        </button>
+        <button type="button" class="clip-step-tab" data-step="2" id="stepTab2">
+          <span class="step-num">2</span> 영어 자막
+        </button>
+        <button type="button" class="clip-step-tab active" data-step="3" id="stepTab3">
+          <span class="step-num">3</span> 한영+따라하기
+        </button>
+      </div>
+
+      <!-- 플레이어 네비게이션 & 반복 컨트롤 -->
+      <div class="clip-controls">
+        <button type="button" class="pill clip-ctrl-btn" id="clipPrevBtn" title="이전 영화 씬">⏮️ 이전 씬</button>
+        <button type="button" class="pill clip-ctrl-btn clip-loop-btn" id="clipLoopBtn" title="2초 구간 반복">🔁 2초 반복 중</button>
+        <button type="button" class="pill clip-ctrl-btn" id="clipNextBtn" title="다음 영화 씬">⏭️ 다음 씬</button>
+      </div>
+
+      <!-- 스트레스 배출 쉐도잉 마이크 버튼 -->
+      <div class="clip-shadowing-bar">
+        <button type="button" class="clip-mic-cta" id="clipMicCta">
+          <span class="mic-icon">🎤</span>
+          <span class="mic-text" id="clipMicText">소리 내어 따라 외치기 (스트레스 배출!)</span>
+        </button>
+        <div class="clip-burst-feedback" id="clipBurstFeedback" hidden>💥 콰광! 스트레스 게이지 -25% 배출 완료!</div>
       </div>
     </div>
   </div>
@@ -2237,100 +2625,407 @@
     updateStarButton();
   });
 
-  // 🎬 실제 사용 영상 모달 제어 (유튜브 공식 고속 플레이어 연동)
+  // 🎬 영화·미드 대사별 100% 일치 실제 발화 클립 엔진
   var clipModal = document.getElementById('clipModal');
   var clipModalClose = document.getElementById('clipModalClose');
-  var clipModalCloseBtn = document.getElementById('clipModalCloseBtn');
   var clipModalPhrase = document.getElementById('clipModalPhrase');
-  var clipYtFrame = document.getElementById('clipYtFrame');
-  var clipYtAppBtn = document.getElementById('clipYtAppBtn');
-  var clipReplayBtn = document.getElementById('clipReplayBtn');
+  var clipMovieBadge = document.getElementById('clipMovieBadge');
+  var clipCounter = document.getElementById('clipCounter');
+  var clipNativeVideo = document.getElementById('clipNativeVideo');
+  var clipYgHost = document.getElementById('clipYgHost');
+  var clipLoading = document.getElementById('clipLoading');
+  var clipLoadingText = document.getElementById('clipLoadingText');
+  var clipSubOverlay = document.getElementById('clipSubOverlay');
+  var clipSubKo = document.getElementById('clipSubKo');
+  var clipSubEn = document.getElementById('clipSubEn');
+  var clipPlayOverlay = document.getElementById('clipPlayOverlay');
+  var clipPrevBtn = document.getElementById('clipPrevBtn');
+  var clipLoopBtn = document.getElementById('clipLoopBtn');
+  var clipNextBtn = document.getElementById('clipNextBtn');
+  var clipMicCta = document.getElementById('clipMicCta');
+  var clipMicText = document.getElementById('clipMicText');
+  var clipBurstFeedback = document.getElementById('clipBurstFeedback');
   var movieClipBtn = document.getElementById('movieClipBtn');
-  var currentClipQuery = '';
+  var stepTabs = [document.getElementById('stepTab1'), document.getElementById('stepTab2'), document.getElementById('stepTab3')];
 
-  // 문장에서 1초 컷 고속 검색용 키워드/핵심 구문 추출
-  function extractClipQuery(enText) {
+  var currentClipStep = 3;
+  var isNativeMode = false;
+  var currentClipList = [];
+  var currentClipIndex = 0;
+  var clipIsLooping = true;
+  var clipSpeechRec = null;
+
+  var ygWidget = null;
+  var ygApiLoaded = false;
+  var ygCurrentQuery = '';
+  var ygTotalClips = 1;
+  var ygCurrentClipIdx = 1;
+
+  // 🎥 1. 사용자가 제공한 실제 씬 모음 비디오 (Where did he go? 전용)
+  var SAMPLE_VIDEO_SRC = './KakaoTalk_20260824_151806977.mp4';
+  var WHERE_DID_HE_GO_CLIPS = [
+    { src: SAMPLE_VIDEO_SRC, start: 8.0, end: 10.8, movie: "쿵푸팬더", char: "시푸 사부", en: "Where'd he go?", ko: "걔 어디 갔어?" },
+    { src: SAMPLE_VIDEO_SRC, start: 10.8, end: 13.0, movie: "제시카 존스", char: "제시카", en: "Where did he go?!", ko: "걔 어디로 갔어?!" },
+    { src: SAMPLE_VIDEO_SRC, start: 13.1, end: 15.2, movie: "패밀리 가이", char: "피터", en: "Where did he go?", ko: "그는 어디로 갔죠?" },
+    { src: SAMPLE_VIDEO_SRC, start: 15.3, end: 18.5, movie: "틴 타이탄즈", char: "로빈", en: "Where did he go?", ko: "걔 어디로 갔어?" },
+    { src: SAMPLE_VIDEO_SRC, start: 26.0, end: 29.0, movie: "몬스터 주식회사", char: "설리", en: "Where did she go?", ko: "어디로 갔을까?" },
+    { src: SAMPLE_VIDEO_SRC, start: 33.5, end: 36.5, movie: "어드벤처 타임", char: "피오나", en: "Where did it go?", ko: "어디 갔어?" },
+    { src: SAMPLE_VIDEO_SRC, start: 39.0, end: 42.0, movie: "심슨 가족", char: "마지 심슨", en: "Where did it go?!", ko: "어디로 갔지?!" },
+    { src: SAMPLE_VIDEO_SRC, start: 44.5, end: 47.8, movie: "심슨 가족", char: "모 바텐더", en: "Where did they go?", ko: "그들은 어디로 간 거지?" }
+  ];
+
+  // 문장에서 100% 매칭되는 실제 발화 검색용 핵심 슬랭/키워드 추출
+  function extractSearchQuery(enText) {
     if (!enText) return '';
     var clean = enText.replace(/["'“”]/g, '').replace(/[,.!?]/g, ' ').replace(/\s+/g, ' ').trim();
     var lower = clean.toLowerCase();
 
-    // 1순위: 자막 및 영상 검색 시 수백~수천 건씩 존재하는 핵심 슬랭/관용구 우선 매칭
-    var PUNCHY_PATTERNS = [
+    // 실제 자막 DB에 수백~수천 건씩 정확히 존재하는 핵심 구문 우선 타겟팅
+    var KEY_PATTERNS = [
+      /fuck monday/i,
       /what the fuck/i,
       /fuck this/i,
       /fucking done/i,
-      /fucking/i,
-      /fuck/i,
       /give a shit/i,
+      /such bullshit/i,
       /bullshit/i,
+      /killing me/i,
       /pissed off/i,
-      /piss me off/i,
       /what the hell/i,
       /screw this/i,
-      /dick move/i,
-      /kicking my ass/i,
-      /messed up/i,
-      /up to here/i,
       /two-faced/i,
       /behind my back/i,
+      /kidding me/i,
+      /leave me alone/i,
       /done with/i,
       /over it/i,
       /ridiculous/i,
       /damn it/i,
-      /damn/i,
-      /sucks/i,
-      /crappy/i
+      /sucks/i
     ];
 
-    for (var i = 0; i < PUNCHY_PATTERNS.length; i++) {
-      var m = lower.match(PUNCHY_PATTERNS[i]);
+    for (var i = 0; i < KEY_PATTERNS.length; i++) {
+      var m = lower.match(KEY_PATTERNS[i]);
       if (m) return m[0];
     }
 
-    // 매칭되는 패턴이 없으면 앞 2~3단어만 추출
+    // 매칭 패턴이 없으면 앞 2~3단어만 추출하여 검색 누락 방지
     var words = clean.split(' ').filter(Boolean);
-    if (words.length > 3) {
-      return words.slice(0, 3).join(' ');
-    }
+    if (words.length > 3) return words.slice(0, 3).join(' ');
     return clean;
   }
 
-  function openClipModal(fullText) {
+  // YouGlish 공식 스크립트 비동기 로드
+  function loadYouglishScript(cb) {
+    if (window.YG && window.YG.Widget) { cb(); return; }
+    if (ygApiLoaded) {
+      var check = setInterval(function () {
+        if (window.YG && window.YG.Widget) { clearInterval(check); cb(); }
+      }, 100);
+      return;
+    }
+    ygApiLoaded = true;
+    var s = document.createElement('script');
+    s.src = 'https://youglish.com/public/emb/widget.js';
+    s.async = true;
+    s.onload = function () { cb(); };
+    s.onerror = function () {
+      if (clipLoadingText) clipLoadingText.textContent = '영상 검색 스크립트를 불러오지 못했습니다.';
+    };
+    document.head.appendChild(s);
+  }
+
+  // YouGlish 위젯 초기화 및 실제 발화 장면 검색
+  function initYouglishSearch(query, fullText, koText) {
+    isNativeMode = false;
+    if (clipNativeVideo) {
+      clipNativeVideo.pause();
+      clipNativeVideo.hidden = true;
+    }
+    if (clipPlayOverlay) clipPlayOverlay.hidden = true;
+    if (clipSubOverlay) clipSubOverlay.hidden = true; // YouGlish 자체 자막 사용
+
+    if (clipMovieBadge) clipMovieBadge.textContent = '실제 발화 장면 검색';
+    if (clipCounter) clipCounter.textContent = '클립 찾는 중…';
+
+    if (clipLoading) {
+      clipLoading.hidden = false;
+      if (clipLoadingText) clipLoadingText.textContent = '“' + query + '” 실제 발화 장면을 찾는 중…';
+    }
+
+    // 위젯 DOM 호스트 안전 재생성
+    if (clipYgHost) {
+      clipYgHost.innerHTML = '<div id="ygWidgetTarget"></div>';
+      clipYgHost.hidden = false;
+    }
+
+    loadYouglishScript(function () {
+      try {
+        ygWidget = new YG.Widget("ygWidgetTarget", {
+          width: '100%',
+          components: 9, // 자막 + 컨트롤
+          query: query,
+          lang: 'english',
+          auto_start: 1,
+          events: {
+            'onVideoChange': function () {
+              if (clipLoading) clipLoading.hidden = true;
+              if (ygWidget && ygWidget.getCurrentTrackNumber && ygWidget.getTotalTracks) {
+                try {
+                  ygCurrentClipIdx = ygWidget.getCurrentTrackNumber() || 1;
+                  ygTotalClips = ygWidget.getTotalTracks() || 1;
+                  if (clipCounter) clipCounter.textContent = ygCurrentClipIdx + ' / ' + ygTotalClips + ' 씬';
+                } catch(e) {}
+              }
+            },
+            'onCaptionConsumed': function () {
+              // 대사 발화가 끝나면 자동 일시정지 (원하면 반복)
+              if (clipIsLooping && ygWidget && ygWidget.replay) {
+                setTimeout(function () {
+                  try { ygWidget.replay(); } catch(e) {}
+                }, 1200);
+              }
+            },
+            'onFetchDone': function (e) {
+              if (e && e.totalResult === 0) {
+                if (clipLoadingText) clipLoadingText.textContent = '일치하는 영상 클립이 없어요.';
+              } else if (e && e.totalResult) {
+                ygTotalClips = e.totalResult;
+                if (clipCounter) clipCounter.textContent = '1 / ' + ygTotalClips + ' 씬';
+                if (clipMovieBadge) clipMovieBadge.textContent = '총 ' + ygTotalClips + '개 영화·영상 발견';
+              }
+            },
+            'onError': function () {
+              if (clipLoadingText) clipLoadingText.textContent = '영상 로드 중 오류가 발생했습니다.';
+            }
+          }
+        });
+      } catch (err) {
+        if (clipLoadingText) clipLoadingText.textContent = '플레이어 초기화 중 오류가 발생했습니다.';
+      }
+    });
+  }
+
+  // 로컬 8개 씬 비디오 재생 (Where did he go? 전용)
+  function playNativeScene(index) {
+    isNativeMode = true;
+    if (clipYgHost) clipYgHost.hidden = true;
+    if (clipLoading) clipLoading.hidden = true;
+    if (clipNativeVideo) clipNativeVideo.hidden = false;
+    if (clipSubOverlay) clipSubOverlay.hidden = false;
+
+    if (index < 0) index = WHERE_DID_HE_GO_CLIPS.length - 1;
+    if (index >= WHERE_DID_HE_GO_CLIPS.length) index = 0;
+    currentClipIndex = index;
+
+    var clip = WHERE_DID_HE_GO_CLIPS[currentClipIndex];
+    if (clipMovieBadge) clipMovieBadge.textContent = clip.movie + ' · ' + clip.char;
+    if (clipCounter) clipCounter.textContent = (currentClipIndex + 1) + ' / ' + WHERE_DID_HE_GO_CLIPS.length + ' 씬';
+    if (clipSubKo) clipSubKo.textContent = clip.ko;
+    if (clipSubEn) clipSubEn.textContent = clip.en;
+
+    if (!clipNativeVideo.src || clipNativeVideo.src.indexOf(clip.src) === -1) {
+      clipNativeVideo.src = clip.src;
+    }
+    clipNativeVideo.currentTime = clip.start;
+    clipNativeVideo.play().catch(function () {
+      if (clipPlayOverlay) clipPlayOverlay.hidden = false;
+    });
+    updateSubtitleDisplay();
+  }
+
+  // 자막 가시성 업데이트 (1단계 무자막 / 2단계 영어 / 3단계 한영)
+  function updateSubtitleDisplay() {
+    if (!clipSubKo || !clipSubEn) return;
+    if (currentClipStep === 1) {
+      clipSubKo.style.display = 'none';
+      clipSubEn.style.display = 'none';
+    } else if (currentClipStep === 2) {
+      clipSubKo.style.display = 'none';
+      clipSubEn.style.display = 'block';
+    } else {
+      clipSubKo.style.display = 'block';
+      clipSubEn.style.display = 'block';
+    }
+    stepTabs.forEach(function (tab, idx) {
+      if (!tab) return;
+      if (idx + 1 === currentClipStep) tab.classList.add('active');
+      else tab.classList.remove('active');
+    });
+  }
+
+  stepTabs.forEach(function (tab, idx) {
+    if (!tab) return;
+    tab.addEventListener('click', function () {
+      currentClipStep = idx + 1;
+      updateSubtitleDisplay();
+    });
+  });
+
+  // 네이티브 비디오 루프
+  if (clipNativeVideo) {
+    clipNativeVideo.addEventListener('timeupdate', function () {
+      if (!isNativeMode) return;
+      var clip = WHERE_DID_HE_GO_CLIPS[currentClipIndex];
+      if (clip && clipIsLooping && clip.end && clipNativeVideo.currentTime >= clip.end) {
+        clipNativeVideo.currentTime = clip.start || 0;
+        clipNativeVideo.play().catch(function () {});
+      }
+    });
+    clipNativeVideo.addEventListener('play', function () {
+      if (clipPlayOverlay) clipPlayOverlay.hidden = true;
+    });
+    clipNativeVideo.addEventListener('pause', function () {
+      if (isNativeMode && clipPlayOverlay) clipPlayOverlay.hidden = false;
+    });
+    clipNativeVideo.addEventListener('click', function () {
+      if (clipNativeVideo.paused) clipNativeVideo.play();
+      else clipNativeVideo.pause();
+    });
+  }
+
+  if (clipPlayOverlay) {
+    clipPlayOverlay.addEventListener('click', function () {
+      if (clipNativeVideo) clipNativeVideo.play();
+    });
+  }
+
+  // ◀️ 이전 씬 버튼
+  if (clipPrevBtn) {
+    clipPrevBtn.addEventListener('click', function () {
+      if (isNativeMode) {
+        playNativeScene(currentClipIndex - 1);
+      } else if (ygWidget && ygWidget.previous) {
+        if (clipLoading) {
+          clipLoading.hidden = false;
+          if (clipLoadingText) clipLoadingText.textContent = '이전 영상으로 이동 중…';
+        }
+        try { ygWidget.previous(); } catch(e) {}
+      }
+    });
+  }
+
+  // 🔁 반복 버튼
+  if (clipLoopBtn) {
+    clipLoopBtn.addEventListener('click', function () {
+      clipIsLooping = !clipIsLooping;
+      clipLoopBtn.textContent = clipIsLooping ? '🔁 2초 반복 중' : '▶️ 1회 재생';
+      clipLoopBtn.style.color = clipIsLooping ? '#5fb3a6' : '#a89d8f';
+      if (!isNativeMode && ygWidget && ygWidget.replay) {
+        try { ygWidget.replay(); } catch(e) {}
+      }
+    });
+  }
+
+  // ▶️ 다음 씬 버튼 (같은 대사를 말하는 다음 영상으로 점프!)
+  if (clipNextBtn) {
+    clipNextBtn.addEventListener('click', function () {
+      if (isNativeMode) {
+        playNativeScene(currentClipIndex + 1);
+      } else if (ygWidget && ygWidget.next) {
+        if (clipLoading) {
+          clipLoading.hidden = false;
+          if (clipLoadingText) clipLoadingText.textContent = '다음 실제 발화 영상으로 이동 중…';
+        }
+        try { ygWidget.next(); } catch(e) {}
+      }
+    });
+  }
+
+  // 스트레스 배출 쉐도잉 마이크 버튼
+  if (clipMicCta) {
+    clipMicCta.addEventListener('click', function () {
+      clipMicCta.classList.add('recording');
+      if (clipMicText) clipMicText.textContent = '듣고 있어요! 감정 담아 외쳐보세요...';
+
+      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      var triggered = false;
+
+      function finishShadowing() {
+        if (triggered) return;
+        triggered = true;
+        clipMicCta.classList.remove('recording');
+        if (clipMicText) clipMicText.textContent = '🎤 소리 내어 따라 외치기 (스트레스 배출!)';
+
+        if (typeof setGauge === 'function') {
+          var nextVal = Math.max(0, (intensity === 'spicy' ? 85 : intensity === 'mild' ? 25 : 50) - 25);
+          setGauge(nextVal);
+        }
+        if (clipBurstFeedback) {
+          clipBurstFeedback.textContent = '💥 콰광! 스트레스 게이지 -25% 시원하게 배출 완료!';
+          clipBurstFeedback.hidden = false;
+        }
+      }
+
+      if (SpeechRecognition) {
+        try {
+          if (!clipSpeechRec) {
+            clipSpeechRec = new SpeechRecognition();
+            clipSpeechRec.lang = 'en-US';
+            clipSpeechRec.interimResults = false;
+            clipSpeechRec.maxAlternatives = 1;
+            clipSpeechRec.onresult = function () { finishShadowing(); };
+            clipSpeechRec.onerror = function () { finishShadowing(); };
+            clipSpeechRec.onend = function () { finishShadowing(); };
+          }
+          clipSpeechRec.start();
+          setTimeout(function () { finishShadowing(); }, 3500);
+        } catch (e) {
+          setTimeout(function () { finishShadowing(); }, 1800);
+        }
+      } else {
+        setTimeout(function () { finishShadowing(); }, 1800);
+      }
+    });
+  }
+
+  // 🎬 모달 열기 (표현에 따라 완벽한 100% 일치 영상 자동 분기)
+  function openClipModal(fullText, koText) {
     if (!fullText) return;
-    var query = extractClipQuery(fullText);
-    currentClipQuery = query;
-
     if (clipModalPhrase) clipModalPhrase.textContent = '“' + fullText + '”';
-
-    var searchQuery = query + ' scene english';
-    var embedUrl = 'https://www.youtube.com/embed?listType=search&list=' + encodeURIComponent(searchQuery) + '&autoplay=1';
-    var appUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(searchQuery);
-
-    if (clipYtFrame) clipYtFrame.src = embedUrl;
-    if (clipYtAppBtn) clipYtAppBtn.href = appUrl;
+    if (clipBurstFeedback) clipBurstFeedback.hidden = true;
     if (clipModal) clipModal.hidden = false;
+
+    var lower = fullText.toLowerCase();
+    // 1. Where did he/she/it/they go 인 경우 -> 사용자가 제공한 8개 씬 비디오 재생
+    if (lower.indexOf('where did he go') !== -1 || lower.indexOf('where did she go') !== -1 || lower.indexOf('where did it go') !== -1 || lower.indexOf('where did they go') !== -1) {
+      playNativeScene(0);
+    } else {
+      // 2. 그 외의 모든 표현 -> 해당 문장의 핵심 대사로 전 세계 유튜브 발화 지점 정밀 검색!
+      var query = extractSearchQuery(fullText);
+      ygCurrentQuery = query;
+      initYouglishSearch(query, fullText, koText);
+    }
   }
 
   function closeClipModal() {
     if (clipModal) clipModal.hidden = true;
-    if (clipYtFrame) clipYtFrame.src = ''; // 모달 닫을 때 재생 중인 영상/음성 즉시 중단
+    if (clipNativeVideo) {
+      clipNativeVideo.pause();
+      clipNativeVideo.src = '';
+    }
+    if (ygWidget && ygWidget.pause) {
+      try { ygWidget.pause(); } catch(e) {}
+    }
+    if (clipYgHost) {
+      clipYgHost.innerHTML = '';
+    }
+    if (clipSpeechRec) {
+      try { clipSpeechRec.abort(); } catch (e) {}
+    }
   }
 
   if (movieClipBtn) {
     movieClipBtn.addEventListener('click', function () {
       if (!currentPhrase || !currentPhrase.en) return;
-      openClipModal(currentPhrase.en);
+      openClipModal(currentPhrase.en, currentPhrase.ko);
     });
   }
 
   if (clipModalClose) clipModalClose.addEventListener('click', closeClipModal);
-  if (clipModalCloseBtn) clipModalCloseBtn.addEventListener('click', closeClipModal);
-  if (clipReplayBtn) {
-    clipReplayBtn.addEventListener('click', function () {
-      if (clipYtFrame && currentClipQuery) {
-        var searchQuery = currentClipQuery + ' scene english';
-        clipYtFrame.src = 'https://www.youtube.com/embed?listType=search&list=' + encodeURIComponent(searchQuery) + '&autoplay=1';
-      }
+  if (clipModal) {
+    clipModal.addEventListener('click', function (e) {
+      if (e.target === clipModal) closeClipModal();
     });
   }
 
@@ -2903,7 +3598,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.8.0';
+  var APP_VERSION = '2.9.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
