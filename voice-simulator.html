@@ -55,6 +55,32 @@
   h1 { margin: 0; font-size: 20px; font-weight: 900; }
   p.sub { margin: 6px 0 0; font-size: 13px; color: var(--text-soft); }
 
+  /* 볼륨 안내 경고 배너 */
+  .volume-tip {
+    background: #2a2015;
+    border: 1px solid #5a3d24;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: #ffd29d;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .volume-test-btn {
+    background: #ef6a3a;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
   .card {
     background: var(--surface);
     border: 1px solid var(--line);
@@ -69,7 +95,35 @@
     font-weight: 800;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 6px;
+  }
+
+  .engine-tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--surface-2);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+  .engine-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-soft);
+    padding: 8px 4px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+  .engine-tab.active {
+    background: var(--ember);
+    color: #fff;
+    box-shadow: 0 2px 6px var(--ember-glow);
   }
 
   .phrase-select {
@@ -152,8 +206,8 @@
     color: #fff;
     border: none;
     border-radius: 8px;
-    padding: 9px 14px;
-    font-size: 13px;
+    padding: 10px 16px;
+    font-size: 13.5px;
     font-weight: 800;
     cursor: pointer;
     flex-shrink: 0;
@@ -203,12 +257,13 @@
     background: #090807;
     border: 1px solid #221c15;
     border-radius: 8px;
-    padding: 10px 12px;
+    padding: 12px;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 11.5px;
-    color: #a89d8f;
-    min-height: 48px;
+    font-size: 12px;
+    color: #5fb3a6;
+    min-height: 52px;
     line-height: 1.4;
+    word-break: break-all;
   }
   .back-link {
     text-align: center;
@@ -230,6 +285,23 @@
     <h1>🎙️ 분노 음성 톤 시뮬레이터</h1>
     <p class="sub">로봇 같은 책 읽기 ➔ 진짜 빡친 톤 비교 청취 실험실</p>
   </header>
+
+  <!-- 볼륨 확인 배너 -->
+  <div class="volume-tip">
+    <span>📢 <b>소리 확인:</b> 폰 측면 볼륨 버튼을 올리고 무음/진동을 해제해 주세요.</span>
+    <button type="button" class="volume-test-btn" id="btnSoundTest">🔔 볼륨 테스트</button>
+  </div>
+
+  <!-- 0. 오디오 엔진 선택 탭 -->
+  <div class="card">
+    <div class="card-title">
+      <span>⚙️ 음성 재생 방식 (엔진 선택)</span>
+    </div>
+    <div class="engine-tabs">
+      <button type="button" class="engine-tab active" id="tabStream">🔊 미디어 스트림 (무조건 소리 남 · 추천)</button>
+      <button type="button" class="engine-tab" id="tabSpeech">🗣️ 기기 내장 TTS (Web Speech)</button>
+    </div>
+  </div>
 
   <!-- 1. 테스트할 영어 문구 선택 -->
   <div class="card">
@@ -264,7 +336,7 @@
       <div class="tone-card original">
         <div class="tone-info">
           <div class="tone-name">🤖 0. 기존 국어책 로봇 톤</div>
-          <div class="tone-desc">속도 0.9 · 기본 피치 · 밋밋하고 영혼 없는 상태</div>
+          <div class="tone-desc">속도 0.88x · 밋밋하고 느린 국어책 읽기 톤</div>
         </div>
         <button type="button" class="play-btn" id="btnOriginal">▶ 듣기</button>
       </div>
@@ -273,7 +345,7 @@
       <div class="tone-card">
         <div class="tone-info">
           <div class="tone-name">⚡ 1. 날카롭게 씹어뱉는 톤</div>
-          <div class="tone-desc">속도 1.2 · 어절 분절 · 단어마다 툭툭 끊어 쏘아붙임</div>
+          <div class="tone-desc">속도 1.25x · 어절 분절 · 찰지게 쏘아붙임</div>
         </div>
         <button type="button" class="play-btn" id="btnSpit">▶ 듣기</button>
       </div>
@@ -282,7 +354,7 @@
       <div class="tone-card">
         <div class="tone-info">
           <div class="tone-name">🔥 2. 격분 폭발 톤 (Enraged)</div>
-          <div class="tone-desc">속도 1.25 · 피치 1.15 · 강한 액센트와 감정 고조</div>
+          <div class="tone-desc">속도 1.35x · 감정 고조와 강한 어조</div>
         </div>
         <button type="button" class="play-btn" id="btnEnraged">▶ 듣기</button>
       </div>
@@ -290,13 +362,13 @@
       <!-- 3. 냉소적 딥빡 톤 -->
       <div class="tone-card">
         <div class="tone-info">
-          <div class="tone-name">❄️ 3. 차갑게 쏘아붙이는 톤</div>
-          <div class="tone-desc">속도 0.95 · 피치 0.72 (저음) · 이 갈며 짓누르는 느낌</div>
+          <div class="tone-name">❄️ 3. 차갑게 쏘아붙이는 톤 (Cold)</div>
+          <div class="tone-desc">속도 1.05x · 낮고 건조하게 이 갈며 짓누름</div>
         </div>
         <button type="button" class="play-btn" id="btnCold">▶ 듣기</button>
       </div>
 
-      <!-- 4. 타격감 SFX 콤보 톤 -->
+      <!-- 4. 타격 비프 + 분노 콤보 -->
       <div class="tone-card">
         <div class="tone-info">
           <div class="tone-name">💥 4. 타격 비프 + 분노 콤보</div>
@@ -314,14 +386,8 @@
 
     <div class="slider-row">
       <span>말하기 속도 (Rate)</span>
-      <input type="range" id="rateSlider" min="0.5" max="2.0" step="0.05" value="1.2">
-      <span class="val-num" id="rateVal">1.20x</span>
-    </div>
-
-    <div class="slider-row">
-      <span>음높이 (Pitch)</span>
-      <input type="range" id="pitchSlider" min="0.5" max="1.6" step="0.05" value="1.0">
-      <span class="val-num" id="pitchVal">1.00</span>
+      <input type="range" id="rateSlider" min="0.5" max="2.0" step="0.05" value="1.25">
+      <span class="val-num" id="rateVal">1.25x</span>
     </div>
 
     <button type="button" class="play-btn" id="btnCustomTest" style="width:100%; justify-content:center; padding:12px;">
@@ -331,7 +397,7 @@
 
   <!-- 로그 콘솔 -->
   <div class="log-box" id="logBox">
-    준비 완료: 위 목록에서 듣고 싶은 톤의 [▶ 듣기] 버튼을 눌러보세요.
+    준비 완료: 상단 [🔔 볼륨 테스트] 또는 아래 [▶ 듣기] 버튼을 눌러보세요.
   </div>
 
   <div class="back-link">
@@ -345,16 +411,60 @@
   var customInput = document.getElementById('customInput');
   var logBox = document.getElementById('logBox');
 
+  var tabStream = document.getElementById('tabStream');
+  var tabSpeech = document.getElementById('tabSpeech');
+  var currentEngine = 'stream'; // 'stream' | 'speech'
+
   var rateSlider = document.getElementById('rateSlider');
-  var pitchSlider = document.getElementById('pitchSlider');
   var rateVal = document.getElementById('rateVal');
-  var pitchVal = document.getElementById('pitchVal');
 
   var currentText = "This is such bullshit!";
+  var currentAudio = null;
+  var pendingUtterance = null;
+  var speechTimer = null;
 
   function log(msg) {
     if (logBox) logBox.textContent = '🔊 ' + msg;
   }
+
+  // 1. 볼륨 비프 테스트 (Web Audio API)
+  document.getElementById('btnSoundTest').addEventListener('click', function () {
+    playBeepSound(440, 0.25);
+    log('🔔 볼륨 테스트 비프음 출력! (소리가 들리면 정상입니다)');
+  });
+
+  function playBeepSound(freq, duration) {
+    try {
+      var AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      var ctx = new AudioCtx();
+      if (ctx.state === 'suspended') ctx.resume();
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq || 440, ctx.currentTime);
+      gain.gain.setValueAtTime(0.4, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (duration || 0.2));
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + (duration || 0.2));
+    } catch(e) {}
+  }
+
+  // 엔진 탭 전환
+  tabStream.addEventListener('click', function () {
+    currentEngine = 'stream';
+    tabStream.classList.add('active');
+    tabSpeech.classList.remove('active');
+    log('엔진 변경: 미디어 스트림 (모바일 100% 보장 방식)');
+  });
+  tabSpeech.addEventListener('click', function () {
+    currentEngine = 'speech';
+    tabSpeech.classList.add('active');
+    tabStream.classList.remove('active');
+    log('엔진 변경: 기기 내장 Web Speech TTS');
+  });
 
   // 문구 선택 칩 클릭
   phraseChips.forEach(function (chip) {
@@ -384,65 +494,89 @@
       rateVal.textContent = parseFloat(rateSlider.value).toFixed(2) + 'x';
     });
   }
-  if (pitchSlider && pitchVal) {
-    pitchSlider.addEventListener('input', function () {
-      pitchVal.textContent = parseFloat(pitchSlider.value).toFixed(2);
-    });
+
+  // ── 오디오 재생 통합 실행기 ──
+  function playVoice(text, speed, pitch, onDone) {
+    if (currentAudio) {
+      try { currentAudio.pause(); currentAudio.currentTime = 0; } catch(e) {}
+      currentAudio = null;
+    }
+    if (window.speechSynthesis) {
+      try { window.speechSynthesis.cancel(); } catch(e) {}
+    }
+
+    if (currentEngine === 'stream') {
+      // 1. 미디어 스트림 방식: HTML5 Audio로 100% 재생 (iOS/안드로이드 무음 모드도 돌파)
+      var clean = text.replace(/["'“”]/g, '');
+      var streamUrl = 'https://translate.google.com/translate_tts?ie=UTF-8&q=' + encodeURIComponent(clean) + '&tl=en&client=tw-ob';
+      var audio = new Audio(streamUrl);
+      currentAudio = audio;
+      audio.playbackRate = speed || 1.0;
+
+      audio.onplay = function () {
+        log('스트림 오디오 재생 시작 (' + (speed || 1.0) + 'x 속도)');
+      };
+      audio.onended = function () {
+        if (onDone) onDone();
+      };
+      audio.onerror = function () {
+        log('스트림 로드 실패 ➔ 기기 내장 TTS로 자동 전환 발화');
+        playWithWebSpeech(text, speed, pitch, onDone);
+      };
+
+      var p = audio.play();
+      if (p && p.catch) {
+        p.catch(function (err) {
+          log('오디오 차단 감지 ➔ 기기 내장 TTS로 발화 시도: ' + err.message);
+          playWithWebSpeech(text, speed, pitch, onDone);
+        });
+      }
+    } else {
+      // 2. 기기 내장 Web Speech 방식
+      playWithWebSpeech(text, speed, pitch, onDone);
+    }
   }
 
-  // 음성 재생 공통 함수
-  function playSpeech(text, rate, pitch, processedText, onDone) {
+  function playWithWebSpeech(text, speed, pitch, onDone) {
     if (!('speechSynthesis' in window)) {
       log('이 브라우저는 음성 합성을 지원하지 않습니다.');
+      if (onDone) onDone();
       return;
     }
-    window.speechSynthesis.cancel();
 
-    var speechText = processedText || text;
-    var utter = new SpeechSynthesisUtterance(speechText);
-    utter.rate = rate;
-    utter.pitch = pitch;
-    utter.lang = 'en-US';
+    clearTimeout(speechTimer);
+    speechTimer = setTimeout(function () {
+      try {
+        var utter = new SpeechSynthesisUtterance(text);
+        utter.rate = speed || 1.0;
+        utter.pitch = pitch || 1.0;
+        utter.lang = 'en-US';
 
-    // 가장 품질 좋은 영어 보이스 탐색
-    var voices = window.speechSynthesis.getVoices() || [];
-    var enVoices = voices.filter(function (v) { return /^en/i.test(v.lang); });
-    if (enVoices.length) {
-      // Natural, Google, Neural 우선 선택
-      var best = enVoices.filter(function (v) {
-        return /natural|neural|google|siri/i.test(v.name);
-      })[0] || enVoices[0];
-      utter.voice = best;
-      log('사용된 목소리: ' + best.name + ' (Rate: ' + rate + ', Pitch: ' + pitch + ')');
-    }
+        var voices = window.speechSynthesis.getVoices() || [];
+        var enVoices = voices.filter(function (v) { return /^en/i.test(v.lang); });
+        if (enVoices.length) {
+          var best = enVoices.filter(function (v) {
+            return /natural|neural|google|siri|samantha/i.test(v.name);
+          })[0] || enVoices[0];
+          utter.voice = best;
+          log('기기 TTS: ' + best.name + ' (' + utter.rate + 'x)');
+        }
 
-    utter.onend = function () {
-      if (onDone) onDone();
-    };
-    utter.onerror = function (e) {
-      log('오류 발생: ' + (e.error || '음성 재생 실패'));
-      if (onDone) onDone();
-    };
+        utter.onstart = function () { log('TTS 발화 시작 중…'); };
+        utter.onend = function () { if (onDone) onDone(); };
+        utter.onerror = function (e) {
+          log('TTS 오류: ' + (e.error || '음소거/재생 실패'));
+          if (onDone) onDone();
+        };
 
-    try { window.speechSynthesis.resume(); } catch (e) {}
-    window.speechSynthesis.speak(utter);
-  }
-
-  // 비프 타격 사운드 생성 (Web Audio API)
-  function playBeep(freq, duration, type) {
-    try {
-      var ctx = new (window.AudioContext || window.webkitAudioContext)();
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
-      osc.type = type || 'sawtooth';
-      osc.frequency.setValueAtTime(freq || 180, ctx.currentTime);
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + duration);
-    } catch (e) {}
+        pendingUtterance = utter;
+        try { window.speechSynthesis.resume(); } catch (e) {}
+        window.speechSynthesis.speak(utter);
+      } catch (err) {
+        log('발화 예외: ' + err.message);
+        if (onDone) onDone();
+      }
+    }, 60);
   }
 
   // 0. 기존 국어책 로봇 톤
@@ -450,49 +584,44 @@
   if (btnOriginal) {
     btnOriginal.addEventListener('click', function () {
       btnOriginal.classList.add('playing');
-      log('기존 밋밋한 로봇 톤 재생 중…');
-      playSpeech(currentText, 0.90, 0.88, null, function () {
+      log('기존 밋밋한 0.88x 로봇 톤 재생…');
+      playVoice(currentText, 0.88, 0.88, function () {
         btnOriginal.classList.remove('playing');
       });
     });
   }
 
-  // 1. 날카롭게 씹어뱉는 톤 (단어 사이를 끊어치듯 엑센트 부여)
+  // 1. 날카롭게 씹어뱉는 톤
   var btnSpit = document.getElementById('btnSpit');
   if (btnSpit) {
     btnSpit.addEventListener('click', function () {
       btnSpit.classList.add('playing');
-      // 느낌표와 대문자로 변환해 음성 엔진이 강세를 주도록 유도
-      var spitText = currentText.replace(/[.,]/g, '!').replace(/\b(fuck|shit|bullshit|damn|hell|crap)\b/gi, function (m) {
-        return m.toUpperCase() + '!';
-      });
-      log('날카롭게 씹어뱉는 톤 재생 중 (1.2배속 + 어절 강세)');
-      playSpeech(currentText, 1.20, 1.05, spitText, function () {
+      log('날카롭게 씹어뱉는 1.25x 톤 재생…');
+      playVoice(currentText, 1.25, 1.05, function () {
         btnSpit.classList.remove('playing');
       });
     });
   }
 
-  // 2. 극대노 폭발 톤 (Enraged - 고속 + 고음 액센트)
+  // 2. 극대노 폭발 톤
   var btnEnraged = document.getElementById('btnEnraged');
   if (btnEnraged) {
     btnEnraged.addEventListener('click', function () {
       btnEnraged.classList.add('playing');
-      var angryText = currentText.toUpperCase() + '!';
-      log('격분 폭발 톤 재생 중 (1.25배속 + 피치 1.15 + 격한 엑센트)');
-      playSpeech(currentText, 1.25, 1.15, angryText, function () {
+      log('격분 폭발 1.35x 초고속 톤 재생…');
+      playVoice(currentText, 1.35, 1.15, function () {
         btnEnraged.classList.remove('playing');
       });
     });
   }
 
-  // 3. 냉소적 딥빡 톤 (Cold - 낮게 깔리며 짓누름)
+  // 3. 차갑게 쏘아붙이는 저음 톤
   var btnCold = document.getElementById('btnCold');
   if (btnCold) {
     btnCold.addEventListener('click', function () {
       btnCold.classList.add('playing');
-      log('차갑게 쏘아붙이는 저음 톤 재생 중 (0.95배속 + 피치 0.72 저음)');
-      playSpeech(currentText, 0.95, 0.72, currentText, function () {
+      log('차갑게 쏘아붙이는 1.05x 저음 톤 재생…');
+      playVoice(currentText, 1.05, 0.75, function () {
         btnCold.classList.remove('playing');
       });
     });
@@ -503,14 +632,13 @@
   if (btnCombo) {
     btnCombo.addEventListener('click', function () {
       btnCombo.classList.add('playing');
-      log('타격 효과음 💥 발생 후 씹어뱉기 발화!');
-      playBeep(120, 0.18, 'sawtooth');
+      log('타격 효과음 💥 발생 후 발화 콤보!');
+      playBeepSound(140, 0.15);
       setTimeout(function () {
-        var comboText = currentText.replace(/\b(fuck|shit|bullshit|damn|crap)\b/gi, '$1!');
-        playSpeech(currentText, 1.22, 1.08, comboText, function () {
+        playVoice(currentText, 1.28, 1.08, function () {
           btnCombo.classList.remove('playing');
         });
-      }, 120);
+      }, 150);
     });
   }
 
@@ -518,21 +646,19 @@
   var btnCustomTest = document.getElementById('btnCustomTest');
   if (btnCustomTest) {
     btnCustomTest.addEventListener('click', function () {
-      var r = parseFloat(rateSlider.value) || 1.0;
-      var p = parseFloat(pitchSlider.value) || 1.0;
+      var r = parseFloat(rateSlider.value) || 1.25;
       btnCustomTest.classList.add('playing');
-      log('내 커스텀 세팅 테스트: 속도 ' + r.toFixed(2) + 'x, 피치 ' + p.toFixed(2));
-      playSpeech(currentText, r, p, null, function () {
+      log('커스텀 세팅 재생: 속도 ' + r.toFixed(2) + 'x');
+      playVoice(currentText, r, 1.0, function () {
         btnCustomTest.classList.remove('playing');
       });
     });
   }
 
-  // 목소리 목록 로드 트리거
-  if ('speechSynthesis' in window) {
+  // Web Speech 음성 캐시 갱신
+  if ('speechSynthesis' in window && 'onvoiceschanged' in window.speechSynthesis) {
     window.speechSynthesis.onvoiceschanged = function () {
-      var voices = window.speechSynthesis.getVoices();
-      log('기기 내 영어 음성 ' + voices.filter(function (v) { return /^en/i.test(v.lang); }).length + '개 감지 완료');
+      window.speechSynthesis.getVoices();
     };
   }
 })();
