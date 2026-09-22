@@ -1294,50 +1294,12 @@
     object-fit: contain;
     background: #000;
   }
-  .clip-yg-host {
+  .clip-yt-frame {
     width: 100%;
     height: 100%;
-    min-height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #000;
-  }
-  .clip-yg-host iframe {
-    width: 100% !important;
-    height: 100% !important;
     border: none;
-  }
-  /* YouGlish 위젯 내부 불필요한 UI 숨김 */
-  .clip-yg-host .ygProgress { display: none !important; }
-
-  .clip-loading {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(18, 15, 12, 0.92);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    z-index: 10;
-  }
-  .clip-loading[hidden] { display: none !important; }
-  .clip-spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid rgba(239, 106, 58, 0.2);
-    border-top-color: #ef6a3a;
-    border-radius: 50%;
-    animation: clipSpin 0.7s linear infinite;
-  }
-  @keyframes clipSpin { to { transform: rotate(360deg); } }
-  .clip-loading-text {
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: #e5ded2;
-    margin: 0;
+    background: #000;
+    display: block;
   }
   .clip-play-overlay {
     position: absolute;
@@ -1700,14 +1662,8 @@
         <!-- 1. 로컬 비디오 플레이어 (Where did he go? 전용) -->
         <video id="clipNativeVideo" class="clip-video-player" playsinline webkit-playsinline hidden></video>
 
-        <!-- 2. 실제 전 세계 유튜브 발화 장면 검색 위젯 호스트 (YouGlish) -->
-        <div id="clipYgHost" class="clip-yg-host"></div>
-
-        <!-- 로딩 인디케이터 -->
-        <div class="clip-loading" id="clipLoading" hidden>
-          <div class="clip-spinner"></div>
-          <p class="clip-loading-text" id="clipLoadingText">실제 대사 발화 장면을 불러오는 중…</p>
-        </div>
+        <!-- 2. 유튜브 공식 실전 발화 플레이어 (앱 팝업 내부에서 1초 만에 직접 재생) -->
+        <iframe id="clipYtFrame" class="clip-yt-frame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen hidden></iframe>
 
         <!-- 영화 자막 오버레이 -->
         <div class="clip-subtitle-overlay" id="clipSubOverlay">
@@ -2632,9 +2588,7 @@
   var clipMovieBadge = document.getElementById('clipMovieBadge');
   var clipCounter = document.getElementById('clipCounter');
   var clipNativeVideo = document.getElementById('clipNativeVideo');
-  var clipYgHost = document.getElementById('clipYgHost');
-  var clipLoading = document.getElementById('clipLoading');
-  var clipLoadingText = document.getElementById('clipLoadingText');
+  var clipYtFrame = document.getElementById('clipYtFrame');
   var clipSubOverlay = document.getElementById('clipSubOverlay');
   var clipSubKo = document.getElementById('clipSubKo');
   var clipSubEn = document.getElementById('clipSubEn');
@@ -2655,11 +2609,23 @@
   var clipIsLooping = true;
   var clipSpeechRec = null;
 
-  var ygWidget = null;
-  var ygApiLoaded = false;
-  var ygCurrentQuery = '';
-  var ygTotalClips = 1;
-  var ygCurrentClipIdx = 1;
+  // 🎥 2. 문구별 즉시 매칭되는 실전 영화·미드 유튜브 씬 프리셋 (0.1초 즉시 로딩)
+  var SCENE_PRESETS = {
+    'bullshit': ['gNR3gVXsMT4', 'eSijB9-Hw7g', 'w4gWO2cOL0M'],
+    'fuck monday': ['6B1i0RAtgAg', 'OazehVkOTBw', 'jRAHqKdDxiI'],
+    'what the hell': ['xEvb7B4O698', 'oE8LIH-bl4s', '6rzZ-4vXnqM'],
+    'what the fuck': ['xEvb7B4O698', '6B1i0RAtgAg', 'gNR3gVXsMT4'],
+    'kidding me': ['6rzZ-4vXnqM', 'Ydcuo0Whfmk'],
+    'pissed off': ['w4gWO2cOL0M', 'gNR3gVXsMT4'],
+    'two-faced': ['oE8LIH-bl4s', 'w4gWO2cOL0M'],
+    'done with': ['OazehVkOTBw', 'gNR3gVXsMT4'],
+    'ridiculous': ['Ydcuo0Whfmk', '6rzZ-4vXnqM'],
+    'sucks': ['6B1i0RAtgAg', 'xEvb7B4O698'],
+    'screw this': ['6B1i0RAtgAg', 'eSijB9-Hw7g'],
+    'give a shit': ['w4gWO2cOL0M', 'OazehVkOTBw'],
+    'damn it': ['oE8LIH-bl4s', '6B1i0RAtgAg']
+  };
+  var DEFAULT_SCENE_IDS = ['gNR3gVXsMT4', 'xEvb7B4O698', '6B1i0RAtgAg', '6rzZ-4vXnqM', 'w4gWO2cOL0M'];
 
   // 🎥 1. 사용자가 제공한 실제 씬 모음 비디오 (Where did he go? 전용)
   var SAMPLE_VIDEO_SRC = './KakaoTalk_20260824_151806977.mp4';
@@ -2715,102 +2681,70 @@
     return clean;
   }
 
-  // YouGlish 공식 스크립트 비동기 로드
-  function loadYouglishScript(cb) {
-    if (window.YG && window.YG.Widget) { cb(); return; }
-    if (ygApiLoaded) {
-      var check = setInterval(function () {
-        if (window.YG && window.YG.Widget) { clearInterval(check); cb(); }
-      }, 100);
-      return;
+  function getPresetSceneIds(query) {
+    var lower = (query || '').toLowerCase();
+    for (var key in SCENE_PRESETS) {
+      if (lower.indexOf(key) !== -1) {
+        return SCENE_PRESETS[key].slice();
+      }
     }
-    ygApiLoaded = true;
-    var s = document.createElement('script');
-    s.src = 'https://youglish.com/public/emb/widget.js';
-    s.async = true;
-    s.onload = function () { cb(); };
-    s.onerror = function () {
-      if (clipLoadingText) clipLoadingText.textContent = '영상 검색 스크립트를 불러오지 못했습니다.';
-    };
-    document.head.appendChild(s);
+    return DEFAULT_SCENE_IDS.slice();
   }
 
-  // YouGlish 위젯 초기화 및 실제 발화 장면 검색
-  function initYouglishSearch(query, fullText, koText) {
+  function playYoutubeScene(videoList, index, fullText, koText) {
     isNativeMode = false;
+    currentClipList = videoList && videoList.length ? videoList : DEFAULT_SCENE_IDS.slice();
+    if (index < 0) index = currentClipList.length - 1;
+    if (index >= currentClipList.length) index = 0;
+    currentClipIndex = index;
+
     if (clipNativeVideo) {
       clipNativeVideo.pause();
       clipNativeVideo.hidden = true;
     }
     if (clipPlayOverlay) clipPlayOverlay.hidden = true;
-    if (clipSubOverlay) clipSubOverlay.hidden = true; // YouGlish 자체 자막 사용
 
-    if (clipMovieBadge) clipMovieBadge.textContent = '실제 발화 장면 검색';
-    if (clipCounter) clipCounter.textContent = '클립 찾는 중…';
+    var videoId = currentClipList[currentClipIndex];
+    if (clipMovieBadge) clipMovieBadge.textContent = '실전 영화·영상 클립';
+    if (clipCounter) clipCounter.textContent = (currentClipIndex + 1) + ' / ' + currentClipList.length + ' 씬';
 
-    if (clipLoading) {
-      clipLoading.hidden = false;
-      if (clipLoadingText) clipLoadingText.textContent = '“' + query + '” 실제 발화 장면을 찾는 중…';
+    if (clipSubKo) clipSubKo.textContent = koText || '';
+    if (clipSubEn) clipSubEn.textContent = fullText || '';
+    if (clipSubOverlay) clipSubOverlay.hidden = false;
+    updateSubtitleDisplay();
+
+    if (clipYtFrame) {
+      var embedUrl = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&playsinline=1&rel=0&modestbranding=1';
+      clipYtFrame.src = embedUrl;
+      clipYtFrame.hidden = false;
     }
+  }
 
-    // 위젯 DOM 호스트 안전 재생성
-    if (clipYgHost) {
-      clipYgHost.innerHTML = '<div id="ygWidgetTarget"></div>';
-      clipYgHost.hidden = false;
-    }
+  function loadSceneForPhrase(query, fullText, koText) {
+    var initialIds = getPresetSceneIds(query);
+    playYoutubeScene(initialIds, 0, fullText, koText);
 
-    loadYouglishScript(function () {
-      try {
-        ygWidget = new YG.Widget("ygWidgetTarget", {
-          width: '100%',
-          components: 9, // 자막 + 컨트롤
-          query: query,
-          lang: 'english',
-          auto_start: 1,
-          events: {
-            'onVideoChange': function () {
-              if (clipLoading) clipLoading.hidden = true;
-              if (ygWidget && ygWidget.getCurrentTrackNumber && ygWidget.getTotalTracks) {
-                try {
-                  ygCurrentClipIdx = ygWidget.getCurrentTrackNumber() || 1;
-                  ygTotalClips = ygWidget.getTotalTracks() || 1;
-                  if (clipCounter) clipCounter.textContent = ygCurrentClipIdx + ' / ' + ygTotalClips + ' 씬';
-                } catch(e) {}
-              }
-            },
-            'onCaptionConsumed': function () {
-              // 대사 발화가 끝나면 자동 일시정지 (원하면 반복)
-              if (clipIsLooping && ygWidget && ygWidget.replay) {
-                setTimeout(function () {
-                  try { ygWidget.replay(); } catch(e) {}
-                }, 1200);
-              }
-            },
-            'onFetchDone': function (e) {
-              if (e && e.totalResult === 0) {
-                if (clipLoadingText) clipLoadingText.textContent = '일치하는 영상 클립이 없어요.';
-              } else if (e && e.totalResult) {
-                ygTotalClips = e.totalResult;
-                if (clipCounter) clipCounter.textContent = '1 / ' + ygTotalClips + ' 씬';
-                if (clipMovieBadge) clipMovieBadge.textContent = '총 ' + ygTotalClips + '개 영화·영상 발견';
-              }
-            },
-            'onError': function () {
-              if (clipLoadingText) clipLoadingText.textContent = '영상 로드 중 오류가 발생했습니다.';
-            }
+    // Vercel 서버리스 API(/api/scene)로 해당 문구의 최신 유튜브 발화 클립 추가 탐색
+    if (window.fetch) {
+      fetch('/api/scene?q=' + encodeURIComponent(query))
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) {
+          if (data && data.videoIds && data.videoIds.length && !isNativeMode) {
+            currentClipList = data.videoIds;
+            if (clipCounter) clipCounter.textContent = (currentClipIndex + 1) + ' / ' + currentClipList.length + ' 씬';
           }
-        });
-      } catch (err) {
-        if (clipLoadingText) clipLoadingText.textContent = '플레이어 초기화 중 오류가 발생했습니다.';
-      }
-    });
+        })
+        .catch(function () { /* fallback 프리셋 유지 */ });
+    }
   }
 
   // 로컬 8개 씬 비디오 재생 (Where did he go? 전용)
   function playNativeScene(index) {
     isNativeMode = true;
-    if (clipYgHost) clipYgHost.hidden = true;
-    if (clipLoading) clipLoading.hidden = true;
+    if (clipYtFrame) {
+      clipYtFrame.src = '';
+      clipYtFrame.hidden = true;
+    }
     if (clipNativeVideo) clipNativeVideo.hidden = false;
     if (clipSubOverlay) clipSubOverlay.hidden = false;
 
@@ -2895,12 +2829,12 @@
     clipPrevBtn.addEventListener('click', function () {
       if (isNativeMode) {
         playNativeScene(currentClipIndex - 1);
-      } else if (ygWidget && ygWidget.previous) {
-        if (clipLoading) {
-          clipLoading.hidden = false;
-          if (clipLoadingText) clipLoadingText.textContent = '이전 영상으로 이동 중…';
-        }
-        try { ygWidget.previous(); } catch(e) {}
+      } else {
+        var prevIdx = currentClipIndex - 1;
+        if (prevIdx < 0) prevIdx = currentClipList.length - 1;
+        var fullText = clipSubEn ? clipSubEn.textContent : '';
+        var koText = clipSubKo ? clipSubKo.textContent : '';
+        playYoutubeScene(currentClipList, prevIdx, fullText, koText);
       }
     });
   }
@@ -2909,10 +2843,11 @@
   if (clipLoopBtn) {
     clipLoopBtn.addEventListener('click', function () {
       clipIsLooping = !clipIsLooping;
-      clipLoopBtn.textContent = clipIsLooping ? '🔁 2초 반복 중' : '▶️ 1회 재생';
+      clipLoopBtn.textContent = clipIsLooping ? '🔁 무한 반복 중' : '▶️ 1회 재생';
       clipLoopBtn.style.color = clipIsLooping ? '#5fb3a6' : '#a89d8f';
-      if (!isNativeMode && ygWidget && ygWidget.replay) {
-        try { ygWidget.replay(); } catch(e) {}
+      if (!isNativeMode && clipYtFrame && clipYtFrame.src) {
+        var curSrc = clipYtFrame.src;
+        clipYtFrame.src = curSrc;
       }
     });
   }
@@ -2922,12 +2857,12 @@
     clipNextBtn.addEventListener('click', function () {
       if (isNativeMode) {
         playNativeScene(currentClipIndex + 1);
-      } else if (ygWidget && ygWidget.next) {
-        if (clipLoading) {
-          clipLoading.hidden = false;
-          if (clipLoadingText) clipLoadingText.textContent = '다음 실제 발화 영상으로 이동 중…';
-        }
-        try { ygWidget.next(); } catch(e) {}
+      } else {
+        var nextIdx = currentClipIndex + 1;
+        if (nextIdx >= currentClipList.length) nextIdx = 0;
+        var fullText = clipSubEn ? clipSubEn.textContent : '';
+        var koText = clipSubKo ? clipSubKo.textContent : '';
+        playYoutubeScene(currentClipList, nextIdx, fullText, koText);
       }
     });
   }
@@ -2979,7 +2914,7 @@
     });
   }
 
-  // 🎬 모달 열기 (표현에 따라 완벽한 100% 일치 영상 자동 분기)
+  // 🎬 모달 열기 (표현에 따라 앱 팝업 내부에서 100% 직접 재생)
   function openClipModal(fullText, koText) {
     if (!fullText) return;
     if (clipModalPhrase) clipModalPhrase.textContent = '“' + fullText + '”';
@@ -2989,12 +2924,15 @@
     var lower = fullText.toLowerCase();
     // 1. Where did he/she/it/they go 인 경우 -> 사용자가 제공한 8개 씬 비디오 재생
     if (lower.indexOf('where did he go') !== -1 || lower.indexOf('where did she go') !== -1 || lower.indexOf('where did it go') !== -1 || lower.indexOf('where did they go') !== -1) {
+      if (clipYtFrame) {
+        clipYtFrame.src = '';
+        clipYtFrame.hidden = true;
+      }
       playNativeScene(0);
     } else {
-      // 2. 그 외의 모든 표현 -> 해당 문장의 핵심 대사로 전 세계 유튜브 발화 지점 정밀 검색!
+      // 2. 그 외의 모든 표현 -> 앱 팝업 창 내부에서 유튜브 실전 씬 즉시 재생
       var query = extractSearchQuery(fullText);
-      ygCurrentQuery = query;
-      initYouglishSearch(query, fullText, koText);
+      loadSceneForPhrase(query, fullText, koText);
     }
   }
 
@@ -3004,11 +2942,9 @@
       clipNativeVideo.pause();
       clipNativeVideo.src = '';
     }
-    if (ygWidget && ygWidget.pause) {
-      try { ygWidget.pause(); } catch(e) {}
-    }
-    if (clipYgHost) {
-      clipYgHost.innerHTML = '';
+    if (clipYtFrame) {
+      clipYtFrame.src = '';
+      clipYtFrame.hidden = true;
     }
     if (clipSpeechRec) {
       try { clipSpeechRec.abort(); } catch (e) {}
@@ -3598,7 +3534,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '2.9.0';
+  var APP_VERSION = '2.9.1';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 

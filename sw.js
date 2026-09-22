@@ -9,7 +9,7 @@
 // 이제 온라인이면 항상 최신 HTML을 받고, 오프라인일 때만 캐시로 대체한다.
 // 아이콘·매니페스트 같은 정적 파일은 기존처럼 캐시 우선으로 빠르게 띄운다.
 
-const CACHE_NAME = 'pressure-valve-v12';
+const CACHE_NAME = 'pressure-valve-v13';
 const CORE_ASSETS = [
   '/',
   '/index.html',
