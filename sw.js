@@ -9,13 +9,14 @@
 // 이제 온라인이면 항상 최신 HTML을 받고, 오프라인일 때만 캐시로 대체한다.
 // 아이콘·매니페스트 같은 정적 파일은 기존처럼 캐시 우선으로 빠르게 띄운다.
 
-const CACHE_NAME = 'pressure-valve-v16';
+const CACHE_NAME = 'pressure-valve-v17';
 const CORE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/icon-192.png',
-  '/icon-512.png'
+  '/icon-512.png',
+  '/audio/emotion-audio.js'
 ];
 
 self.addEventListener('install', function (event) {
@@ -63,6 +64,9 @@ self.addEventListener('fetch', function (event) {
 
   // 버전 확인 파일도 캐싱하지 않는다 — 캐시되면 새 버전을 영영 못 알아챈다
   if (url.pathname === '/version.json') return;
+
+  // Range 요청(오디오 스트리밍/모바일 Safari)은 브라우저 기본 네트워크로 통과
+  if (req.headers && req.headers.has && req.headers.has('range')) return;
 
   if (isHtmlRequest(req, url)) {
     // 페이지: 네트워크 우선 — 배포 직후에도 바로 최신 화면이 뜬다

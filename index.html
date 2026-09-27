@@ -1260,6 +1260,7 @@
   </footer>
 </div>
 
+<script src="/audio/emotion-audio.js"></script>
 <script>
 (function () {
   var CATEGORIES = [
@@ -1285,6 +1286,7 @@
         { en: "This is ridiculous, honestly.", ko: "이거 진짜 말도 안 된다는 뜻이에요.", tip: "부당한 업무 지시에 살짝 날카롭게 반응할 때." }
       ],
       spicy: [
+        { en: "I've had ENOUGH of this shit.", ko: "이딴 개같은 짓거리도 이제 진짜 진절머리 나고 끝이라는 뜻이에요.", tip: "누적된 스트레스와 부조리에 한계점을 찍고 폭발 선언할 때 쓰는 킬링 표현이에요." },
         { en: "This is such bullshit.", ko: "이건 진짜 개소리(말도 안 됨)라는 뜻이에요.", tip: "친한 동료끼리 혼잣말이나 메신저용. 상사 앞에서는 절대 금지." },
         { en: "I'm so fucking done with this.", ko: "나 이거 진짜 존나 지쳤다는 뜻이에요.", tip: "강도가 센 표현이라 아주 편한 사이에서만." },
         { en: "I don't get paid enough to deal with this bullshit.", ko: "내가 이딴 개소리 상대하려고 월급 받는 줄 아냐는 뜻이에요.", tip: "터무니없는 지시나 억지 요구를 받았을 때 혼잣말로 분노를 씹어뱉는 킬링 구문이에요." },
@@ -1317,9 +1319,14 @@
         { en: "That person can be such a pain.", ko: "그 사람 진짜 골치 아플 때가 있다는 뜻이에요.", tip: "직접적인 욕은 아니지만 짜증을 담아서 쓸 수 있어요." },
         { en: "People can be so damn annoying sometimes.", ko: "사람들이 진짜 짜증날 때가 있다는 뜻이에요.", tip: "damn을 강조어로 자연스럽게 섞어 쓰는 표현이에요." },
         { en: "I'm sick and tired of this crap.", ko: "이 헛짓거리 이제 지긋지긋하다는 뜻이에요.", tip: "crap은 bullshit보다 순한 대체 표현이에요." },
+        { en: "I literally JUST told you that.", ko: "나 진짜 방금 막 너한테 그 얘기 해줬잖아, 라는 뜻이에요.", tip: "방금 말해줬는데 딴청 피우다 또 되묻는 동료/지인에게 턱 끝까지 차오르는 짜증을 낼 때 써요." },
         { en: "That was pretty messed up, not gonna lie.", ko: "그거 좀 별로였다, 솔직히 말해서, 라는 뜻이에요.", tip: "messed up은 부정적인 상황을 캐주얼하게 표현할 때 씁니다." }
       ],
       spicy: [
+        { en: "What the HELL are you doing?!", ko: "너 도대체 뭐하고 자빠졌냐는 뜻이에요.", tip: "상대방의 상식 밖 돌발 행동이나 실수에 극대노하여 소리칠 때 써요." },
+        { en: "What the FUCK is wrong with you?!", ko: "도대체 너 머리에 뭐가 잘못 처박혔냐(너 진짜 미쳤냐)는 뜻이에요.", tip: "선의를 무시하거나 선을 세게 넘는 상대방 면전에 분노를 폭발시킬 때 써요." },
+        { en: "I told you — DON'T touch that.", ko: "내가 분명히 그거 손대지 말라고 경고했잖아, 라는 뜻이에요.", tip: "수차례 경고했는데 기어코 건드려서 망쳐놓은 상대에게 낮고 서늘하게 쏘아붙일 때 딱이에요." },
+        { en: "Just... get the fuck out.", ko: "그냥... 닥치고 내 눈앞에서 당장 꺼져, 라는 뜻이에요.", tip: "더 이상 대화할 가치조차 느끼지 못하고 상대방을 공간에서 쫓아낼 때 씹어뱉는 표현이에요." },
         { en: "Keep my name out of your fucking mouth.", ko: "그 주둥이에 내 이름 함부로 올리지 말라는 뜻이에요.", tip: "뒤에서 이간질하거나 뒷담화 까는 사람에게 선을 굵게 긋는 직설적인 분노 표현이에요." },
         { en: "Cut the crap and stop lying to my face.", ko: "개수작 부리지 말고 내 앞에서 거짓말 작작 하라는 뜻이에요.", tip: "뻔히 보이는 변명이나 수작 부리는 상대 면전에 날리기 좋아요." },
         { en: "Fuck off and leave me the hell alone.", ko: "꺼져, 그리고 나 좀 제발 가만히 냅두라는 뜻이에요.", tip: "선 넘는 사람에게 완벽하게 차단 박을 때 쓰는 단호한 표현이에요." },
@@ -1336,6 +1343,7 @@
     {
       id: "small", label: "소소한 빡침", keywords: ["짜증","버스","지하철","줄","날씨","신호등","와이파이","배달","늦었","엘리베이터","비와서","미세먼지","택시","주차","지각","알람","늦잠","새치기","흡연","담배냄새","시끄러","민폐","쓰레기","층간소음","이웃","택배","분실","고장","인터넷","렉","버벅","앱오류","에러","결제","환불","고객센터","콜센터","대기","핸드폰","배터리","놓쳤","놓침","꼬였"],
       mild: [
+        { en: "Oh, come on...", ko: "아 진짜 왜 이래, 장난해?라는 뜻이에요.", tip: "귀찮거나 황당한 상황에 가볍게 탄식하듯 내뱉는 만능 표현이에요." },
         { en: "Ugh, seriously?", ko: "아, 진짜?라는 짧은 탄식이에요.", tip: "가장 만능으로 쓸 수 있는 감탄사." },
         { en: "You've got to be kidding me.", ko: "장난하는 거지 지금, 이라는 뜻이에요.", tip: "황당한 일이 벌어졌을 때." },
         { en: "This is so annoying.", ko: "이거 진짜 짜증난다는 뜻이에요.", tip: "가장 직접적이고 무난한 표현." },
@@ -1933,6 +1941,13 @@
   }
 
   function showPhrase(category, phrase, level) {
+    // 새 문구로 전환 시 이전 재생 중이던 음성(MP3 및 Web Speech) 즉시 중단
+    if (window.EmotionAudioManager) window.EmotionAudioManager.stop();
+    if (window.speechSynthesis) {
+      try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    }
+    if (typeof setSpeaking === 'function') setSpeaking(false);
+
     // 버그 수정 — 같은 상황 칩을 반복 클릭하면 매번 똑같은 고정 문구가 다시 뜨는데도
     // 게이지가 계속 깎였음(새로 "꺼내본" 게 없는데도 감소). 실제로 다른 문구가 떴을 때만 깎이게 함.
     var isNewPhrase = phrase !== currentPhrase;
@@ -2220,7 +2235,7 @@
     });
   }
 
-  var speechOk = typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+  var speechOk = (typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined') || (typeof Audio !== 'undefined');
   if (!speechOk) {
     speakBtn.hidden = true;
     noSpeechNote.hidden = false;
@@ -2498,14 +2513,32 @@
       if (!currentPhrase) return;
       var text = currentPhrase.en;
       try {
-        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
-          window.speechSynthesis.cancel();
-          // cancel()은 브라우저에 따라 비동기라, 곧바로 speak()하면 씹히는 경우가 있어
-          // 한 틱 쉬었다가 새로 발화한다
-          clearTimeout(speakRetryTimer);
-          speakRetryTimer = setTimeout(function () { doSpeak(text); }, 60);
-        } else {
-          doSpeak(text);
+        // 1. 기존 진행 중인 모든 음성(MP3 및 Web Speech) 즉각 중단
+        if (window.EmotionAudioManager) {
+          window.EmotionAudioManager.stop();
+        }
+        if (window.speechSynthesis) {
+          try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+        }
+        clearTimeout(speakRetryTimer);
+
+        // 2. 정적 감정 MP3 존재 여부 확인 후 최우선 재생
+        var played = false;
+        if (window.EmotionAudioManager && typeof window.EmotionAudioManager.play === 'function') {
+          played = window.EmotionAudioManager.play(text, {
+            onStart: function () { setSpeaking(true); },
+            onEnd: function () { setSpeaking(false); },
+            onError: function () {
+              // MP3 파일 로드 실패 시 기존 Web Speech API로 즉시 fallback
+              setSpeaking(false);
+              doSpeak(text);
+            }
+          });
+        }
+
+        // 3. MP3가 없는 일반 문장은 기존 Web Speech API fallback 사용
+        if (!played) {
+          speakRetryTimer = setTimeout(function () { doSpeak(text); }, 30);
         }
       } catch (e) { flashSpeakError(); }
     });
@@ -2682,7 +2715,7 @@
 
   // Phase 12 · 업데이트 알림 — 배포된 version.json과 지금 돌고 있는 버전을 비교해서
   // 새 버전이 있으면 알려주고, 업데이트한 뒤에는 "완료"를 확실히 보여준다.
-  var APP_VERSION = '3.0.1';
+  var APP_VERSION = '3.1.0';
   var UPDATE_FLAG_KEY = 'pressure-valve-updating-to';
   var LAST_SEEN_KEY = 'pressure-valve-last-seen-version';
 
