@@ -1,4 +1,4 @@
 {
-  "version": "3.1.0",
-  "note": "리얼 감정 오디오(ElevenLabs v3) 정적 자산 탑재: 킬링 분노 표현 8종 고품질 음원 최우선 재생 + Web Speech API fallback 연동"
+  "version": "3.1.1",
+  "note": "초기 화면 및 전 상황(SITUATIONS)에 ElevenLabs 리얼 보이스 문구 전면 배치: 즉시 찐 분노 오디오 재생 보장"
 }
