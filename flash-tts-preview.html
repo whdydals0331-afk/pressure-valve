@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini Flash TTS vs ElevenLabs 분노 음성 비교 청취</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card: #1a1e29;
+      --border: #2d3345;
+      --text: #f0f3f8;
+      --text-sub: #9aa5b8;
+      --accent: #ff4757;
+      --primary: #4f8cfc;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 560px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 11px;
+      background: #ff4757;
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 99px;
+      font-weight: 700;
+    }
+    p.desc {
+      color: var(--text-sub);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-top: 0;
+      margin-bottom: 24px;
+    }
+    .phrase-box {
+      background: #232938;
+      border-left: 4px solid var(--accent);
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+    .phrase-en {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .phrase-ko {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: border-color .2s;
+    }
+    .card:hover {
+      border-color: #4f8cfc;
+    }
+    .info {
+      flex: 1;
+    }
+    .title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .detail {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.4;
+    }
+    button.play-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: filter .15s, transform .1s;
+    }
+    button.play-btn:active {
+      transform: scale(0.96);
+    }
+    button.play-btn.playing {
+      background: var(--accent);
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.75; }
+    }
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 28px;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Gemini Flash TTS 음성 비교 <span class="badge">NEW</span></h1>
+    <p class="desc">
+      조코딩 영상에서 소개된 최신 <b>Gemini Flash TTS</b> 모델로 생성한 미국인 남성 분노 음성 3종입니다.
+      원하시는 톤을 직접 들어보고 가장 마음에 드는 음성을 골라보세요!
+    </p>
+
+    <div class="phrase-box">
+      <div class="phrase-en">“Are you fucking kidding me right now?!”</div>
+      <div class="phrase-ko">“너 지금 씨발 장난하냐?!” (극한의 분노 연기 프롬프트 적용)</div>
+    </div>
+
+    <!-- 1. Fenrir -->
+    <div class="card">
+      <div class="info">
+        <div class="title">⚡ 1. Fenrir (극대노 폭발 톤)</div>
+        <div class="detail">미국인 남성의 굵고 묵직한 샤우팅 분노. 억누르지 않고 터뜨리는 톤.</div>
+      </div>
+      <button class="play-btn" onclick="playAudio('/audio/emotion/gemini_fenrir_angry.wav', this)">
+        <span>🔊</span> 듣기
+      </button>
+    </div>
+
+    <!-- 2. Puck -->
+    <div class="card">
+      <div class="info">
+        <div class="title">🔥 2. Puck (허스키 씹어뱉는 톤)</div>
+        <div class="detail">약간 쉰 목소리와 함께 날카롭게 이를 갈며 씹어뱉는 미국인 남성 톤.</div>
+      </div>
+      <button class="play-btn" onclick="playAudio('/audio/emotion/gemini_puck_angry.wav', this)">
+        <span>🔊</span> 듣기
+      </button>
+    </div>
+
+    <!-- 3. Charon -->
+    <div class="card">
+      <div class="info">
+        <div class="title">🧊 3. Charon (서늘한 저음 톤)</div>
+        <div class="detail">낮게 깔린 깊은 바리톤으로 차갑고 싸늘하게 쏘아붙이는 저음 분노.</div>
+      </div>
+      <button class="play-btn" onclick="playAudio('/audio/emotion/gemini_charon_angry.wav', this)">
+        <span>🔊</span> 듣기
+      </button>
+    </div>
+
+    <!-- 4. ElevenLabs 비교 -->
+    <div class="card" style="border-style: dashed; opacity: 0.9;">
+      <div class="info">
+        <div class="title">🎙️ [비교용] 기존 ElevenLabs v3 음성</div>
+        <div class="detail">앞서 업로드하셨던 ElevenLabs 직접 생성 파일 (angry-002.mp3)</div>
+      </div>
+      <button class="play-btn" style="background: #6c5ce7;" onclick="playAudio('/audio/emotion/angry-002.mp3', this)">
+        <span>🔊</span> 비교
+      </button>
+    </div>
+
+    <a href="/" class="back-link">← 메인 앱으로 돌아가기</a>
+  </div>
+
+  <script>
+    let currentAudio = null;
+    let currentBtn = null;
+
+    function playAudio(src, btn) {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        if (currentBtn) currentBtn.classList.remove('playing');
+      }
+
+      if (currentBtn === btn && !currentAudio.paused) {
+        currentBtn = null;
+        currentAudio = null;
+        return;
+      }
+
+      const audio = new Audio(src);
+      currentAudio = audio;
+      currentBtn = btn;
+      btn.classList.add('playing');
+
+      audio.onended = () => {
+        btn.classList.remove('playing');
+        currentAudio = null;
+        currentBtn = null;
+      };
+
+      audio.onerror = () => {
+        btn.classList.remove('playing');
+        alert('오디오를 재생할 수 없습니다.');
+      };
+
+      audio.play().catch(e => {
+        console.error(e);
+        btn.classList.remove('playing');
+      });
+    }
+  </script>
+</body>
+</html>
